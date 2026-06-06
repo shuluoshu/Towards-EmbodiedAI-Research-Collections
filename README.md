@@ -4,6 +4,11 @@ This repository collects structured technical notes for Embodied AI, VLA, World 
 
 ## Current Collection
 
+### Must-Read Papers
+
+- [Cosmos3](./must-read-papers/Cosmos3/README.md)
+- [Cosmos3 HTML report](./must-read-papers/Cosmos3/cosmos3_report.html)
+
 ### VLA / World Model / World Action Model Technical Intelligence
 
 - [Markdown report](./reports/vla-worldmodel-tech-intelligence/VLA_WorldModel_Tech_Intelligence_Report.md)

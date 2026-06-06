@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Cosmos 3 技术报告中文解读</title>
+<style>
+:root{--bg:#07102e;--card:#0d1b46;--card2:#101f52;--text:#ecf3ff;--muted:#b8c8e8;--accent:#65d8ff;--accent2:#9df5c7;--warn:#ffd166;--line:#29406f;}
+*{box-sizing:border-box} body{margin:0;background:linear-gradient(135deg,#060b1e,#07102e 42%,#0d1b46);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei",Arial,sans-serif;line-height:1.72} 
+a{color:#8be8ff} .wrap{max-width:1180px;margin:0 auto;padding:32px 20px 80px}.hero{padding:42px 28px;border:1px solid var(--line);border-radius:24px;background:radial-gradient(circle at 80% 10%,rgba(101,216,255,.18),transparent 30%),linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.02));box-shadow:0 18px 50px rgba(0,0,0,.28)}
+h1{font-size:38px;line-height:1.2;margin:0 0 10px}.subtitle{color:var(--muted);font-size:18px}.meta{margin-top:20px;display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.pill{background:rgba(255,255,255,.07);border:1px solid var(--line);border-radius:14px;padding:12px}.pill b{display:block;color:var(--accent2)}
+nav{position:sticky;top:0;z-index:3;backdrop-filter:blur(10px);background:rgba(7,16,46,.88);border-bottom:1px solid var(--line);padding:12px 0;margin:24px 0}nav a{margin-right:18px;text-decoration:none;color:var(--muted);font-size:14px}nav a:hover{color:var(--accent)}
+section{margin:28px 0;padding:24px;border:1px solid var(--line);border-radius:22px;background:rgba(13,27,70,.72)}h2{margin-top:0;color:#fff;font-size:27px;border-left:5px solid var(--accent);padding-left:12px}h3{color:var(--accent2);margin-top:24px}.lead{font-size:18px;color:#dce8ff}.note{border-left:4px solid var(--warn);padding:12px 16px;background:rgba(255,209,102,.08);border-radius:10px;color:#ffe9aa}.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}.card{background:rgba(255,255,255,.055);border:1px solid var(--line);border-radius:18px;padding:18px}.card h4{margin:0 0 8px;color:#fff}.tag{display:inline-block;padding:3px 9px;border-radius:999px;background:rgba(101,216,255,.12);border:1px solid rgba(101,216,255,.32);font-size:12px;color:#bdf2ff;margin:2px}table{width:100%;border-collapse:collapse;margin:14px 0;background:rgba(255,255,255,.04);border-radius:12px;overflow:hidden}th,td{border:1px solid var(--line);padding:10px 12px;text-align:left;vertical-align:top}th{background:rgba(101,216,255,.12);color:#eaffff}code,pre{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}pre{white-space:pre-wrap;background:#06122f;border:1px solid var(--line);padding:14px;border-radius:14px;color:#d7e7ff}.diagram{background:#081536;border:1px solid var(--line);border-radius:18px;padding:16px;margin:12px 0}.diagram svg{width:100%;height:auto}.small{font-size:13px;color:var(--muted)}.bilingual{display:grid;grid-template-columns:1fr 1fr;gap:14px}.en,.zh{padding:14px;border-radius:14px;border:1px solid var(--line);background:rgba(255,255,255,.04)}.en{color:#cfe0ff}.zh{color:#f0f8ff}.footer{color:var(--muted);font-size:13px;margin-top:32px}.ok{color:var(--accent2)}.bad{color:#ff9b9b}@media(max-width:900px){.grid,.bilingual,.meta{grid-template-columns:1fr}h1{font-size:30px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="hero">
+    <h1>Cosmos 3: Omnimodal World Models for Physical AI<br/>技术报告中文解读</h1>
+    <div class="subtitle">面向具身智能/自动驾驶/机器人：统一理解、生成、仿真和动作的 NVIDIA 开放世界模型体系</div>
+    <div class="meta">
+      <div class="pill"><b>论文</b>Cosmos 3: Omnimodal World Models for Physical AI</div>
+      <div class="pill"><b>时间</b>arXiv 提交：2026-06-01</div>
+      <div class="pill"><b>核心</b>统一 MoT + 自回归扩散</div>
+      <div class="pill"><b>模态</b>Language / Image / Video / Audio / Action</div>
+    </div>
+    <p class="small">资料基于 NVIDIA Cosmos 3 官方项目页、arXiv 摘要页、Hugging Face Cosmos3 集合和公开报道整理。因用户请求的是外部链接中的论文，本文不提供逐字全文翻译，而提供章节级中英双语释义、技术拆解和重绘框图。</p>
+  </div>
+
+  <nav>
+    <a href="#tldr">TL;DR</a><a href="#position">定位</a><a href="#translation">中英双语释义</a><a href="#architecture">核心框图</a><a href="#innovation">创新点</a><a href="#data">数据</a><a href="#effect">效果</a><a href="#takeaway">我的判断</a><a href="#refs">参考</a>
+  </nav>
+
+  <section id="tldr">
+    <h2>1. TL;DR：一句话读懂 Cosmos 3</h2>
+    <p class="lead"><b>Cosmos 3 的目标不是再做一个视频生成模型，而是把 VLM、视频生成器、世界模拟器、forward dynamics、inverse dynamics、robot policy 统一到一个 omnimodal world model 里。</b></p>
+    <p>官方摘要称 Cosmos 3 能在一个统一的 mixture-of-transformers 架构中联合处理和生成语言、图像、视频、音频和动作序列；官方项目页也强调它把 understanding、generation、simulation、action 连接到同一个 shared omnimodal world model 中。</p>
+    <div class="note"><b>对具身智能的意义：</b>它试图解决“感知模型、生成模型、仿真模型、策略模型割裂”的问题。过去你需要 VLM 看懂场景、视频模型预测未来、policy 输出动作、simulator 评估结果；Cosmos 3 想用一个模型承接这些 I/O 组合。</div>
+  </section>
+
+  <section id="position">
+    <h2>2. 论文定位：Cosmos 3 到底是什么？</h2>
+    <div class="grid">
+      <div class="card"><h4>不是单纯 VLM</h4><p>VLM 主要是 image/video → text reasoning；Cosmos 3 还要 text/image/video/audio/action 之间互相转化，包括生成未来视频、推断动作轨迹、产生 robot policy。</p></div>
+      <div class="card"><h4>不是单纯视频生成</h4><p>普通视频生成重视觉质量；Cosmos 3 更强调物理世界的时空关系、动作因果、可作为 robot/AV 数据生成与评估的世界模拟。</p></div>
+      <div class="card"><h4>不是传统 world model</h4><p>传统 world model 多是 state + action → next state；Cosmos 3 把文本、图像、视频、音频、动作都放进同一模型，支持 forward/inverse dynamics 和生成。</p></div>
+      <div class="card"><h4>不是单一策略模型</h4><p>它能 post-train 成 robot policy，也能做 image/video generation、VLM reasoning、trajectory reasoning，是一个可后训练的基础模型族。</p></div>
+    </div>
+    <h3>和 Cosmos 2/2.5 的关系</h3>
+    <p>公开资料显示，早期 Cosmos 系列更像多个专用模块：Reason / Predict / Transfer / Policy 等。Cosmos 3 的主张是把这些能力合并到一个统一 omnimodal 架构中，减少开发者在多模型管线之间切换、蒸馏、对齐、拼接的成本。</p>
+  </section>
+
+  <section id="translation">
+    <h2>3. 章节级中英双语释义（非逐字全文翻译）</h2>
+    <p class="note">说明：完整逐字翻译外部 PDF 会涉及版权限制。下面保留关键英文术语与结构，提供“可读性更强的中文释义 + 英文要点”，用于快速掌握全文。</p>
+    <h3>Abstract / 摘要</h3>
+    <div class="bilingual"><div class="en"><b>English gist</b><br/>Cosmos 3 is a family of omnimodal world models that jointly process and generate language, image, video, audio, and action sequences in a unified mixture-of-transformers architecture. It subsumes VLMs, video generators, world simulators, and world-action models. Evaluations show strong open-model results across understanding and generation tasks. Code, checkpoints, synthetic datasets, and benchmarks are released under OpenMDW-1.1.</div><div class="zh"><b>中文释义</b><br/>Cosmos 3 是一个面向 Physical AI 的全模态世界模型族。它不是把多个模型简单串起来，而是在统一架构里同时支持语言、图像、视频、音频和动作的输入输出，因此可以覆盖视觉语言理解、图像/视频生成、世界仿真、机器人动作预测等任务。报告强调其开放性：代码、权重、合成数据集和评测都会开放。</div></div>
+    <h3>Introduction / 引言</h3>
+    <div class="bilingual"><div class="en"><b>English gist</b><br/>Physical AI requires agents that perceive, reason, simulate and act in the real world. Separate perception/generation/control models create fragmented pipelines and limited generalization. A unified omnimodal world model can provide a scalable backbone for embodied agents.</div><div class="zh"><b>中文释义</b><br/>具身智能的难点不是“看懂图片”这么简单，而是要让智能体能理解物理世界、预测未来、选择动作并评估后果。传统管线把感知、预测、仿真、控制拆成多个模型，导致信息对齐困难、泛化差、部署复杂。Cosmos 3 的出发点是用统一基础模型承载这些能力。</div></div>
+    <h3>Model / 模型架构</h3>
+    <div class="bilingual"><div class="en"><b>English gist</b><br/>Cosmos 3 uses a Mixture-of-Transformers design. The public project page summarizes it as a unified MoT architecture with autoregressive diffusion, supporting flexible modality-to-modality mapping.</div><div class="zh"><b>中文释义</b><br/>模型采用 Mixture-of-Transformers（MoT）架构，可以理解成将“更擅长离散推理/上下文组织的自回归 transformer”和“更擅长连续视觉/音频/动作生成的扩散式生成 transformer”结合。不同模态通过统一 token/latent 表达进入模型，模型根据任务选择输出文本、图像、视频、音频或动作。</div></div>
+    <h3>Capabilities / 能力</h3>
+    <div class="bilingual"><div class="en"><b>English gist</b><br/>Cosmos 3 supports vision-language reasoning, image generation, audio-visual generation, robot policy, forward dynamics, inverse dynamics, and reasoning+generation.</div><div class="zh"><b>中文释义</b><br/>官方项目页展示了六类能力：物理世界视觉语言推理、图像生成、音视频生成、机器人策略、forward dynamics（观测+控制→未来视频）、inverse dynamics（视频变化→动作/轨迹）、以及先推理再生成物理交互结果。</div></div>
+    <h3>Data / 数据</h3>
+    <div class="bilingual"><div class="en"><b>English gist</b><br/>Public reports state Cosmos 3 was trained on about 20 trillion multimodal tokens, including roughly one billion images, 400 million real and synthetic videos, ambient audio, text, and human/robot action data.</div><div class="zh"><b>中文释义</b><br/>公开报道披露训练数据规模约 20T 多模态 token，包括近 10 亿图像、4 亿真实/合成视频、环境音频、文本，以及人类和机器人动作数据。Hugging Face 集合还列出若干开放合成数据集，覆盖数字人、物理交互、具身机器人、仓储操作、自动驾驶等场景。</div></div>
+  </section>
+
+  <section id="architecture">
+    <h2>4. 核心框图解释（重绘版）</h2>
+    <h3>图 1：统一全模态 I/O</h3>
+    <div class="diagram">
+      <svg viewBox="0 0 1000 310" xmlns="http://www.w3.org/2000/svg">
+        <defs><marker id="arr" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#65d8ff"/></marker></defs>
+        <rect x="360" y="75" width="280" height="150" rx="24" fill="#13265f" stroke="#65d8ff" stroke-width="2"/>
+        <text x="500" y="132" text-anchor="middle" fill="#fff" font-size="30" font-weight="700">Cosmos 3</text>
+        <text x="500" y="172" text-anchor="middle" fill="#9df5c7" font-size="20">Omnimodal World Model</text>
+        <text x="500" y="200" text-anchor="middle" fill="#b8c8e8" font-size="15">理解 / 生成 / 仿真 / 动作</text>
+        <g fill="#0b1b45" stroke="#29406f" stroke-width="2"><rect x="40" y="35" width="170" height="48" rx="14"/><rect x="40" y="95" width="170" height="48" rx="14"/><rect x="40" y="155" width="170" height="48" rx="14"/><rect x="40" y="215" width="170" height="48" rx="14"/></g>
+        <g fill="#ecf3ff" font-size="18"><text x="125" y="66" text-anchor="middle">Language</text><text x="125" y="126" text-anchor="middle">Image / Video</text><text x="125" y="186" text-anchor="middle">Audio</text><text x="125" y="246" text-anchor="middle">Action</text></g>
+        <g stroke="#65d8ff" stroke-width="2.5" marker-end="url(#arr)"><line x1="210" y1="59" x2="360" y2="115"/><line x1="210" y1="119" x2="360" y2="140"/><line x1="210" y1="179" x2="360" y2="165"/><line x1="210" y1="239" x2="360" y2="190"/></g>
+        <g fill="#0b1b45" stroke="#29406f" stroke-width="2"><rect x="790" y="35" width="170" height="48" rx="14"/><rect x="790" y="95" width="170" height="48" rx="14"/><rect x="790" y="155" width="170" height="48" rx="14"/><rect x="790" y="215" width="170" height="48" rx="14"/></g>
+        <g fill="#ecf3ff" font-size="18"><text x="875" y="66" text-anchor="middle">Text Reasoning</text><text x="875" y="126" text-anchor="middle">Image / Video</text><text x="875" y="186" text-anchor="middle">Audio</text><text x="875" y="246" text-anchor="middle">Trajectory / Action</text></g>
+        <g stroke="#65d8ff" stroke-width="2.5" marker-end="url(#arr)"><line x1="640" y1="115" x2="790" y2="59"/><line x1="640" y1="140" x2="790" y2="119"/><line x1="640" y1="165" x2="790" y2="179"/><line x1="640" y1="190" x2="790" y2="239"/></g>
+      </svg>
+    </div>
+    <p><b>解读：</b>这张图表达 Cosmos 3 的最核心目标：任意若干输入模态组合，输出任意目标模态。比如 video+prompt→驾驶推理；image+task→机器人轨迹；observation+action→未来视频；video pair→反推动作。</p>
+
+    <h3>图 2：Mixture-of-Transformers + Autoregressive Diffusion</h3>
+    <div class="diagram">
+      <svg viewBox="0 0 1000 350" xmlns="http://www.w3.org/2000/svg">
+        <defs><marker id="arr2" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#9df5c7"/></marker></defs>
+        <rect x="40" y="120" width="180" height="90" rx="18" fill="#0b1b45" stroke="#29406f" stroke-width="2"/><text x="130" y="154" text-anchor="middle" fill="#fff" font-size="18">Tokenized Inputs</text><text x="130" y="184" text-anchor="middle" fill="#b8c8e8" font-size="14">text / visual / audio / action</text>
+        <rect x="300" y="55" width="260" height="110" rx="20" fill="#13265f" stroke="#65d8ff" stroke-width="2"/><text x="430" y="96" text-anchor="middle" fill="#fff" font-size="20" font-weight="700">Reasoner Transformer</text><text x="430" y="128" text-anchor="middle" fill="#b8c8e8" font-size="15">自回归推理 / 规划 / grounding</text>
+        <rect x="300" y="205" width="260" height="110" rx="20" fill="#182353" stroke="#9df5c7" stroke-width="2"/><text x="430" y="246" text-anchor="middle" fill="#fff" font-size="20" font-weight="700">Generator Transformer</text><text x="430" y="278" text-anchor="middle" fill="#b8c8e8" font-size="15">扩散式生成 / 连续模态建模</text>
+        <rect x="650" y="120" width="280" height="90" rx="20" fill="#0b1b45" stroke="#29406f" stroke-width="2"/><text x="790" y="154" text-anchor="middle" fill="#fff" font-size="18">Task-specific Outputs</text><text x="790" y="184" text-anchor="middle" fill="#b8c8e8" font-size="14">reasoning / image / video / audio / action</text>
+        <g stroke="#9df5c7" stroke-width="2.8" marker-end="url(#arr2)"><line x1="220" y1="145" x2="300" y2="110"/><line x1="220" y1="185" x2="300" y2="260"/><line x1="560" y1="110" x2="650" y2="145"/><line x1="560" y1="260" x2="650" y2="185"/><line x1="430" y1="165" x2="430" y2="205"/></g>
+      </svg>
+    </div>
+    <p><b>解读：</b>Reasoner 更像语言模型/VLM，擅长组织上下文、显式推理、定位对象、规划轨迹；Generator 更像扩散模型，擅长生成高维连续信号，如图像、视频、音频、动作序列。MoT 的价值是避免“用一个 transformer 兼顾所有事情”导致能力互相牵制。</p>
+
+    <h3>图 3：Forward / Inverse Dynamics 与机器人策略</h3>
+    <div class="diagram">
+      <svg viewBox="0 0 1000 360" xmlns="http://www.w3.org/2000/svg">
+        <defs><marker id="arr3" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#65d8ff"/></marker></defs>
+        <rect x="60" y="45" width="220" height="70" rx="16" fill="#0b1b45" stroke="#29406f" stroke-width="2"/><text x="170" y="88" fill="#fff" text-anchor="middle" font-size="18">Obs_t + Action</text>
+        <rect x="390" y="45" width="220" height="70" rx="16" fill="#13265f" stroke="#65d8ff" stroke-width="2"/><text x="500" y="88" fill="#fff" text-anchor="middle" font-size="18">Forward Dynamics</text>
+        <rect x="720" y="45" width="220" height="70" rx="16" fill="#0b1b45" stroke="#29406f" stroke-width="2"/><text x="830" y="88" fill="#fff" text-anchor="middle" font-size="18">Future Video</text>
+        <line x1="280" y1="80" x2="390" y2="80" stroke="#65d8ff" stroke-width="3" marker-end="url(#arr3)"/><line x1="610" y1="80" x2="720" y2="80" stroke="#65d8ff" stroke-width="3" marker-end="url(#arr3)"/>
+        <rect x="60" y="145" width="220" height="70" rx="16" fill="#0b1b45" stroke="#29406f" stroke-width="2"/><text x="170" y="188" fill="#fff" text-anchor="middle" font-size="18">Video / State Change</text>
+        <rect x="390" y="145" width="220" height="70" rx="16" fill="#13265f" stroke="#9df5c7" stroke-width="2"/><text x="500" y="188" fill="#fff" text-anchor="middle" font-size="18">Inverse Dynamics</text>
+        <rect x="720" y="145" width="220" height="70" rx="16" fill="#0b1b45" stroke="#29406f" stroke-width="2"/><text x="830" y="188" fill="#fff" text-anchor="middle" font-size="18">Action / Trajectory</text>
+        <line x1="280" y1="180" x2="390" y2="180" stroke="#9df5c7" stroke-width="3" marker-end="url(#arr3)"/><line x1="610" y1="180" x2="720" y2="180" stroke="#9df5c7" stroke-width="3" marker-end="url(#arr3)"/>
+        <rect x="60" y="245" width="220" height="70" rx="16" fill="#0b1b45" stroke="#29406f" stroke-width="2"/><text x="170" y="288" fill="#fff" text-anchor="middle" font-size="18">Image + Task</text>
+        <rect x="390" y="245" width="220" height="70" rx="16" fill="#13265f" stroke="#ffd166" stroke-width="2"/><text x="500" y="288" fill="#fff" text-anchor="middle" font-size="18">Robot Policy</text>
+        <rect x="720" y="245" width="220" height="70" rx="16" fill="#0b1b45" stroke="#29406f" stroke-width="2"/><text x="830" y="288" fill="#fff" text-anchor="middle" font-size="18">Goal-directed Action</text>
+        <line x1="280" y1="280" x2="390" y2="280" stroke="#ffd166" stroke-width="3" marker-end="url(#arr3)"/><line x1="610" y1="280" x2="720" y2="280" stroke="#ffd166" stroke-width="3" marker-end="url(#arr3)"/>
+      </svg>
+    </div>
+    <p><b>解读：</b>这三条能力链是 Cosmos 3 相比普通 VLM/视频生成模型最“物理 AI”的部分。Forward dynamics 用来预演动作结果；inverse dynamics 把视频变化解释为动作；policy 直接把视觉和任务转为动作。三者闭环以后，可以做数据生成、策略训练、失败分析和在线规划。</p>
+  </section>
+
+  <section id="innovation">
+    <h2>5. 创新点、要解决的问题和效果</h2>
+    <table><thead><tr><th>问题</th><th>Cosmos 3 的做法</th><th>为什么重要</th></tr></thead><tbody>
+      <tr><td>多模型管线割裂</td><td>用统一 omnimodal world model 连接理解、生成、仿真、动作。</td><td>减少 VLM、视频模型、policy、simulator 之间的接口和语义对齐成本。</td></tr>
+      <tr><td>视频生成缺少动作因果</td><td>引入 action 数据，支持 forward/inverse dynamics。</td><td>让模型不只是“画视频”，而是能建模“动作导致世界怎样变化”。</td></tr>
+      <tr><td>具身泛化差</td><td>用大规模多模态数据 + 合成物理场景 + 机器人/人类动作数据预训练。</td><td>为机器人和自动驾驶构造更强的世界先验，减少每个任务从零采集数据。</td></tr>
+      <tr><td>生成和推理难以统一</td><td>MoT 架构把 reasoning transformer 与 generation transformer 组合。</td><td>让模型先理解/规划，再生成未来观测或动作，避免纯扩散模型缺推理、纯 AR 模型弱视觉生成。</td></tr>
+      <tr><td>危险/长尾数据难采</td><td>开放 synthetic datasets 和视频/场景生成能力。</td><td>适合自动驾驶 rare event、机器人碰撞/失败场景、安全评估等。</td></tr>
+    </tbody></table>
+    <h3>一句话创新概括</h3>
+    <pre>Cosmos 3 = Omnimodal tokenization + Mixture-of-Transformers + autoregressive reasoning + diffusion generation + action-aware world modeling + open physical-AI datasets/checkpoints</pre>
+  </section>
+
+  <section id="data">
+    <h2>6. 使用的数据</h2>
+    <p>公开报道披露的训练数据规模是 <b>20T multimodal tokens</b>，包括约 <b>近 10 亿图像</b>、<b>4 亿真实和合成视频</b>、环境音频、文本，以及人类和机器人动作数据。这个量级表明 Cosmos 3 更像“物理世界版多模态基础模型”，不是某个机器人任务的小模型。</p>
+    <h3>Hugging Face 开放集合中的数据/模型线索</h3>
+    <table><thead><tr><th>类别</th><th>公开名称示例</th><th>用途推断</th></tr></thead><tbody>
+      <tr><td>合成数字人场景</td><td>PhysicalAI-WorldModel-Synthetic-Digital-Human-Scenes</td><td>人体、动作、交互、空间关系建模。</td></tr>
+      <tr><td>物理交互场景</td><td>PhysicalAI-WorldModel-Synthetic-Physical-Interaction-Scenes</td><td>碰撞、接触、物体运动、动力学先验。</td></tr>
+      <tr><td>具身机器人场景</td><td>PhysicalAI-WorldModel-Synthetic-Embodied-Robot-Scenes</td><td>机器人操作、任务执行、动作到视觉变化。</td></tr>
+      <tr><td>仓储操作场景</td><td>PhysicalAI-WorldModel-Synthetic-Warehouse-Operations-Scenes</td><td>工业物流、仓储机器人、安全监控。</td></tr>
+      <tr><td>自动驾驶场景</td><td>PhysicalAI-WorldModel-Synthetic-Autonomous-Driving-Scenarios</td><td>道路交通、长尾事件、AV world simulation。</td></tr>
+      <tr><td>机器人真实/公开数据</td><td>LIBERO_LeRobot_v3, BridgeData2_LeRobot_v3</td><td>policy fine-tuning、轨迹学习、动作对齐。</td></tr>
+      <tr><td>合成 caption</td><td>BridgeData2-Subset-Synthetic-Captions</td><td>把无语言机器人数据转成 language-conditioned policy/VLA 数据。</td></tr>
+    </tbody></table>
+    <div class="note"><b>我的理解：</b>Cosmos 3 的数据策略不是单纯“堆互联网视频”，而是把真实视频、合成视频、物理交互、机器人动作、自动驾驶长尾场景和文本/音频一起 token 化，让模型形成“看—听—想—动—预演”的统一经验库。</div>
+  </section>
+
+  <section id="effect">
+    <h2>7. 效果与 benchmark 怎么看</h2>
+    <p>arXiv 摘要称，post-trained Cosmos 3 在 technical report 写作时被 Artificial Analysis 评为最佳开源 Text-to-Image 和 Image-to-Video 模型，并在 RoboArena 被评为最佳 policy model。官方项目页还称其在 Robotics、Smart Space、Driving benchmark averages 上位列开放模型第一，并在 R-Bench、Artificial Analysis、RoboLab、RoboArena 等生成/机器人策略评测中排名靠前。</p>
+    <h3>需要理性看待的地方</h3>
+    <ul>
+      <li><b>榜单结果不等于通用机器人已解决。</b>官方和采访都强调 physical AI 的泛化仍是核心难题，Cosmos 3 更像 foundation，而非最终解决方案。</li>
+      <li><b>生成物理一致性仍需验证。</b>视频看起来真实，不代表动力学、接触、力学完全可用于闭环控制。</li>
+      <li><b>动作空间适配是关键。</b>不同机器人、自动驾驶系统、仿真器的 action representation 不同，Cosmos 3 需要后训练/适配。</li>
+      <li><b>开源可用性很重要。</b>相比纯 API，开放权重/代码/数据让产业用户能本地部署、做安全审计和领域微调。</li>
+    </ul>
+  </section>
+
+  <section id="takeaway">
+    <h2>8. 对你做具身/自动驾驶的启发</h2>
+    <h3>对 VLA / WAM</h3>
+    <p>Cosmos 3 的路线说明 VLA 和 WAM 的边界在融合：VLA 负责视觉语言理解和动作输出，WAM 负责世界演化预测；Cosmos 3 想把两者统一成一个“action-aware omnimodal world model”。这和你之前关注的 DriveWAM、GigaWorld-policy、FAST-WAM 的区别在于：它不是只做 C→F→A 或 C→A→F 的 mask 设计，而是试图在同一 backbone 中覆盖所有 I/O 方向。</p>
+    <h3>对自动驾驶</h3>
+    <p>自动驾驶里最有价值的不是让 Cosmos 3 直接控制车，而是用于：</p>
+    <ul><li>长尾场景生成：cut-in、落石、行人鬼探头、施工区、异常交通灯。</li><li>world simulation：给定 ego action/trajectory，生成未来多视角视频或关键状态。</li><li>inverse dynamics：从人驾/robotaxi 视频中反推出隐式动作或意图。</li><li>trajectory reasoning：从视频中识别关键物体、解释风险、生成候选驾驶轨迹。</li></ul>
+    <h3>对机器人 manipulation</h3>
+    <p>它比 SuSIE 这类 image-editing subgoal 更进一步：SuSIE 是 image+language→subgoal image→policy；Cosmos 3 则想支持 image/video/language/action 之间任意转换。因此它既可以做视觉子目标，也可以做 action trajectory、forward rollout、inverse action labeling。</p>
+    <div class="note"><b>我的判断：</b>Cosmos 3 的最大价值是“统一数据闭环底座”，不是单点 SOTA。它会让合成数据、视频 world model、VLA policy、评估 benchmark 和部署工具链更容易在同一个 NVIDIA 生态里打通。</div>
+  </section>
+
+  <section id="refs">
+    <h2>9. 参考来源</h2>
+    <ol>
+      <li>NVIDIA Cosmos 3 官方项目页：Cosmos 3 connects understanding, generation, simulation, and action through a shared omnimodal world model；列出 Vision-Language Reasoning、Image Generation、Audio-Visual Generation、Robot Policy、Forward Dynamics、Inverse Dynamics 等能力。</li>
+      <li>arXiv:2606.02800 摘要页：论文题目、提交时间、摘要、开放代码/权重/数据/benchmark 与 OpenMDW-1.1 license 信息。</li>
+      <li>Hugging Face nvidia/Cosmos3 collection：列出 Cosmos3-Nano 16B、Cosmos3-Super 65B、Super Image2Video、Super Text2Image、Nano Policy DROID 以及多个 synthetic datasets。</li>
+      <li>Axios / 公开报道：训练数据约 20T multimodal tokens，近 10 亿图像、4 亿真实和合成视频、环境音频、文本和人类/机器人动作数据。</li>
+    </ol>
+    <p class="small">注：本文中的框图为作者根据公开描述重绘，用于解释结构关系，不是原论文图的复制。</p>
+  </section>
+
+  <div class="footer">Generated for Xiaoqing Ye · 2026-06-06 · HTML 技术解读版</div>
+</div>
+</body>
+</html>
