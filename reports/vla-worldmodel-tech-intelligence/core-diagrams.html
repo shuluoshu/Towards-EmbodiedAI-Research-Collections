@@ -1,0 +1,405 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>VLA / World Model 核心框图速记</title>
+    <style>
+      :root {
+        --bg: #f6f7f9;
+        --ink: #17202a;
+        --muted: #5d6875;
+        --line: #d9dee7;
+        --card: #ffffff;
+        --blue: #0b6bcb;
+        --green: #087f5b;
+        --amber: #a16207;
+        --red: #b42318;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Noto Sans SC", "Segoe UI", sans-serif;
+        line-height: 1.58;
+      }
+
+      a {
+        color: var(--blue);
+        text-decoration: none;
+      }
+
+      a:hover {
+        text-decoration: underline;
+      }
+
+      header {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        border-bottom: 1px solid var(--line);
+        background: rgba(255, 255, 255, 0.94);
+        backdrop-filter: blur(12px);
+      }
+
+      .bar {
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: 18px 22px;
+      }
+
+      h1 {
+        margin: 0 0 8px;
+        font-size: 28px;
+        line-height: 1.18;
+      }
+
+      .lead {
+        margin: 0;
+        color: var(--muted);
+        max-width: 920px;
+      }
+
+      .toolbar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 14px;
+      }
+
+      button {
+        border: 1px solid var(--line);
+        background: #fff;
+        color: var(--ink);
+        padding: 7px 11px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 13px;
+      }
+
+      button.active {
+        border-color: var(--blue);
+        color: var(--blue);
+        background: #eef6ff;
+      }
+
+      main {
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: 22px;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px;
+      }
+
+      .card {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--card);
+        overflow: hidden;
+      }
+
+      .card-head {
+        display: grid;
+        grid-template-columns: 72px minmax(0, 1fr);
+        gap: 12px;
+        padding: 14px 16px;
+        border-bottom: 1px solid #edf0f4;
+      }
+
+      .pid {
+        display: grid;
+        place-items: center;
+        height: 42px;
+        border-radius: 6px;
+        background: #edf2f7;
+        font-weight: 700;
+      }
+
+      .title {
+        margin: 0;
+        font-size: 17px;
+        line-height: 1.3;
+      }
+
+      .meta {
+        margin-top: 4px;
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .body {
+        padding: 16px;
+      }
+
+      .memory {
+        margin: 0 0 12px;
+        color: #26323f;
+      }
+
+      .diagram {
+        display: grid;
+        grid-template-columns: repeat(var(--cols), minmax(90px, 1fr));
+        align-items: stretch;
+        gap: 8px;
+        overflow-x: auto;
+        padding-bottom: 3px;
+      }
+
+      .node {
+        position: relative;
+        min-height: 74px;
+        border: 1px solid #dfe5ee;
+        border-radius: 7px;
+        background: #f9fbfd;
+        padding: 9px 10px;
+      }
+
+      .node::after {
+        content: "→";
+        position: absolute;
+        right: -14px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #8592a3;
+        font-weight: 700;
+      }
+
+      .node:last-child::after {
+        content: "";
+      }
+
+      .node strong {
+        display: block;
+        font-size: 13px;
+        margin-bottom: 5px;
+      }
+
+      .node span {
+        display: block;
+        color: var(--muted);
+        font-size: 12px;
+        line-height: 1.35;
+      }
+
+      .tagrow {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-top: 12px;
+      }
+
+      .tag {
+        border-radius: 999px;
+        padding: 4px 8px;
+        background: #eef2f7;
+        color: #425466;
+        font-size: 12px;
+      }
+
+      .route-vla .pid,
+      .route-vla .tag:first-child {
+        background: #eef6ff;
+        color: var(--blue);
+      }
+
+      .route-flow .pid,
+      .route-flow .tag:first-child {
+        background: #eefbf6;
+        color: var(--green);
+      }
+
+      .route-world .pid,
+      .route-world .tag:first-child {
+        background: #fff8e6;
+        color: var(--amber);
+      }
+
+      .route-wam .pid,
+      .route-wam .tag:first-child {
+        background: #fff1f0;
+        color: var(--red);
+      }
+
+      .route-deploy .pid,
+      .route-deploy .tag:first-child,
+      .route-other .pid,
+      .route-other .tag:first-child {
+        background: #f2f4f7;
+        color: #344054;
+      }
+
+      .hidden {
+        display: none;
+      }
+
+      @media (max-width: 920px) {
+        .grid {
+          grid-template-columns: 1fr;
+        }
+
+        .card-head {
+          grid-template-columns: 58px minmax(0, 1fr);
+        }
+
+        .diagram {
+          grid-template-columns: repeat(var(--cols), 160px);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="bar">
+        <h1>核心框图速记</h1>
+        <p class="lead">
+          这里的框图是按论文/技术博客核心机制重画的“记忆版”，不是论文原图搬运。目标是让每个工作都能被压缩成一个可比较的结构：输入是什么，中间新东西是什么，输出或训练信号是什么。
+          <a href="./VLA_WorldModel_Tech_Intelligence_Report.md">返回 Markdown 报告</a>
+          /
+          <a href="./index.html">返回 HTML 报告</a>
+        </p>
+        <div class="toolbar" id="filters"></div>
+      </div>
+    </header>
+
+    <main>
+      <section class="grid" id="grid"></section>
+    </main>
+
+    <script>
+      const works = [
+        ["P01", "RT-1", "2022-12", "VLA", "真实机器人数据上的 Transformer policy 起点。", ["视频历史", "TokenLearner 压缩观测", "Robotics Transformer", "离散动作 token", "真实机器人执行"], ["VLA", "action token", "real robot data"]],
+        ["P02", "PaLM-E", "2023-03", "VLA", "把连续传感输入塞进 LLM，上层 embodied reasoning 成立。", ["图像/状态/文本", "多模态句子", "PaLM-E LLM", "语言计划/回答", "机器人高层决策"], ["VLA", "native multimodal", "reasoning"]],
+        ["P03", "RT-2", "2023-07", "VLA", "web-scale VLM 知识第一次系统转成机器人动作。", ["图像+指令", "VLM 预训练知识", "动作文本化", "Action token", "机器人控制"], ["VLA", "web knowledge", "action token"]],
+        ["P04", "Open X-Embodiment / RT-X", "2023-10", "VLA", "把单机器人 VLA 推成跨机器人数据基础设施。", ["22 robots 数据", "统一数据格式", "RT-X 训练", "跨 embodiment 迁移", "新机器人适配"], ["VLA", "data engine", "cross-embodiment"]],
+        ["P05", "Prismatic VLMs", "2024-02", "OTHER", "OpenVLA 之前先把 VLM 底座设计空间摸清楚。", ["视觉编码器", "Projector/融合", "LLM backbone", "VLM 训练配方", "开源 PRISM 模型"], ["Native multimodal", "VLM backbone", "design space"]],
+        ["P06", "OpenVLA", "2024-06", "VLA", "开源 7B VLA 基线：Open X 数据 + Prismatic 底座 + 可微调工具链。", ["图像+指令", "DINOv2/SigLIP", "Llama2/Prismatic", "Action token", "LoRA/量化部署"], ["VLA", "open source", "Open X"]],
+        ["P07", "π₀ / pi0", "2024-10", "FLOW", "从动作 token 转向 flow matching 连续动作专家。", ["图像+语言", "预训练 VLM", "Flow action expert", "连续 action chunk", "灵巧操作"], ["Flow policy", "VLA", "continuous action"]],
+        ["P08", "RDT-1B", "2024-10", "FLOW", "1B diffusion transformer + 统一物理动作空间，主攻双臂操控。", ["多视角 RGB+语言", "统一动作空间", "Diffusion Transformer", "64-step action chunk", "双臂/移动操作"], ["Diffusion policy", "bimanual", "action space"]],
+        ["P09", "FAST", "2025-01", "DEPLOY", "把高频动作序列压缩成更快、更适合控制的表示。", ["长动作序列", "动作压缩/tokenizer", "FAST 表示", "快速生成", "高频闭环控制"], ["Action representation", "efficiency", "PI"]],
+        ["P10", "Helix", "2025-02", "DEPLOY", "产业侧 humanoid VLA 系统信号，核心是单系统接语言视觉动作。", ["人类指令", "视觉感知", "Helix neural system", "双手/全身动作", "Figure humanoid"], ["Humanoid", "deployment", "official blog"]],
+        ["P11", "GR00T N1", "2025-03", "FLOW", "System 2 理解环境，System 1 diffusion transformer 生成动作。", ["视觉+语言", "System 2 VLM", "System 1 DiT", "连续动作", "humanoid 执行"], ["Humanoid", "diffusion", "synthetic data"]],
+        ["P12", "AgiBot World / GO-1", "2025-03", "VLA", "百万轨迹数据平台 + latent action generalist policy。", ["百万轨迹", "标准化采集", "Latent action", "GO-1 policy", "长程/灵巧任务"], ["Data engine", "latent action", "AgiBot"]],
+        ["P13", "Gemini Robotics", "2025-03", "VLA", "Gemini-native multimodal reasoning 接入机器人动作。", ["多模态输入", "Gemini 2.0", "Robotics adaptation", "Action policy", "多机器人控制"], ["VLA", "Gemini", "native multimodal"]],
+        ["P14", "π₀.5 / pi0.5", "2025-04", "FLOW", "π₀ 的开放世界泛化版，重点是野外任务和混合样例训练。", ["开放环境数据", "Hybrid examples", "π 系列 VLA", "Flow action", "陌生环境泛化"], ["Flow policy", "open-world", "PI"]],
+        ["P15", "SmolVLA", "2025-06", "FLOW", "450M 小模型 + flow action expert + 异步推理。", ["社区 LeRobot 数据", "SmolVLM-2", "Flow action expert", "异步 action chunk", "消费级部署"], ["Efficient VLA", "flow matching", "open source"]],
+        ["P16", "Genie 2", "2024-12", "WORLD", "从单图生成可交互 3D 世界，给 agent 训练环境。", ["Prompt image", "Latent diffusion world model", "Action-conditioned dynamics", "Playable 3D world", "SIMA/agent 评估"], ["World model", "interactive environment", "counterfactual"]],
+        ["P17", "Genie 3", "2025-08", "WORLD", "实时 720p/24fps 交互世界，world model 从视频走向环境接口。", ["文本 prompt", "实时世界生成", "视觉记忆", "Promptable events", "分钟级交互"], ["World model", "real-time", "agent training"]],
+        ["P18", "GigaWorld-0", "2025-11", "WORLD", "world model 明确作为 VLA 数据引擎：视频生成 + 3D 物理一致性。", ["指令/场景", "GigaWorld Video", "GigaWorld 3D", "合成 embodied data", "训练 GigaBrain/VLA"], ["World model", "data engine", "3D"]],
+        ["P19", "Ctrl-World", "2025-10", "WORLD", "可控多视角 world model，用 imagination 排名和改进 policy。", ["DROID 轨迹", "多视角 world model", "Action conditioning", "Imagination rollout", "policy ranking/SFT"], ["World model", "policy improvement", "DROID"]],
+        ["P20", "WMPO", "2025-11", "WORLD", "pixel world model 里做 on-policy GRPO，减少真实机器人 RL。", ["VLA policy", "Pixel world model", "Imagined trajectories", "GRPO update", "自纠错/泛化"], ["World model", "RL", "GRPO"]],
+        ["P21", "π*0.6 / RECAP", "2025-11", "DEPLOY", "π 系列从预训练 policy 转向后训练、纠错和可控。", ["执行轨迹", "反馈/纠错信号", "RECAP 后训练", "改进 policy", "更可靠执行"], ["Post-training", "PI", "correction"]],
+        ["P22", "GR00T N1.6 / N1.7", "2025-12", "DEPLOY", "NVIDIA humanoid foundation model 的工程迭代跟踪项。", ["GR00T N1", "更多数据/版本迭代", "open weights", "post-training", "humanoid deployment"], ["Humanoid", "NVIDIA", "version tracking"]],
+        ["P23", "χ₀ / Kai0", "2025-12", "DEPLOY", "不拼规模，拼 train-deploy distribution alignment。", ["20h 真实数据", "Model arithmetic", "Stage advantage", "DAgger/平滑对齐", "24h 布料操作"], ["Deployment", "long horizon", "alignment"]],
+        ["P24", "VLAW", "2026-02", "WORLD", "policy 生成 rollout 改 world model，world model 再反哺 policy。", ["真实 rollout", "World model 更新", "Synthetic rollouts", "VLA 微调", "迭代提升"], ["VLA+World", "iterative improvement", "synthetic rollout"]],
+        ["P25", "LAP", "2026-02", "VLA", "把低层动作写成自然语言，直接做跨 embodiment 迁移。", ["机器人动作", "自然语言 action", "VLM 分布对齐", "LAP-3B", "零样本新机器人"], ["VLA", "language action", "cross-embodiment"]],
+        ["P26", "BagelVLA", "2026-02", "WAM", "语言规划、视觉预测、动作生成三者交错生成。", ["当前观测+指令", "语言 planning", "Residual Flow Guidance", "视觉 foresight", "动作生成"], ["VLA+foresight", "long horizon", "MoT"]],
+        ["P27", "InternVLA-A1", "2026-01", "WAM", "understanding、generation、action 三专家统一到 MoT。", ["图像/语言", "理解专家", "视觉生成专家", "动作专家", "真实/仿真任务"], ["Unified VLA", "MoT", "visual foresight"]],
+        ["P28", "Action Space Design", "2026-02", "DEPLOY", "动作空间不是细节，是 policy learning 的优化地形。", ["原始动作数据", "动作空间变体", "系统消融", "性能/稳定性比较", "设计准则"], ["Action representation", "evaluation", "policy design"]],
+        ["P29", "UniAct", "2025-01", "VLA", "用 universal action 表征对齐不同机器人动作。", ["异构机器人动作", "Universal action", "共享 latent/action space", "Foundation policy", "跨平台迁移"], ["Action representation", "cross-embodiment", "latent action"]],
+        ["P30", "From Flow to One Step", "2026-03", "FLOW", "把 CFM expert 蒸馏成单步 student，保留多模态动作。", ["CFM expert", "IMLE distillation", "Chamfer set loss", "One-step student", "实时轨迹控制"], ["Flow policy", "distillation", "real-time"]],
+        ["P31", "SPMem", "2025-06", "DEPLOY", "给长程 embodied task 加空间和过程记忆。", ["感知历史", "空间记忆", "过程记忆", "Memory retrieval", "长时程决策"], ["Memory", "long horizon", "embodied agent"]],
+        ["P32", "RynnVLA-002", "2025-11", "WAM", "VLA 和 world model 单框架互相增强。", ["图像+动作", "World model 预测未来帧", "VLA 生成动作", "联合学习", "仿真/真实提升"], ["Unified VLA+WM", "autoregressive WAM", "DAMO"]],
+        ["P33", "Being-H0.7", "2026-04/05", "WAM", "未来感知压进 latent query，推理时不 rollout 视频。", ["当前观测", "Prior latent query", "Posterior future branch", "latent 对齐", "直接 action"], ["Latent WAM", "future-aware", "efficient inference"]],
+        ["P34", "π₀.7 / Steerable Policies", "2026", "DEPLOY", "从会做事走向可引导、可约束、可纠正。", ["用户 steering", "策略后训练", "π 系列 policy", "可控动作", "真实部署"], ["Steerable policy", "PI", "alignment"]],
+        ["P35", "Motus", "2025-12", "WAM", "MoT + UniDiffuser，把理解、视频、动作、逆动力学统一。", ["异构数据", "Optical-flow latent action", "MoT experts", "UniDiffuser scheduler", "多模式生成/控制"], ["Latent action WAM", "MoT", "unified model"]],
+        ["P36", "LingBot-VA", "2026-01", "WAM", "共享 latent space 同时学 frame prediction 和 policy execution。", ["视觉+动作 tokens", "共享 latent space", "Autoregressive diffusion", "closed-loop rollout", "异步控制"], ["Causal world model", "VA", "closed-loop"]],
+        ["P37", "ThinkJEPA", "2026-03", "WORLD", "JEPA 学局部动态，VLM thinker 给长时程语义。", ["密集视频帧", "JEPA dynamics branch", "稀疏 VLM thinker", "层级语义指导", "latent rollout"], ["Latent world model", "JEPA", "VLM guidance"]],
+        ["P38", "LeWorldModel", "2026-03", "WORLD", "极简 two-loss JEPA，从 raw pixels 稳定训练 world model。", ["原始像素", "Encoder", "Next-embedding predictor", "SIGReg 防坍塌", "快速 planning"], ["World model", "JEPA", "efficient planning"]],
+        ["P39", "NEO-Unify", "2026-03", "OTHER", "原生多模态统一模型，机器人相关性取决于是否接 action。", ["多模态数据", "统一 backbone", "理解/生成", "潜在 action 接口", "边界候选"], ["Native multimodal", "boundary", "SenseNova"]],
+        ["P40", "Cosmos Policy", "2026-01", "WAM", "视频模型后训练成 policy，同时生成 action、future image、value。", ["Robot demos", "Cosmos-Predict2", "latent action frames", "future image+value", "规划执行"], ["Video policy", "planning", "NVIDIA"]],
+        ["P41", "DreamZero", "2026-02", "WAM", "World Action Model 直接作为零样本 policy。", ["当前观测", "Action-conditioned video diffusion", "未来结果评分", "动作选择", "zero-shot policy"], ["WAM", "zero-shot", "NVIDIA"]],
+        ["P42", "Fast-WAM", "2026-03", "WAM", "训练时学世界，推理时不想象，直接实时动作。", ["观测+动作", "video co-training", "policy representation", "跳过未来生成", "190ms 实时控制"], ["WAM", "efficiency", "real-time"]],
+        ["P43", "Genesis Engine", "2026", "WORLD", "物理仿真/生成环境基础设施，服务数据引擎。", ["场景/资产", "Genesis world engine", "物理仿真", "机器人交互", "训练数据导出"], ["Simulator", "data engine", "physics"]],
+        ["P44", "GEN-1 / Beyond World Models & VLAs", "2026-04", "DEPLOY", "目标驱动 robotics foundation model，不把自己限制为 VLA 或 world model。", ["Physical interaction data", "from-scratch training", "native foundation model", "目标驱动优化", "physical AGI"], ["Generalist AI", "methodology", "from scratch"]],
+        ["P45", "UniVTAC", "2026-02", "OTHER", "仿真生成触觉数据，训练 visuo-tactile encoder。", ["接触仿真", "多触觉传感器", "UniVTAC Encoder", "触觉 benchmark", "真实任务提升"], ["Tactile", "benchmark", "sim2real"]],
+        ["P46", "Tactile-VLA", "2025-07", "OTHER", "把触觉变成 VLA 的一等输入，补接触信息。", ["视觉+语言", "触觉 encoder", "多模态融合", "Action policy", "接触丰富操作"], ["Tactile VLA", "contact", "manipulation"]],
+        ["P47", "RoboClaw", "2026-03", "OTHER", "抓取/操控候选项，需进一步深读机制。", ["操控任务", "RoboClaw 方法", "策略/硬件/benchmark", "实验验证", "待深读"], ["Manipulation", "candidate", "needs deep read"]],
+        ["P48", "CoT-VLA", "2025-03", "VLA", "把 chain-of-thought 放进 VLA，显式任务分解。", ["观测+指令", "CoT reasoning", "子任务计划", "Action decoder", "闭环执行"], ["Reasoning VLA", "CoT", "planning"]],
+        ["P49", "ThinkAct", "2025-07", "VLA", "thinking phase 和 acting phase 分离，服务长程任务。", ["观测+目标", "Think module", "阶段计划", "Act module", "动作执行"], ["Reasoning VLA", "think-act", "long horizon"]],
+        ["P50", "ACoT-VLA", "2026-01", "VLA", "把 CoT 动作化，显式生成 action reasoning trace。", ["观测+指令", "Action CoT", "动作阶段解释", "VLA action head", "多阶段操作"], ["Reasoning VLA", "action CoT", "AgiBot"]],
+        ["P51", "UniVLA", "2025-06", "VLA", "统一 VLA / latent action 路线，和 UniAct、X-VLA 成组阅读。", ["多源机器人数据", "统一 VLA backbone", "latent/unified action", "跨任务训练", "泛化评测"], ["Unified VLA", "latent action", "cross-embodiment"]],
+        ["P52", "Cosmos3", "2026-06", "WAM", "把 language、image、video、audio、action 统一进 omnimodal world model。", ["多模态输入", "Modality encoders", "AR+Diffusion tokens", "MoT backbone", "理解/生成/策略"], ["Omnimodal", "NVIDIA", "MoT"]],
+        ["P53", "WALL-WM", "2026-06", "WAM", "把 WAM 训练原子从固定 chunk 改成 action-grounded semantic event。", ["全局指令+多视角", "Event captions", "Video-action denoising", "Staircase decoding", "事件级执行"], ["Event-grounded WAM", "X Square", "semantic event"]],
+        ["P54", "GigaWorld-Policy", "2026-03", "WAM", "训练时 video+action，推理时 action-only，主打实时 WAM。", ["GigaWorld-0.5", "video+action joint training", "causal mask", "drop video branch", "action-only policy"], ["Action-centered WAM", "GigaAI", "real-time"]]
+      ];
+
+      const labels = {
+        ALL: "全部",
+        VLA: "VLA / action token",
+        FLOW: "Flow / Diffusion policy",
+        WORLD: "World model",
+        WAM: "World Action Model",
+        DEPLOY: "部署 / 表征 / 后训练",
+        OTHER: "触觉 / 多模态 / 边界项"
+      };
+
+      let active = "ALL";
+      const grid = document.getElementById("grid");
+      const filters = document.getElementById("filters");
+
+      function routeClass(route) {
+        return {
+          VLA: "route-vla",
+          FLOW: "route-flow",
+          WORLD: "route-world",
+          WAM: "route-wam",
+          DEPLOY: "route-deploy",
+          OTHER: "route-other"
+        }[route] || "route-other";
+      }
+
+      function renderFilters() {
+        filters.innerHTML = Object.entries(labels).map(([key, label]) => (
+          `<button class="${active === key ? "active" : ""}" data-key="${key}">${label}</button>`
+        )).join("");
+        filters.querySelectorAll("button").forEach((button) => {
+          button.addEventListener("click", () => {
+            active = button.dataset.key;
+            renderFilters();
+            renderCards();
+          });
+        });
+      }
+
+      function renderCards() {
+        const visible = works.filter((work) => active === "ALL" || work[3] === active);
+        grid.innerHTML = visible.map(([id, title, date, route, memory, nodes, tags]) => {
+          const nodeHtml = nodes.map((node) => {
+            const parts = node.split(" ");
+            const head = parts.slice(0, 2).join(" ");
+            const rest = parts.slice(2).join(" ");
+            return `<div class="node"><strong>${head}</strong><span>${rest || node}</span></div>`;
+          }).join("");
+          return `
+            <article class="card ${routeClass(route)}">
+              <div class="card-head">
+                <div class="pid">${id}</div>
+                <div>
+                  <h2 class="title">${title}</h2>
+                  <div class="meta">${date} · ${labels[route]}</div>
+                </div>
+              </div>
+              <div class="body">
+                <p class="memory">${memory}</p>
+                <div class="diagram" style="--cols:${nodes.length}">${nodeHtml}</div>
+                <div class="tagrow">${tags.map((tag) => `<span class="tag">${tag}</span>`).join("")}</div>
+              </div>
+            </article>
+          `;
+        }).join("");
+      }
+
+      renderFilters();
+      renderCards();
+    </script>
+  </body>
+</html>

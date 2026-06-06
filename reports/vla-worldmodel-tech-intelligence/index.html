@@ -1,0 +1,1325 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>VLA / World Model 技术情报报告</title><style>:root{--bg:#f7f8fb;--ink:#17202a;--muted:#5d6875;--line:#d9dee7;--panel:#fff;--accent:#0b6bcb;--accent2:#087f5b}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Noto Sans SC",Segoe UI,sans-serif;line-height:1.68}a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}.layout{display:grid;grid-template-columns:300px minmax(0,1fr);min-height:100vh}.toc{position:sticky;top:0;height:100vh;overflow:auto;border-right:1px solid var(--line);background:#fff;padding:22px}.toc h2{font-size:16px;margin:0 0 14px}.toc a{display:block;color:#334155;font-size:13px;padding:7px 0;border-bottom:1px solid #eef1f5}.doc{max-width:1180px;padding:34px 44px 80px}.source-file{display:inline-block;margin:0 8px 24px 0;padding:8px 12px;border:1px solid var(--line);border-radius:6px;background:#fff;color:var(--muted);font-size:13px}h1{font-size:34px;line-height:1.18;margin:0 0 14px}h2{font-size:26px;margin:42px 0 14px;border-top:1px solid var(--line);padding-top:28px}h3{font-size:20px;margin:28px 0 10px}h4{font-size:16px;margin:22px 0 8px;color:#334155}p{margin:9px 0;color:#26323f}ul,ol{padding-left:24px}li{margin:6px 0}code{background:#eef3f8;border:1px solid #dbe4ee;border-radius:4px;padding:1px 5px;font-size:.92em}.table-wrap{overflow:auto;margin:14px 0 22px;border:1px solid var(--line);border-radius:8px;background:#fff}table{border-collapse:collapse;width:100%;min-width:760px}th,td{border-bottom:1px solid #edf0f4;padding:9px 11px;text-align:left;vertical-align:top;font-size:14px}th{background:#f1f5f9;font-weight:700;color:#1f2937}tr:last-child td{border-bottom:0}strong{color:#0f172a}.doc>h1:first-child{border-bottom:2px solid #17202a;padding-bottom:14px}.doc h3[id^="p"]{background:#fff;border:1px solid var(--line);border-left:4px solid var(--accent2);border-radius:8px;padding:14px 16px;margin-top:34px}@media(max-width:900px){.layout{grid-template-columns:1fr}.toc{position:relative;height:auto}.doc{padding:24px 18px 60px}table{min-width:680px}}</style></head><body><div class="layout"><aside class="toc"><h2>目录</h2><a href="#0-总览结论">0. 总览结论</a><a href="#0-1-这一批工作的总体趋势">0.1 这一批工作的总体趋势</a><a href="#0-2-最值得重点关注的工作">0.2 最值得重点关注的工作</a><a href="#0-3-一张总表">0.3 一张总表</a><a href="#1-分类图谱">1. 分类图谱</a><a href="#2-技术演化主线">2. 技术演化主线</a><a href="#2-1-google-deepmind-路线">2.1 Google / DeepMind 路线</a><a href="#2-2-physical-intelligence-路线">2.2 Physical Intelligence 路线</a><a href="#2-3-nvidia-路线">2.3 NVIDIA 路线</a><a href="#2-4-stanford-berkeley-chelsea-finn-jianyu-chen-相关路线">2.4 Stanford / Berkeley / Chelsea Finn / Jianyu Chen 相关路线</a><a href="#2-5-gigaai-gigaworld-路线">2.5 GigaAI / GigaWorld 路线</a><a href="#2-6-generalist-ai-路线">2.6 Generalist AI 路线</a><a href="#3-前后依赖关系与技术演化">3. 前后依赖关系与技术演化</a><a href="#4-核心思想聚类">4. 核心思想聚类</a><a href="#cluster-a-action-token-language-action">Cluster A：Action Token / Language Action</a><a href="#cluster-b-flow-diffusion-action-expert">Cluster B：Flow / Diffusion Action Expert</a><a href="#cluster-c-world-model-as-data-engine">Cluster C：World Model as Data Engine</a><a href="#cluster-d-world-action-model">Cluster D：World Action Model</a><a href="#cluster-e-deployment-robustness-train-deploy-alignment">Cluster E：Deployment / Robustness / Train-Deploy Alignment</a><a href="#5-单篇技术卡片">5. 单篇技术卡片</a><a href="#p01-rt-1-robotics-transformer-for-real-world-control-at-scale">P01. RT-1: Robotics Transformer for Real-World Control at Scale</a><a href="#p02-palm-e-an-embodied-multimodal-language-model">P02. PaLM-E: An Embodied Multimodal Language Model</a><a href="#p03-rt-2-vision-language-action-models-transfer-web-knowledge-to-robotic-control">P03. RT-2: Vision-Language-Action Models Transfer Web Knowledge to Robotic Control</a><a href="#p04-open-x-embodiment-rt-x">P04. Open X-Embodiment / RT-X</a><a href="#p05-prismatic-vlms">P05. Prismatic VLMs</a><a href="#p06-openvla">P06. OpenVLA</a><a href="#p07-a-vision-language-action-flow-model-for-general-robot-control">P07. π₀: A Vision-Language-Action Flow Model for General Robot Control</a><a href="#p08-rdt-1b-robotics-diffusion-transformer">P08. RDT-1B: Robotics Diffusion Transformer</a><a href="#p09-fast">P09. FAST</a><a href="#p10-helix">P10. Helix</a><a href="#p11-gr00t-n1">P11. GR00T N1</a><a href="#p12-agibot-world-colosseo-go-1">P12. AgiBot World Colosseo / GO-1</a><a href="#p13-gemini-robotics">P13. Gemini Robotics</a><a href="#p14-5">P14. π₀.5</a><a href="#p15-smolvla">P15. SmolVLA</a><a href="#p16-genie-2">P16. Genie 2</a><a href="#p17-genie-3">P17. Genie 3</a><a href="#p18-gigaworld-0">P18. GigaWorld-0</a><a href="#p19-ctrl-world">P19. Ctrl-World</a><a href="#p20-wmpo">P20. WMPO</a><a href="#p21-0-6-recap">P21. π\*0.6 / RECAP</a><a href="#p22-gr00t-n1-6-n1-7">P22. GR00T N1.6 / N1.7</a><a href="#p23-kai0">P23. χ₀ / Kai0</a><a href="#p24-vlaw">P24. VLAW</a><a href="#p25-lap-language-action-pre-training">P25. LAP: Language-Action Pre-Training</a><a href="#p26-bagelvla">P26. BagelVLA</a><a href="#p27-internvla-a1">P27. InternVLA-A1</a><a href="#p28-demystifying-action-space-design-for-robotic-manipulation-policies">P28. Demystifying Action Space Design for Robotic Manipulation Policies</a><a href="#p29-uniact">P29. UniAct</a><a href="#p30-from-flow-to-one-step">P30. From Flow to One Step</a><a href="#p31-spmem">P31. SPMem</a><a href="#p32-rynnvla-002">P32. RynnVLA-002</a><a href="#p33-being-h0-7">P33. Being-H0.7</a><a href="#p34-7-steerable-policies">P34. π₀.7 / Steerable Policies</a><a href="#p35-motus">P35. Motus</a><a href="#p36-lingbot-va-causal-world-modeling-for-robot-control">P36. LingBot-VA / Causal World Modeling for Robot Control</a><a href="#p37-thinkjepa">P37. ThinkJEPA</a><a href="#p38-leworldmodel">P38. LeWorldModel</a><a href="#p39-neo-unify">P39. NEO-Unify</a><a href="#p40-cosmos-policy">P40. Cosmos Policy</a><a href="#p41-dreamzero-world-action-models-are-zero-shot-policies">P41. DreamZero / World Action Models are Zero-shot Policies</a><a href="#p42-fast-wam">P42. Fast-WAM</a><a href="#p43-genesis-engine">P43. Genesis Engine</a><a href="#p44-gen-1-beyond-world-models-vlas">P44. GEN-1 / Beyond World Models &amp; VLAs</a><a href="#p45-univtac">P45. UniVTAC</a><a href="#p46-tactile-vla-taclva">P46. Tactile-VLA / TacLVA</a><a href="#p47-roboclaw">P47. RoboClaw</a><a href="#p48-cot-vla">P48. CoT-VLA</a><a href="#p49-thinkact">P49. ThinkAct</a><a href="#p50-acot-vla">P50. ACoT-VLA</a><a href="#p51-univla">P51. UniVLA</a><a href="#p52-cosmos3-omnimodal-world-models-for-physical-ai">P52. Cosmos3: Omnimodal World Models for Physical AI</a><a href="#p53-wall-wm-carving-world-action-modeling-at-the-event-joints">P53. WALL-WM: Carving World Action Modeling at the Event Joints</a><a href="#p54-gigaworld-policy">P54. GigaWorld-Policy</a><a href="#6-对-vla-world-model-world-action-model-的迁移启发">6. 对 VLA / World Model / World Action Model 的迁移启发</a><a href="#7-值得继续跟进的问题">7. 值得继续跟进的问题</a><a href="#8-资料来源索引">8. 资料来源索引</a></aside><main class="doc"><a class="source-file" href="./core-diagrams.html">核心框图速记页</a><a class="source-file" href="./VLA_WorldModel_Tech_Intelligence_Report.md">Markdown 原文</a><h1 id="多论文技术调研报告-vla-world-model-world-action-model-技术脉络">多论文技术调研报告：VLA / World Model / World Action Model 技术脉络</h1>
+<p>生成日期：2026-05-10  </p>
+<p>最近更新：2026-06-06  </p>
+<p>使用 skill：<code>paper-abstract-compared</code>  </p>
+<p>输入范围：用户给定的 VLA、World Model、World Action Model、机器人基础模型、动作模型、数据引擎、触觉/多模态相关 work。</p>
+<p>配套可视化速记页：<a href="./core-diagrams.html"><code>core-diagrams.html</code></a>  </p>
+<p>说明：该页面为每个工作补充了统一风格的“核心机制框图”，用于记忆和横向比较；框图是按论文/技术博客核心思想重画的结构图，不是论文原图搬运。</p>
+<h2 id="0-总览结论">0. 总览结论</h2>
+<h3 id="0-1-这一批工作的总体趋势">0.1 这一批工作的总体趋势</h3>
+<ol>
+<li><strong>VLA 的第一阶段是把机器人控制变成 token / language-conditioned imitation learning。</strong> RT-1 把真实机器人数据规模化，RT-2 把 VLM/LLM 的互联网语义迁移到 action token，Open X-Embodiment / RT-X 进一步把跨机器人数据变成公共基础设施。</li>
+</ol>
+<ol>
+<li><strong>第二阶段转向开源、可复现和可微调。</strong> Prismatic VLMs 提供 VLM 设计空间与 OpenVLA 的视觉语言底座，OpenVLA 把 7B VLA、970K 机器人 episode、LoRA/量化微调与公开代码整合起来，成为后续很多 VLA 的事实参考点。</li>
+</ol>
+<ol>
+<li><strong>第三阶段从 autoregressive action token 走向 diffusion / flow / continuous action。</strong> π₀、RDT-1B、SmolVLA、From Flow to One Step 等工作说明：动作分布通常是多模态且连续的，flow matching / diffusion transformer 在 dexterous manipulation 和 action chunking 上更自然。</li>
+</ol>
+<ol>
+<li><strong>第四阶段开始把 world model 接回 policy learning。</strong> Genie 2/3、Ctrl-World、GigaWorld、VLAW、WMPO、DreamZero、Fast-WAM、Cosmos Policy、GigaWorld-Policy、WALL-WM 都在回答同一个问题：未来视频/世界预测到底应该作为数据引擎、训练表征、规划器，还是直接作为 action model。</li>
+</ol>
+<ol>
+<li><strong>跨 embodiment 和 action representation 成为 2025-2026 的硬问题。</strong> LAP、UniAct、X-VLA、Action Space Design、AgiBot GO-1、χ₀ / Kai0 都在围绕“动作空间如何统一、迁移、稳定部署”做文章。</li>
+</ol>
+<ol>
+<li><strong>机器人基础模型逐渐从“能做 demo”转向“数据闭环 + 部署闭环”。</strong> GR00T N1、AgiBot World、π₀.5、Gemini Robotics、Helix、Cosmos Policy、Cosmos3、LingBot/RynnVLA 等都把真实数据、合成数据、后训练、长时程评测和部署成本放在核心位置。</li>
+</ol>
+<ol>
+<li><strong>2026-06 新增材料把 WAM 的焦点从“是否能想象未来”推进到“以什么粒度、什么成本、什么统一接口想象未来”。</strong> Cosmos3 走 omnimodal backbone，WALL-WM 走 event-grounded 原子单元，GigaWorld-Policy 走 action-centered train-complex/infer-simple，Generalist GEN-1 则从目标驱动角度反对把自己限制在 VLA/world model 标签里。</li>
+</ol>
+<h3 id="0-2-最值得重点关注的工作">0.2 最值得重点关注的工作</h3>
+<div class="table-wrap"><table>
+<tbody><tr><td>优先级</td><td>ID</td><td>工作</td><td>理由</td></tr>
+<tr><td>-</td><td>-</td><td>-</td><td>-</td></tr>
+<tr><td>高</td><td>P01</td><td>RT-1</td><td>真实机器人 Transformer policy 的规模化起点。</td></tr>
+<tr><td>高</td><td>P03</td><td>RT-2</td><td>VLA 概念的关键转折：web-scale VLM 知识迁移到 robot action。</td></tr>
+<tr><td>高</td><td>P04</td><td>Open X-Embodiment / RT-X</td><td>数据标准化和跨 embodiment scaling 的基础设施。</td></tr>
+<tr><td>高</td><td>P06</td><td>OpenVLA</td><td>开源 VLA 基线，后续大量工作围绕它比较或改造。</td></tr>
+<tr><td>高</td><td>P07</td><td>π₀</td><td>flow matching VLA 的代表作，直接影响 2025-2026 action model 线。</td></tr>
+<tr><td>高</td><td>P11</td><td>GR00T N1</td><td>humanoid foundation model 的系统化代表，双系统 VLA + diffusion action。</td></tr>
+<tr><td>高</td><td>P19</td><td>Ctrl-World</td><td>robot world model 从生成视频走向 policy evaluation / improvement。</td></tr>
+<tr><td>高</td><td>P24</td><td>VLAW</td><td>VLA policy 与 world model 迭代共改进，接近真实闭环。</td></tr>
+<tr><td>高</td><td>P42</td><td>DreamZero</td><td>World Action Model / WAM 代表：从预测世界变成零样本策略。</td></tr>
+<tr><td>高</td><td>P43</td><td>Fast-WAM</td><td>对 WAM 提出关键反问：推理时是否真的需要想象未来。</td></tr>
+<tr><td>高</td><td>P40</td><td>Cosmos Policy</td><td>视频模型后训练成 policy，把 future image、value、action 融合到 latent diffusion。</td></tr>
+<tr><td>高</td><td>P52</td><td>Cosmos3</td><td>omnimodal world model，把 language/image/video/audio/action 统一到 MoT backbone，并开放模型、代码、数据和 benchmark。</td></tr>
+<tr><td>高</td><td>P53</td><td>WALL-WM</td><td>event-grounded WAM，把训练原子从固定 action chunk 改成 action-grounded semantic event。</td></tr>
+<tr><td>高</td><td>P54</td><td>GigaWorld-Policy</td><td>action-centered WAM，训练时联合 video/action，推理时只解码动作，直接回应实时部署瓶颈。</td></tr>
+</tbody></table></div>
+<h3 id="0-3-一张总表">0.3 一张总表</h3>
+<div class="table-wrap"><table>
+<tbody><tr><td>ID</td><td>时间</td><td>标题</td><td>单位 / 团队</td><td>主类</td><td>关键贡献</td><td>状态</td></tr>
+<tr><td>-</td><td>-:</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td></tr>
+<tr><td>P01</td><td>2022-12</td><td>RT-1</td><td>Google Robotics</td><td>VLA / Embodied Foundation Model</td><td>真实机器人数据上的 Robotics Transformer</td><td>已确认</td></tr>
+<tr><td>P02</td><td>2023-03</td><td>PaLM-E</td><td>Google / TU Berlin 等</td><td>Native Multimodal / Embodied Reasoning</td><td>把连续传感输入接入 LLM，做 embodied reasoning</td><td>已确认</td></tr>
+<tr><td>P03</td><td>2023-07</td><td>RT-2</td><td>Google DeepMind</td><td>VLA</td><td>把 web-scale VLM 知识转为 action token</td><td>已确认</td></tr>
+<tr><td>P04</td><td>2023-10</td><td>Open X-Embodiment / RT-X</td><td>Open X-Embodiment Collaboration</td><td>Data Engine / VLA</td><td>22 robots、527 skills 的跨 embodiment 数据与 RT-X</td><td>已确认</td></tr>
+<tr><td>P05</td><td>2024-02</td><td>Prismatic VLMs</td><td>TRI / Stanford 等</td><td>Native Multimodal</td><td>VLM 设计空间，OpenVLA 的底座之一</td><td>已确认</td></tr>
+<tr><td>P06</td><td>2024-06</td><td>OpenVLA</td><td>Stanford / Berkeley / Google / TRI</td><td>VLA</td><td>7B 开源 VLA，970K episodes，LoRA/量化部署</td><td>已确认</td></tr>
+<tr><td>P07</td><td>2024-10</td><td>π₀</td><td>Physical Intelligence</td><td>Diffusion / Flow Policy</td><td>VLM + flow matching action expert 的 generalist robot policy</td><td>已确认</td></tr>
+<tr><td>P08</td><td>2024-10</td><td>RDT-1B</td><td>Tsinghua / THU-ML</td><td>Diffusion Policy</td><td>1B diffusion transformer，统一动作空间，双臂操控</td><td>已确认</td></tr>
+<tr><td>P09</td><td>2025-01</td><td>FAST</td><td>Physical Intelligence</td><td>Action Tokenization / Efficiency</td><td>面向高频动作序列的压缩/加速 action representation</td><td>待深读</td></tr>
+<tr><td>P10</td><td>2025-02</td><td>Helix</td><td>Figure AI</td><td>Humanoid VLA</td><td>humanoid 上的视觉-语言-动作闭环系统</td><td>官方 blog，未见论文</td></tr>
+<tr><td>P11</td><td>2025-03</td><td>GR00T N1</td><td>NVIDIA</td><td>Humanoid Foundation Model</td><td>System 2 VLM + System 1 diffusion transformer</td><td>已确认</td></tr>
+<tr><td>P12</td><td>2025-03</td><td>AgiBot World Colosseo / GO-1</td><td>AgiBot / OpenDriveLab</td><td>Data Engine / VLA</td><td>百万轨迹、217 任务、latent action generalist policy</td><td>已确认</td></tr>
+<tr><td>P13</td><td>2025-03</td><td>Gemini Robotics</td><td>Google DeepMind</td><td>VLA / Native Multimodal</td><td>基于 Gemini 2.0 的 embodied multimodal VLA</td><td>已确认</td></tr>
+<tr><td>P14</td><td>2025-04</td><td>π₀.5</td><td>Physical Intelligence</td><td>VLA / Open-world Generalization</td><td>co-training + hybrid multi-modal examples，提高野外泛化</td><td>已确认</td></tr>
+<tr><td>P15</td><td>2025-06</td><td>SmolVLA</td><td>Hugging Face / LeRobot</td><td>Efficient VLA / Flow Policy</td><td>450M 开源 VLA，flow matching action expert，异步推理</td><td>已确认</td></tr>
+<tr><td>P16</td><td>2024-12</td><td>Genie 2</td><td>Google DeepMind</td><td>World Model</td><td>action-controllable playable 3D world model</td><td>官方 blog</td></tr>
+<tr><td>P17</td><td>2025-08</td><td>Genie 3</td><td>Google DeepMind</td><td>World Model</td><td>720p/24fps、分钟级一致性的交互世界模型</td><td>官方 blog</td></tr>
+<tr><td>P18</td><td>2025-11</td><td>GigaWorld-0</td><td>GigaWorld Team</td><td>World Model / Data Engine</td><td>video + 3D world model 合成 embodied VLA 数据</td><td>已确认</td></tr>
+<tr><td>P19</td><td>2025-10</td><td>Ctrl-World</td><td>Stanford / Berkeley line</td><td>World Model / Policy Improvement</td><td>可控多视角 world model，用 imagination 评估和改进 policy</td><td>已确认</td></tr>
+<tr><td>P20</td><td>2025-11</td><td>WMPO</td><td>ByteDance Seed</td><td>World Model + RL</td><td>pixel world model + on-policy GRPO for VLA</td><td>已确认</td></tr>
+<tr><td>P21</td><td>2025-11</td><td>π\*0.6 / RECAP</td><td>Physical Intelligence</td><td>RL / Preference / Generalist Policy</td><td>pi 系列后训练/可纠正策略线</td><td>待深读</td></tr>
+<tr><td>P22</td><td>2025-12</td><td>GR00T N1.6</td><td>NVIDIA</td><td>Humanoid Foundation Model</td><td>N1 系列迭代，公开资源更偏 N1.7</td><td>待核验</td></tr>
+<tr><td>P23</td><td>2025-12</td><td>χ₀ / Kai0</td><td>OpenDriveLab / HKU MMLab</td><td>Deployment / Long-horizon Manipulation</td><td>model arithmetic + stage advantage + train-deploy alignment</td><td>已确认</td></tr>
+<tr><td>P24</td><td>2026-02</td><td>VLAW</td><td>Stanford / Berkeley line</td><td>VLA + World Model</td><td>policy 和 action-conditioned video world model 迭代共改进</td><td>已确认</td></tr>
+<tr><td>P25</td><td>2026-02</td><td>LAP</td><td>Princeton / UC Berkeley line</td><td>Cross-Embodiment VLA</td><td>用自然语言表达低层动作，实现零样本跨机器人迁移</td><td>已确认</td></tr>
+<tr><td>P26</td><td>2026-02</td><td>BagelVLA</td><td>Tsinghua / ByteDance line</td><td>VLA + Visual Foresight</td><td>interleaved language planning、visual forecasting、action generation</td><td>已确认</td></tr>
+<tr><td>P27</td><td>2026-01</td><td>InternVLA-A1</td><td>InternRobotics / InternVL line</td><td>Native Multimodal VLA</td><td>understanding + generation + action 的 MoT 统一模型</td><td>已确认</td></tr>
+<tr><td>P28</td><td>2026-02</td><td>Action Space Design</td><td>多机构</td><td>Action Representation</td><td>系统研究动作空间选择对 policy learning 的影响</td><td>已确认</td></tr>
+<tr><td>P29</td><td>2025-01</td><td>UniAct</td><td>2toINF</td><td>Action Representation</td><td>universal action 表征增强 embodied foundation model</td><td>已确认但名称有歧义</td></tr>
+<tr><td>P30</td><td>2026-03</td><td>From Flow to One Step</td><td>TUM / robotics line</td><td>Flow Policy / Distillation</td><td>CFM expert 蒸馏成单步实时多模态 trajectory policy</td><td>已确认</td></tr>
+<tr><td>P31</td><td>2025-06</td><td>SPMem</td><td>SPMem team</td><td>Memory / VLA</td><td>空间-过程记忆增强长程 embodied task</td><td>已确认</td></tr>
+<tr><td>P32</td><td>2025-11</td><td>RynnVLA-002</td><td>Alibaba DAMO</td><td>VLA</td><td>产业侧 VLA 系列迭代</td><td>已确认但需深读</td></tr>
+<tr><td>P33</td><td>2026-04/05</td><td>Being-H0.7</td><td>BeingBeyond</td><td>Humanoid Foundation Model</td><td>humanoid foundation policy / project release</td><td>已确认但需深读</td></tr>
+<tr><td>P34</td><td>2026</td><td>π₀.7 / Steerable Policies</td><td>Physical Intelligence</td><td>Steerable Generalist Policy</td><td>可控/可引导 generalist robot policy</td><td>官方 blog，未见论文</td></tr>
+<tr><td>P35</td><td>2025-12</td><td>Motus</td><td>Motus Robotics</td><td>Robotics Foundation Model</td><td>运动/操控相关 foundation policy</td><td>已确认但需深读</td></tr>
+<tr><td>P36</td><td>2026-01</td><td>LingBot-VA</td><td>Robbyant / Ant</td><td>Vision-Action</td><td>偏 VA 的真实机器人模型</td><td>已确认但需深读</td></tr>
+<tr><td>P37</td><td>2026-03</td><td>ThinkJEPA</td><td>未定</td><td>Representation / World Model</td><td>JEPA 类思考/预测表征</td><td>已确认但需深读</td></tr>
+<tr><td>P38</td><td>2026-03</td><td>LeWorldModel</td><td>Le-WM team</td><td>World Model</td><td>LeRobot/embodied world model 线</td><td>已确认但需深读</td></tr>
+<tr><td>P39</td><td>2026-03</td><td>NEO-Unify</td><td>SenseNova</td><td>Native Multimodal</td><td>原生多模态统一模型，机器人相关性弱</td><td>边界项</td></tr>
+<tr><td>P40</td><td>2026-01</td><td>Cosmos Policy</td><td>NVIDIA / Stanford / Columbia line</td><td>Video Model Policy / Planning</td><td>视频模型单阶段后训练成 robot policy + planning</td><td>已确认</td></tr>
+<tr><td>P41</td><td>2026-02</td><td>DreamZero</td><td>NVIDIA DIR</td><td>World Action Model</td><td>WAM 作为零样本 policy</td><td>已确认</td></tr>
+<tr><td>P42</td><td>2026-03</td><td>Fast-WAM</td><td>Shanghai AI Lab / Tsinghua line</td><td>World Action Model / Efficiency</td><td>去掉推理时 future imagination，保留训练时 video co-training</td><td>已确认</td></tr>
+<tr><td>P43</td><td>2026</td><td>Genesis Engine</td><td>Genesis Embodied AI</td><td>Simulator / Generative Environment</td><td>物理仿真与世界生成基础设施</td><td>已确认项目</td></tr>
+<tr><td>P44</td><td>2026-04</td><td>GEN-1 / Beyond World Models &amp; VLAs</td><td>Generalist AI</td><td>Robotics Foundation Model / Methodology</td><td>从 scratch 训练 physical-interaction foundation model，强调目标驱动而非标签驱动</td><td>官方 blog，未见论文</td></tr>
+<tr><td>P45</td><td>2026-02</td><td>UniVTAC</td><td>UniVTAC team</td><td>Tactile / Benchmark</td><td>触觉-视觉-动作统一数据/benchmark</td><td>已确认</td></tr>
+<tr><td>P46</td><td>2025-07</td><td>Tactile-VLA</td><td>Tactile-VLA team</td><td>Tactile VLA</td><td>触觉纳入 VLA 操控</td><td>已确认</td></tr>
+<tr><td>P47</td><td>2026-03</td><td>RoboClaw</td><td>未定</td><td>Robotics / Manipulation</td><td>机器人操控 work，需深读</td><td>已确认但需深读</td></tr>
+<tr><td>P48</td><td>2025-03</td><td>CoT-VLA</td><td>CoT-VLA team</td><td>Reasoning VLA</td><td>chain-of-thought reasoning for VLA</td><td>已确认</td></tr>
+<tr><td>P49</td><td>2025-07</td><td>ThinkAct</td><td>ThinkAct team</td><td>Reasoning VLA</td><td>reasoning/action 分解路线</td><td>已确认</td></tr>
+<tr><td>P50</td><td>2026-01</td><td>ACoT-VLA</td><td>AgiBotTech</td><td>Reasoning VLA</td><td>action chain-of-thought for VLA</td><td>已确认</td></tr>
+<tr><td>P51</td><td>2025-06</td><td>UniVLA</td><td>多机构</td><td>VLA / Latent Action</td><td>unified VLA / latent action 线</td><td>已确认</td></tr>
+<tr><td>P52</td><td>2026-06</td><td>Cosmos3</td><td>NVIDIA</td><td>Omnimodal World Model</td><td>language/image/video/audio/action 统一 MoT，开放模型、代码、合成数据和 Cosmos-HUE</td><td>已确认</td></tr>
+<tr><td>P53</td><td>2026-06</td><td>WALL-WM</td><td>X Square Robot Team / 自变量机器人</td><td>Event-grounded WAM</td><td>semantic event 作为 video-action learning 原子，event mode + unified mode</td><td>已确认</td></tr>
+<tr><td>P54</td><td>2026-03</td><td>GigaWorld-Policy</td><td>GigaAI</td><td>Action-centered WAM</td><td>基于 GigaWorld-0.5，训练时 video+action，推理只保留 action decoding</td><td>已确认</td></tr>
+<tr><td>U01</td><td>未知</td><td>NoVA-render</td><td>未定</td><td>未定</td><td>名称不明确</td><td>不收录，待核验</td></tr>
+<tr><td>U02</td><td>未知</td><td>MoH</td><td>未定</td><td>未定</td><td>名称过短</td><td>不收录，待核验</td></tr>
+<tr><td>U03</td><td>未知</td><td>DALI-R</td><td>未定</td><td>未定</td><td>未确认可靠链接</td><td>不收录，待核验</td></tr>
+<tr><td>U04</td><td>未知</td><td>3D-mix for VLA</td><td>未定</td><td>未定</td><td>未确认可靠链接</td><td>不收录，待核验</td></tr>
+<tr><td>U05</td><td>未知</td><td>CAST</td><td>未定</td><td>未定</td><td>名称歧义大</td><td>不收录，待核验</td></tr>
+<tr><td>U06</td><td>未知</td><td>HyT</td><td>未定</td><td>未定</td><td>名称过短</td><td>不收录，待核验</td></tr>
+<tr><td>U07</td><td>未知</td><td>LaRA-VLA</td><td>未定</td><td>未定</td><td>未确认可靠链接</td><td>不收录，待核验</td></tr>
+<tr><td>U08</td><td>2026-02</td><td>RDT2</td><td>未定</td><td>Diffusion Policy</td><td>用户备注未确认公开 arXiv/blog</td><td>暂不收录</td></tr>
+<tr><td>U09</td><td>2026-05</td><td>GENE-26.5</td><td>Genesis AI</td><td>公司发布</td><td>Reuters 新闻，不足以技术收录</td><td>暂不收录</td></tr>
+</tbody></table></div>
+<h2 id="1-分类图谱">1. 分类图谱</h2>
+<div class="table-wrap"><table>
+<tbody><tr><td>类别</td><td>包含论文</td><td>共同思想</td><td>代表差异</td></tr>
+<tr><td>-</td><td>-</td><td>-</td><td>-</td></tr>
+<tr><td>Autoregressive / Token VLA</td><td>P01, P03, P06, P25</td><td>把动作离散化或语言化，用 LM/VLM 的 next-token 能力预测 action</td><td>RT-1 更像机器人 Transformer；RT-2/OpenVLA 依赖 web-scale VLM；LAP 把动作转为自然语言</td></tr>
+<tr><td>Flow / Diffusion Policy</td><td>P07, P08, P15, P30, P40</td><td>用连续生成模型拟合多模态动作分布</td><td>π₀/SmolVLA 是 VLA action expert；RDT 是 diffusion foundation model；Cosmos Policy 把视频模型直接后训练为 policy</td></tr>
+<tr><td>World Model as Data Engine</td><td>P16, P17, P18, P19, P52</td><td>用交互世界/视频/3D/omnimodal 模型替代或补充真实 rollout</td><td>Genie 更通用环境；Ctrl-World/GigaWorld 更贴近机器人操控数据；Cosmos3 把 action 纳入统一 world backbone</td></tr>
+<tr><td>World Model + Policy Optimization</td><td>P20, P24, P40</td><td>world model 不只是生成数据，而是参与 policy improvement / planning / RL</td><td>WMPO 强调 pixel world model + GRPO；VLAW 强调 policy/world model 迭代共改进；Cosmos Policy 强调 value/future image planning</td></tr>
+<tr><td>World Action Model</td><td>P41, P42, P53, P54</td><td>显式建模 action-conditioned future，并把 world prediction 变成可执行 policy 能力</td><td>DreamZero 强调零样本 policy；Fast-WAM/GigaWorld-Policy 证明训练时 video co-training 可以服务高效 action-only inference；WALL-WM 强调事件粒度</td></tr>
+<tr><td>Cross-Embodiment / Action Space</td><td>P04, P12, P25, P28, P29, P51</td><td>统一不同机器人、不同控制接口、不同动作维度</td><td>RT-X 强调数据混合；LAP 语言化 action；Action Space Design 做系统消融；UniAct/UniVLA 走 latent/universal action</td></tr>
+<tr><td>Humanoid / Physical Intelligence</td><td>P10, P11, P22, P33, P34, P36</td><td>面向 humanoid 或真实机器人长时程部署</td><td>GR00T 更开放工程化；Helix/Figure 更偏官方系统演示；π 系列更偏 generalist manipulation</td></tr>
+<tr><td>Reasoning VLA</td><td>P48, P49, P50</td><td>将推理步骤、任务分解或 CoT 显式接入 VLA</td><td>需要警惕推理文本与真实动作闭环之间的 credit assignment</td></tr>
+<tr><td>Tactile / Multimodal Embodiment</td><td>P45, P46</td><td>把触觉作为 action grounding 的关键模态</td><td>对高精度接触、灵巧手、材质判断有直接价值</td></tr>
+<tr><td>Goal-driven Robotics Foundation Model</td><td>P44</td><td>不按 VLA/world model 标签组织，而按物理 AGI 目标与数据/算力约束组织</td><td>Generalist GEN-1 强调从 scratch 训练和大规模 physical interaction data</td></tr>
+</tbody></table></div>
+<h2 id="2-技术演化主线">2. 技术演化主线</h2>
+<h3 id="2-1-google-deepmind-路线">2.1 Google / DeepMind 路线</h3>
+<div class="table-wrap"><table>
+<tbody><tr><td>时间</td><td>工作</td><td>类型</td><td>核心贡献</td><td>与前作关系</td></tr>
+<tr><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td></tr>
+<tr><td>2022-12</td><td>RT-1</td><td>Robot Transformer</td><td>真实机器人数据规模化，action token imitation</td><td>起点</td></tr>
+<tr><td>2023-03</td><td>PaLM-E</td><td>Embodied multimodal LM</td><td>把连续传感输入插入 LLM，多任务 embodied reasoning</td><td>从 policy 扩展到 reasoning</td></tr>
+<tr><td>2023-07</td><td>RT-2</td><td>VLA</td><td>把 VLM 语义迁移到 action token</td><td>RT-1 + PaLI/PaLM-E 思想合流</td></tr>
+<tr><td>2023-10</td><td>RT-X</td><td>Data / Cross-Embodiment</td><td>跨机器人数据和模型迁移</td><td>把单团队数据变成开放协作</td></tr>
+<tr><td>2025-03</td><td>Gemini Robotics</td><td>VLA</td><td>Gemini 2.0 进入物理世界</td><td>从 RT 系列演进到 Gemini-native multimodality</td></tr>
+<tr><td>2024-12 / 2025-08</td><td>Genie 2/3</td><td>World Model</td><td>可交互世界模型用于 agent training/evaluation</td><td>从 action policy 外扩到 synthetic environment</td></tr>
+</tbody></table></div>
+<p>路线结论：Google 系列可以概括为 <strong>真实机器人行为克隆 → embodied multimodal reasoning → web-scale VLA → 跨 embodiment 数据基础设施 → Gemini-native robotics → 可交互 world model</strong>。</p>
+<h3 id="2-2-physical-intelligence-路线">2.2 Physical Intelligence 路线</h3>
+<div class="table-wrap"><table>
+<tbody><tr><td>时间</td><td>工作</td><td>类型</td><td>核心贡献</td><td>与前作关系</td></tr>
+<tr><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td></tr>
+<tr><td>2024-10</td><td>π₀</td><td>Flow VLA</td><td>VLM + flow matching action expert</td><td>从 token action 转向连续 action generative policy</td></tr>
+<tr><td>2025-01</td><td>FAST</td><td>Action representation</td><td>高效动作 token/压缩表示</td><td>服务高频、长序列控制</td></tr>
+<tr><td>2025-04</td><td>π₀.5</td><td>Open-world VLA</td><td>hybrid multi-modal examples 和现实泛化</td><td>扩大 π₀ 的部署半径</td></tr>
+<tr><td>2025-11</td><td>π\*0.6 / RECAP</td><td>Post-training / alignment</td><td>后训练、纠错、偏好/可控策略</td><td>从 pretrain policy 走向 self-improvement</td></tr>
+<tr><td>2026</td><td>π₀.7 / Steerable Policies</td><td>Steerable generalist policy</td><td>可引导/可控的 generalist robot foundation model</td><td>从泛化进一步走向可控部署</td></tr>
+</tbody></table></div>
+<p>路线结论：PI 线可以概括为 <strong>flow-based generalist policy → action representation efficiency → open-world generalization → post-training correction → steerability</strong>。</p>
+<h3 id="2-3-nvidia-路线">2.3 NVIDIA 路线</h3>
+<div class="table-wrap"><table>
+<tbody><tr><td>时间</td><td>工作</td><td>类型</td><td>核心贡献</td><td>与前作关系</td></tr>
+<tr><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td></tr>
+<tr><td>2025-03</td><td>GR00T N1</td><td>Humanoid foundation model</td><td>System 2 VLM + System 1 diffusion transformer</td><td>humanoid VLA 起点</td></tr>
+<tr><td>2025-12</td><td>GR00T N1.6 / N1.7</td><td>Humanoid iteration</td><td>模型与数据迭代</td><td>需要以公开 repo/HF 为准</td></tr>
+<tr><td>2026-01</td><td>Cosmos Policy</td><td>Video model policy</td><td>Cosmos-Predict2 单阶段后训练成 policy + future/value planning</td><td>把 video foundation model 直接接 control</td></tr>
+<tr><td>2026-02</td><td>DreamZero</td><td>World Action Model</td><td>WAM 作为零样本 policy</td><td>从 VLA 转向 action-conditioned world prediction</td></tr>
+<tr><td>2026-06</td><td>Cosmos3</td><td>Omnimodal world model</td><td>language/image/video/audio/action 统一 MoT backbone</td><td>把 VLM、video generator、world simulator、WAM 收束到同一 Physical AI backbone</td></tr>
+</tbody></table></div>
+<p>路线结论：NVIDIA 线可以概括为 <strong>humanoid VLA → synthetic data + simulation → video model policy → world action model → omnimodal Physical AI backbone</strong>。</p>
+<h3 id="2-4-stanford-berkeley-chelsea-finn-jianyu-chen-相关路线">2.4 Stanford / Berkeley / Chelsea Finn / Jianyu Chen 相关路线</h3>
+<div class="table-wrap"><table>
+<tbody><tr><td>时间</td><td>工作</td><td>类型</td><td>核心贡献</td><td>与前作关系</td></tr>
+<tr><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td></tr>
+<tr><td>2024-02</td><td>Prismatic VLMs</td><td>VLM design</td><td>系统研究 VLM 设计空间</td><td>OpenVLA 基座之一</td></tr>
+<tr><td>2024-06</td><td>OpenVLA</td><td>Open VLA</td><td>7B 开源 VLA 基线</td><td>使后续 VLA 可复现</td></tr>
+<tr><td>2025-10</td><td>Ctrl-World</td><td>Robot world model</td><td>多视角可控 imagination，用于 policy ranking / SFT</td><td>world model 开始服务 policy</td></tr>
+<tr><td>2026-02</td><td>VLAW</td><td>VLA + world model</td><td>policy 和 world model online iterative improvement</td><td>更接近闭环自改进</td></tr>
+<tr><td>2026-02</td><td>LAP</td><td>Cross-Embodiment</td><td>natural language action 表达</td><td>从结构统一转向语言统一 action</td></tr>
+</tbody></table></div>
+<p>路线结论：这条线可以概括为 <strong>VLM 设计 → 开源 VLA → robot imagination → policy/world model 共训练 → action 表达迁移</strong>。</p>
+<h3 id="2-5-gigaai-gigaworld-路线">2.5 GigaAI / GigaWorld 路线</h3>
+<div class="table-wrap"><table>
+<tbody><tr><td>时间</td><td>工作</td><td>类型</td><td>核心贡献</td><td>与前作关系</td></tr>
+<tr><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td></tr>
+<tr><td>2025-11</td><td>GigaWorld-0</td><td>World model / data engine</td><td>video + 3D world model 合成 embodied VLA 数据</td><td>用 world model 扩展机器人数据供给</td></tr>
+<tr><td>2026-03</td><td>GigaWorld-Policy</td><td>Action-centered WAM</td><td>基于 GigaWorld-0.5，训练时联合 video/action，推理时只保留动作解码</td><td>从数据生成器推进到实时策略模型</td></tr>
+</tbody></table></div>
+<p>路线结论：GigaWorld 路线可以概括为 <strong>世界生成数据引擎 → action-centered WAM → 实时闭环控制</strong>。</p>
+<h3 id="2-6-generalist-ai-路线">2.6 Generalist AI 路线</h3>
+<div class="table-wrap"><table>
+<tbody><tr><td>时间</td><td>工作</td><td>类型</td><td>核心贡献</td><td>与前作关系</td></tr>
+<tr><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td></tr>
+<tr><td>2026-04</td><td>GEN-1</td><td>Robotics foundation model</td><td>约 99% 参数从 scratch 训练，强调足够数据下完全控制模型底座</td><td>不把自己定义成 fine-tuned VLA 或 world model</td></tr>
+<tr><td>2026-04</td><td>Beyond World Models &amp; VLAs</td><td>Methodology blog</td><td>以目标驱动替代方法标签驱动，提出 99%+ success with about 1 hour robot data 等里程碑</td><td>给 GEN-1 的技术取向补充解释</td></tr>
+</tbody></table></div>
+<p>路线结论：Generalist AI 路线可以概括为 <strong>大规模 physical interaction data → 从 scratch 训练 → 不按 VLA/world model 标签约束架构 → 面向 physical AGI 的目标驱动优化</strong>。</p>
+<h2 id="3-前后依赖关系与技术演化">3. 前后依赖关系与技术演化</h2>
+<div class="table-wrap"><table>
+<tbody><tr><td>关系</td><td>A</td><td>B</td><td>说明</td></tr>
+<tr><td>-</td><td>-</td><td>-</td><td>-</td></tr>
+<tr><td>数据规模继承</td><td>RT-1</td><td>RT-2</td><td>RT-2 继承 RT-1 的机器人控制问题，但用 web-scale VLM 扩展语义泛化。</td></tr>
+<tr><td>多团队基础设施</td><td>RT-2</td><td>Open X-Embodiment / RT-X</td><td>RT-X 将单模型路线扩展成跨数据集、跨机器人协作。</td></tr>
+<tr><td>开源化继承</td><td>RT-X</td><td>OpenVLA</td><td>OpenVLA 依赖 Open X-Embodiment 数据并提供可复现模型/训练代码。</td></tr>
+<tr><td>结构基座</td><td>Prismatic VLMs</td><td>OpenVLA</td><td>OpenVLA 使用 Prismatic 系列思想作为视觉语言底座。</td></tr>
+<tr><td>动作生成范式迁移</td><td>OpenVLA</td><td>π₀ / SmolVLA</td><td>从 autoregressive action token 逐渐转向 flow matching continuous actions。</td></tr>
+<tr><td>数据引擎升级</td><td>RT-X / AgiBot World</td><td>GigaWorld / Ctrl-World</td><td>从收集真实数据到用 world model 合成和评估数据。</td></tr>
+<tr><td>world model 闭环</td><td>Ctrl-World</td><td>VLAW</td><td>Ctrl-World 提供 imagination 改进 policy 的思路；VLAW 进一步迭代改进 policy 和 world model。</td></tr>
+<tr><td>WAM 反思</td><td>DreamZero</td><td>Fast-WAM</td><td>DreamZero 强调 WAM 作为 policy；Fast-WAM 追问推理时显式 future imagination 是否必要。</td></tr>
+<tr><td>视频模型 policy 化</td><td>Genie / Cosmos</td><td>Cosmos Policy</td><td>将视频模型的动态先验直接后训练成控制与规划能力。</td></tr>
+<tr><td>统一 backbone 扩展</td><td>Cosmos Policy</td><td>Cosmos3</td><td>Cosmos Policy 是视频模型 policy 化案例；Cosmos3 将 action 与 language/image/video/audio 一起放进 omnimodal MoT backbone。</td></tr>
+<tr><td>训练繁推理简</td><td>Fast-WAM</td><td>GigaWorld-Policy</td><td>两者都削弱推理时视频生成成本；GigaWorld-Policy 明确提出训练阶段联合 video/action、推理阶段 action-only decoding。</td></tr>
+<tr><td>时间粒度重定义</td><td>action chunk WAM</td><td>WALL-WM</td><td>WALL-WM 反对固定长度 chunk 作为学习原子，改用 action-grounded semantic event。</td></tr>
+<tr><td>标签范式反思</td><td>VLA / World Model</td><td>GEN-1</td><td>Generalist AI 认为目标和约束比方法标签重要，GEN-1 不自称 fine-tuned VLA 或 world model。</td></tr>
+</tbody></table></div>
+<h2 id="4-核心思想聚类">4. 核心思想聚类</h2>
+<h3 id="cluster-a-action-token-language-action">Cluster A：Action Token / Language Action</h3>
+<p>代表：RT-1、RT-2、OpenVLA、LAP、UniAct、UniVLA。  </p>
+<p>核心判断：这条路线最大优势是能继承 LM/VLM 的预训练知识，缺点是低层连续控制细节和高频闭环容易变成 action tokenization 工程问题。LAP 的自然语言动作非常激进，它不是再设计 tokenizer，而是让 action supervision 回到语言模型最擅长的分布。</p>
+<h3 id="cluster-b-flow-diffusion-action-expert">Cluster B：Flow / Diffusion Action Expert</h3>
+<p>代表：π₀、RDT-1B、SmolVLA、From Flow to One Step、Cosmos Policy。  </p>
+<p>核心判断：这条路线承认机器人动作是连续、多峰、需要 chunking 的分布。关键矛盾从“会不会生成动作”变成“生成是否足够快、是否可闭环、是否稳定覆盖多模态动作”。</p>
+<h3 id="cluster-c-world-model-as-data-engine">Cluster C：World Model as Data Engine</h3>
+<p>代表：Genie 2/3、GigaWorld、Ctrl-World、DreamGen、VLAW。  </p>
+<p>核心判断：单纯收集真实机器人数据太慢，world model 让 policy 可以在 imagination 中获得更多状态、失败和反事实。但最难的是 contact-rich manipulation 的物理细节，尤其是微小接触误差会直接造成 real robot failure。</p>
+<h3 id="cluster-d-world-action-model">Cluster D：World Action Model</h3>
+<p>代表：DreamZero、Fast-WAM、Cosmos Policy、GigaWorld-Policy、WALL-WM、Cosmos3。  </p>
+<p>核心判断：WAM 的野心比 world model 更大：不只是预测未来，而是把动作和未来状态联结成可执行 policy。Fast-WAM 和 GigaWorld-Policy 的结论尤其关键：世界预测可能更像训练表征的 regularizer 或 dense supervision，而不是推理时必须真的生成未来视频。WALL-WM 则指出另一个关键变量：学习原子不该总是固定长度 action chunk，而可以是语义一致的 executable event。</p>
+<h3 id="cluster-e-deployment-robustness-train-deploy-alignment">Cluster E：Deployment / Robustness / Train-Deploy Alignment</h3>
+<p>代表：χ₀ / Kai0、Action Space Design、GR00T N1、Helix、Being-H0.7、π₀.7。  </p>
+<p>核心判断：当模型走向真实部署，性能瓶颈往往从模型容量转移到分布一致性、动作空间、数据采样、后训练、纠错和系统集成。</p>
+<h2 id="5-单篇技术卡片">5. 单篇技术卡片</h2>
+<h3 id="p01-rt-1-robotics-transformer-for-real-world-control-at-scale">P01. RT-1: Robotics Transformer for Real-World Control at Scale</h3>
+<div class="table-wrap"><table>
+<tbody><tr><td>项目</td><td>内容</td></tr>
+<tr><td>-</td><td>-</td></tr>
+<tr><td>类型</td><td>arXiv + project</td></tr>
+<tr><td>链接</td><td><a href="<a href="https://arxiv.org/pdf/2212.06817">https://arxiv.org/pdf/2212.06817</a>" target="_blank" rel="noreferrer">https://arxiv.org/pdf/2212.06817">https://arxiv.org/pdf/2212.06817</a></a> / <a href="<a href="https://robotics-transformer1.github.io/">https://robotics-transformer1.github.io/</a>" target="_blank" rel="noreferrer">https://robotics-transformer1.github.io/">https://robotics-transformer1.github.io/</a></a></td></tr>
+<tr><td>团队</td><td>Google Robotics</td></tr>
+<tr><td>发布时间</td><td>2022-12</td></tr>
+<tr><td>主类</td><td>VLA / Embodied Foundation Model</td></tr>
+<tr><td>副类标签</td><td>real\_robot\_data, action\_token, transformer\_policy, instruction\_following</td></tr>
+</tbody></table></div>
+<p>一句话总结：RT-1 是把大规模真实机器人数据训练成通用 Transformer policy 的起点之一。</p>
+<p>出发点：传统机器人 policy 往往依赖单任务、小数据和特定场景，泛化能力弱。RT-1 的关键问题是：如果像 NLP/vision 一样扩大数据和模型，机器人控制是否也会出现 scaling behavior。</p>
+<p>核心方法：使用图像历史、自然语言指令和离散化动作作为输入输出，训练 Transformer 预测动作 token。它强调真实机器人 demonstrations 的规模和多任务覆盖，而不是只在仿真 benchmark 上优化。</p>
+<p>模型结构：视觉编码器把图像转成 token，语言指令作为条件，Transformer 聚合历史观测与语言，输出离散动作维度。动作包括机械臂位置、旋转、夹爪等控制量。</p>
+<p>数据与训练：核心是大规模真实机器人数据，覆盖多任务、多物体、多场景。训练目标是 imitation learning / behavioral cloning。</p>
+<p>评测与 insight：证明数据规模和任务多样性可以改善真实机器人泛化。其局限是动作离散化和单一平台约束，后续 RT-X/OpenVLA 主要在跨 embodiment 和开放复现上继续推进。</p>
+<p>与 VLA / WAM 关系：RT-1 还不是典型 web-scale VLA，但它奠定了“语言条件 + 视觉观测 + 动作 token”的基本模板。</p>
+<h3 id="p02-palm-e-an-embodied-multimodal-language-model">P02. PaLM-E: An Embodied Multimodal Language Model</h3>
+<div class="table-wrap"><table>
+<tbody><tr><td>项目</td><td>内容</td></tr>
+<tr><td>-</td><td>-</td></tr>
+<tr><td>类型</td><td>arXiv + project + Google blog</td></tr>
+<tr><td>链接</td><td><a href="<a href="https://arxiv.org/pdf/2303.03378">https://arxiv.org/pdf/2303.03378</a>" target="_blank" rel="noreferrer">https://arxiv.org/pdf/2303.03378">https://arxiv.org/pdf/2303.03378</a></a> / <a href="<a href="https://palm-e.github.io/">https://palm-e.github.io/</a>" target="_blank" rel="noreferrer">https://palm-e.github.io/">https://palm-e.github.io/</a></a> / <a href="<a href="https://research.google/blog/palm-e-an-embodied-multimodal-language-model/">https://research.google/blog/palm-e-an-embodied-multimodal-language-model/</a>" target="_blank" rel="noreferrer">https://research.google/blog/palm-e-an-embodied-multimodal-language-model/">https://research.google/blog/palm-e-an-embodied-multimodal-language-model/</a></a></td></tr>
+<tr><td>团队</td><td>Google / TU Berlin 等</td></tr>
+<tr><td>发布时间</td><td>2023-03</td></tr>
+<tr><td>主类</td><td>Native Multimodal / Embodied Reasoning</td></tr>
+<tr><td>副类标签</td><td>multimodal\_sentence, embodied\_reasoning, planning, transfer</td></tr>
+</tbody></table></div>
+<p>一句话总结：PaLM-E 把真实世界连续传感输入直接接入大语言模型，让 LLM 具备 embodied grounding 和多任务推理能力。</p>
+<p>出发点：LLM 有强推理能力，但缺少和真实世界感知状态的直接连接。机器人任务需要把语言、图像、状态估计、规划步骤放进同一上下文。</p>
+<p>核心方法：将视觉、连续状态估计和文本编码成 interleaved multimodal sentence，与预训练 LLM 端到端联合训练。它不只做机器人任务，还做 VQA、captioning 等视觉语言任务。</p>
+<p>模型结构：输入端把不同模态投影到语言模型 token 空间，LLM backbone 负责跨模态推理，输出可以是语言计划、任务回答或 embodied 决策相关文本。</p>
+<p>数据与训练：多任务训练，包含机器人 sequential manipulation planning、视觉问答、captioning 等。最大模型 PaLM-E-562B 体现了 scale 对 embodied reasoning 的影响。</p>
+<p>评测与 insight：显示跨任务联合训练能带来正迁移，且模型规模越大越能保留通用语言能力。局限在于它更偏 reasoning 和 high-level planning，不是低层实时控制 policy。</p>
+<p>与 VLA / WAM 关系：PaLM-E 是 RT-2/Gemini Robotics 的思想前身：把互联网级 multimodal reasoning 融入机器人，而不是从零训练 policy。</p>
+<h3 id="p03-rt-2-vision-language-action-models-transfer-web-knowledge-to-robotic-control">P03. RT-2: Vision-Language-Action Models Transfer Web Knowledge to Robotic Control</h3>
+<div class="table-wrap"><table>
+<tbody><tr><td>项目</td><td>内容</td></tr>
+<tr><td>-</td><td>-</td></tr>
+<tr><td>类型</td><td>arXiv + project + Google DeepMind blog</td></tr>
+<tr><td>链接</td><td><a href="<a href="https://arxiv.org/pdf/2307.15818">https://arxiv.org/pdf/2307.15818</a>" target="_blank" rel="noreferrer">https://arxiv.org/pdf/2307.15818">https://arxiv.org/pdf/2307.15818</a></a> / <a href="<a href="https://robotics-transformer2.github.io/">https://robotics-transformer2.github.io/</a>" target="_blank" rel="noreferrer">https://robotics-transformer2.github.io/">https://robotics-transformer2.github.io/</a></a> / <a href="<a href="https://deepmind.google/blog/rt-2-new-model-translates-vision-and-language-into-action/">https://deepmind.google/blog/rt-2-new-model-translates-vision-and-language-into-action/</a>" target="_blank" rel="noreferrer">https://deepmind.google/blog/rt-2-new-model-translates-vision-and-language-into-action/">https://deepmind.google/blog/rt-2-new-model-translates-vision-and-language-into-action/</a></a></td></tr>
+<tr><td>团队</td><td>Google DeepMind</td></tr>
+<tr><td>发布时间</td><td>2023-07</td></tr>
+<tr><td>主类</td><td>VLA</td></tr>
+<tr><td>副类标签</td><td>web\_knowledge\_transfer, action\_token, semantic\_generalization</td></tr>
+</tbody></table></div>
+<p>一句话总结：RT-2 是 VLA 路线的关键转折，把 web-scale VLM 的语义能力转成机器人 action。</p>
+<p>出发点：机器人数据少且昂贵，单靠 robot demonstrations 很难覆盖真实世界语义长尾。RT-2 试图回答：VLM 从互联网学到的知识能否迁移到机器人控制。</p>
+<p>核心方法：将机器人动作表示成文本 token 或可由 VLM 生成的符号序列，使 VLM 同时学习视觉语言任务和机器人动作预测。这样模型能把“看到、理解、行动”放在同一个序列建模框架中。</p>
+<p>模型结构：以 PaLI / PaLM-E 风格的视觉语言模型为底座，输入图像和语言指令，输出 action token。它本质上把 action 作为另一种语言输出。</p>
+<p>数据与训练：混合互联网视觉语言数据与机器人 trajectory 数据。关键不是机器人数据最大，而是让两类数据互相迁移。</p>
+<p>评测与 insight：RT-2 在需要语义理解、符号推理、物体常识的任务上优于只用机器人数据的 policy。局限是 action token 的离散表示和推理时延。</p>
+<p>与 VLA / WAM 关系：这是标准 VLA 命名真正成立的代表作。后续 OpenVLA、Gemini Robotics、LAP 都在继承或修正它的 action-as-language 思路。</p>
+<h3 id="p04-open-x-embodiment-rt-x">P04. Open X-Embodiment / RT-X</h3>
+<div class="table-wrap"><table>
+<tbody><tr><td>项目</td><td>内容</td></tr>
+<tr><td>-</td><td>-</td></tr>
+<tr><td>类型</td><td>arXiv + project</td></tr>
+<tr><td>链接</td><td><a href="<a href="https://arxiv.org/pdf/2310.08864">https://arxiv.org/pdf/2310.08864</a>" target="_blank" rel="noreferrer">https://arxiv.org/pdf/2310.08864">https://arxiv.org/pdf/2310.08864</a></a> / <a href="<a href="https://robotics-transformer-x.github.io/">https://robotics-transformer-x.github.io/</a>" target="_blank" rel="noreferrer">https://robotics-transformer-x.github.io/">https://robotics-transformer-x.github.io/</a></a></td></tr>
+<tr><td>团队</td><td>Open X-Embodiment Collaboration</td></tr>
+<tr><td>发布时间</td><td>2023-10</td></tr>
+<tr><td>主类</td><td>Data Engine / Cross-Embodiment VLA</td></tr>
+<tr><td>副类标签</td><td>cross\_embodiment, robot\_dataset, RT-X, transfer</td></tr>
+</tbody></table></div>
+<p>一句话总结：Open X-Embodiment 把 VLA 从单机器人实验推进到跨机器人数据基础设施。</p>
+<p>出发点：每个实验室的数据、机器人和动作空间都不同，导致数据不能自然合并。要训练 robot foundation model，必须解决跨 embodiment 数据统一和迁移。</p>
+<p>核心方法：整合 22 个机器人、527 个 skills 的多源数据，并训练 RT-X 模型研究跨数据迁移。它从数据层面证明不同机器人 demonstrations 可以产生正迁移。</p>
+<p>模型结构：RT-X 沿用 RT 系列 Transformer/VLA 思路，但重点在多数据集融合和跨平台泛化。</p>
+<p>数据与训练：多机构、多机器人真实数据，覆盖不同传感器、动作空间和任务。它的意义不仅是模型，而是数据格式和社区协作。</p>
+<p>评测与 insight：证明跨 embodiment 训练能提高很多下游任务表现，但也暴露动作空间、观测格式、任务标签不统一的问题。</p>
+<p>与 VLA / WAM 关系：后续 OpenVLA、SmolVLA、RDT、AgiBot、GigaWorld 都绕不开它提出的数据混合问题。</p>
+<h3 id="p05-prismatic-vlms">P05. Prismatic VLMs</h3>
+<div class="table-wrap"><table>
+<tbody><tr><td>项目</td><td>内容</td></tr>
+<tr><td>-</td><td>-</td></tr>
+<tr><td>类型</td><td>arXiv + GitHub</td></tr>
+<tr><td>链接</td><td><a href="<a href="https://arxiv.org/pdf/2402.07865">https://arxiv.org/pdf/2402.07865</a>" target="_blank" rel="noreferrer">https://arxiv.org/pdf/2402.07865">https://arxiv.org/pdf/2402.07865</a></a> / <a href="<a href="https://github.com/TRI-ML/prismatic-vlms">https://github.com/TRI-ML/prismatic-vlms</a>" target="_blank" rel="noreferrer">https://github.com/TRI-ML/prismatic-vlms">https://github.com/TRI-ML/prismatic-vlms</a></a></td></tr>
+<tr><td>团队</td><td>TRI / Stanford 等</td></tr>
+<tr><td>发布时间</td><td>2024-02</td></tr>
+<tr><td>主类</td><td>Native Multimodal / VLM Design</td></tr>
+<tr><td>副类标签</td><td>VLM\_backbone, visual\_encoder, design\_space, open\_source</td></tr>
+</tbody></table></div>
+<p>一句话总结：Prismatic VLMs 系统研究视觉编码器、LLM、训练配方等 VLM 设计选择，并成为 OpenVLA 的重要底座。</p>
+<p>出发点：很多 VLM 论文只报告单点模型，缺少对设计空间的可控比较。VLA 依赖 VLM 底座，因此底座质量会直接影响机器人泛化。</p>
+<p>核心方法：在统一代码框架中比较视觉编码器、语言模型、融合方式和数据配方，释放 PRISM 模型与训练框架。</p>
+<p>模型结构：通常由视觉 encoder、projector/resampler 和 LLM backbone 组成。对 VLA 的启发在于视觉 token 和语言 token 如何融合。</p>
+<p>数据与训练：面向视觉语言任务的多阶段训练，不直接以机器人控制为主。</p>
+<p>评测与 insight：它不是 VLA 论文，但对 OpenVLA 这类模型极重要，因为 OpenVLA 需要强、开源、可训练的 VLM backbone。</p>
+<p>与 VLA / WAM 关系：它回答的是“VLA 的 V 和 L 底座怎么选”，不是动作学习本身。</p>
+<h3 id="p06-openvla">P06. OpenVLA</h3>
+<div class="table-wrap"><table>
+<tbody><tr><td>项目</td><td>内容</td></tr>
+<tr><td>-</td><td>-</td></tr>
+<tr><td>类型</td><td>arXiv + project + GitHub + HuggingFace</td></tr>
+<tr><td>链接</td><td><a href="<a href="https://arxiv.org/pdf/2406.09246">https://arxiv.org/pdf/2406.09246</a>" target="_blank" rel="noreferrer">https://arxiv.org/pdf/2406.09246">https://arxiv.org/pdf/2406.09246</a></a> / <a href="<a href="https://openvla.github.io/">https://openvla.github.io/</a>" target="_blank" rel="noreferrer">https://openvla.github.io/">https://openvla.github.io/</a></a> / <a href="<a href="https://github.com/openvla/openvla">https://github.com/openvla/openvla</a>" target="_blank" rel="noreferrer">https://github.com/openvla/openvla">https://github.com/openvla/openvla</a></a> / <a href="<a href="https://huggingface.co/openvla/openvla-7b">https://huggingface.co/openvla/openvla-7b</a>" target="_blank" rel="noreferrer">https://huggingface.co/openvla/openvla-7b">https://huggingface.co/openvla/openvla-7b</a></a></td></tr>
+<tr><td>团队</td><td>Stanford / UC Berkeley / Google DeepMind / TRI</td></tr>
+<tr><td>发布时间</td><td>2024-06</td></tr>
+<tr><td>主类</td><td>VLA / Open Source Robot Foundation Model</td></tr>
+<tr><td>副类标签</td><td>open\_source, Open\_X, LoRA, quantization, DINOv2, SigLIP</td></tr>
+</tbody></table></div>
+<p>一句话总结：OpenVLA 是第一个影响力很大的开源 7B VLA，显著降低了研究者复现和微调 VLA 的门槛。</p>
+<p>出发点：RT-2 等早期 VLA 大多闭源，社区难以研究如何训练、微调和部署 VLA。OpenVLA 目标是把模型、代码、checkpoint、微调教程都公开。</p>
+<p>核心方法：基于 Llama 2 语言模型，结合 DINOv2 和 SigLIP 视觉特征，训练在 Open X-Embodiment 的 970K 真实机器人 episodes 上。输出 robot actions，并支持多机器人控制和参数高效微调。</p>
+<p>模型结构：视觉 encoder 融合多种预训练视觉特征，投影到 LLM token 空间，LLM 进行 autoregressive action prediction。动作仍然是 token 化输出。</p>
+<p>数据与训练：Open X-Embodiment 数据为核心，训练 7B VLA。工程贡献包括 LoRA 微调、量化 serving 和 PyTorch 训练代码。</p>
+<p>评测与 insight：OpenVLA 在 generalist manipulation 上优于更大闭源模型 RT-2-X 的若干设置，并展示消费级 GPU 上微调可能性。局限是高频连续控制和物理预测能力仍弱。</p>
+<p>与 VLA / WAM 关系：OpenVLA 是 2024-2025 很多论文的 baseline 和改造对象，是 VLA 开源生态的基准线。</p>
+<h3 id="p07-a-vision-language-action-flow-model-for-general-robot-control">P07. π₀: A Vision-Language-Action Flow Model for General Robot Control</h3>
+<div class="table-wrap"><table>
+<tbody><tr><td>项目</td><td>内容</td></tr>
+<tr><td>-</td><td>-</td></tr>
+<tr><td>类型</td><td>arXiv + blog + GitHub</td></tr>
+<tr><td>链接</td><td><a href="<a href="https://arxiv.org/pdf/2410.24164">https://arxiv.org/pdf/2410.24164</a>" target="_blank" rel="noreferrer">https://arxiv.org/pdf/2410.24164">https://arxiv.org/pdf/2410.24164</a></a> / <a href="<a href="https://www.pi.website/blog/pi0">https://www.pi.website/blog/pi0</a>" target="_blank" rel="noreferrer">https://www.pi.website/blog/pi0">https://www.pi.website/blog/pi0</a></a> / <a href="<a href="https://github.com/Physical-Intelligence/openpi">https://github.com/Physical-Intelligence/openpi</a>" target="_blank" rel="noreferrer">https://github.com/Physical-Intelligence/openpi">https://github.com/Physical-Intelligence/openpi</a></a></td></tr>
+<tr><td>团队</td><td>Physical Intelligence</td></tr>
+<tr><td>发布时间</td><td>2024-10</td></tr>
+<tr><td>主类</td><td>Diffusion / Flow Policy / VLA</td></tr>
+<tr><td>副类标签</td><td>flow\_matching, action\_chunking, VLM\_backbone, dexterous\_manipulation</td></tr>
+</tbody></table></div>
+<p>一句话总结：π₀ 把 VLA 与 flow matching action generation 结合，成为连续动作 generalist robot policy 的代表。</p>
+<p>出发点：action token 适合继承 LLM 能力，但机器人控制本质上是连续、多模态、高频和接触丰富的。π₀ 试图让 VLA 继承语义知识，同时用 flow matching 更自然地生成动作轨迹。</p>
+<p>核心方法：在预训练 VLM 上加 action expert，用 flow matching 生成连续动作。它训练在多平台、多任务、灵巧操作数据上，支持 zero-shot、语言指令、VLM high-level policy 调用和少量微调。</p>
+<p>模型结构：VLM 负责视觉语言上下文理解，action expert 负责连续动作生成。与 autoregressive action token 相比，动作头更像 conditional generative model。</p>
+<p>数据与训练：混合多机器人平台数据，包括单臂、双臂、移动操作等。训练目标包含 flow matching 对动作分布的建模。</p>
+<p>评测与 insight：覆盖 laundry folding、table cleaning、box assembly 等复杂任务。核心 insight 是：VLA 不一定要把 action 完全语言化，连续生成模型可能更适合低层控制。</p>
+<p>与 VLA / WAM 关系：π₀ 是 VLA 向 action model 转型的关键节点，后续 SmolVLA、π₀.5、π₀.7 都继承这条线。</p>
+<h3 id="p08-rdt-1b-robotics-diffusion-transformer">P08. RDT-1B: Robotics Diffusion Transformer</h3>
+<div class="table-wrap"><table>
+<tbody><tr><td>项目</td><td>内容</td></tr>
+<tr><td>-</td><td>-</td></tr>
+<tr><td>类型</td><td>arXiv + project + GitHub</td></tr>
+<tr><td>链接</td><td><a href="<a href="https://arxiv.org/pdf/2410.07864">https://arxiv.org/pdf/2410.07864</a>" target="_blank" rel="noreferrer">https://arxiv.org/pdf/2410.07864">https://arxiv.org/pdf/2410.07864</a></a> / <a href="<a href="https://rdt-robotics.github.io/rdt-robotics/">https://rdt-robotics.github.io/rdt-robotics/</a>" target="_blank" rel="noreferrer">https://rdt-robotics.github.io/rdt-robotics/">https://rdt-robotics.github.io/rdt-robotics/</a></a> / <a href="<a href="https://github.com/thu-ml/RoboticsDiffusionTransformer">https://github.com/thu-ml/RoboticsDiffusionTransformer</a>" target="_blank" rel="noreferrer">https://github.com/thu-ml/RoboticsDiffusionTransformer">https://github.com/thu-ml/RoboticsDiffusionTransformer</a></a></td></tr>
+<tr><td>团队</td><td>Tsinghua / THU-ML</td></tr>
+<tr><td>发布时间</td><td>2024-10</td></tr>
+<tr><td>主类</td><td>Diffusion Policy / Embodied Foundation Model</td></tr>
+<tr><td>副类标签</td><td>diffusion\_transformer, bimanual, unified\_action\_space, action\_chunking</td></tr>
+</tbody></table></div>
+<p>一句话总结：RDT-1B 是面向双臂操控的 1B diffusion foundation model，强调统一动作空间和多机器人兼容。</p>
+<p>出发点：双臂操控存在多峰动作分布和强协调需求，传统 BC 或 autoregressive token policy 很难稳定建模。RDT 试图用 diffusion transformer 提升动作分布表达能力。</p>
+<p>核心方法：用 Diffusion Transformer 预测未来动作 chunk，输入包括语言、最多三视角 RGB、控制频率和 proprioception。统一动作空间包含末端、关节、位置、速度、移动底盘等物理量。</p>
+<p>模型结构：多模态 encoder + diffusion transformer action decoder。输出是 64 步 action chunk。</p>
+<p>数据与训练：预训练在 1M+ 多机器人 episodes 上，强调 MIT 许可、开放模型和代码。</p>
+<p>评测与 insight：强项在 bimanual manipulation 和多平台适配。局限是对未见过的新机器人平台仍通常需要小数据微调。</p>
+<p>与 VLA / WAM 关系：RDT 是 diffusion policy foundation model，不一定依赖 LLM 推理，但对动作模型和统一动作空间非常重要。</p>
+<h3 id="p09-fast">P09. FAST</h3>
+<div class="table-wrap"><table>
+<tbody><tr><td>项目</td><td>内容</td></tr>
+<tr><td>-</td><td>-</td></tr>
+<tr><td>类型</td><td>arXiv + Physical Intelligence blog</td></tr>
+<tr><td>链接</td><td><a href="<a href="https://arxiv.org/pdf/2501.09747">https://arxiv.org/pdf/2501.09747</a>" target="_blank" rel="noreferrer">https://arxiv.org/pdf/2501.09747">https://arxiv.org/pdf/2501.09747</a></a> / <a href="<a href="https://www.pi.website/research/fast">https://www.pi.website/research/fast</a>" target="_blank" rel="noreferrer">https://www.pi.website/research/fast">https://www.pi.website/research/fast</a></a></td></tr>
+<tr><td>团队</td><td>Physical Intelligence</td></tr>
+<tr><td>发布时间</td><td>2025-01</td></tr>
+<tr><td>主类</td><td>Action Representation / Deployment Efficiency</td></tr>
+<tr><td>副类标签</td><td>action\_tokenization, fast\_inference, high\_frequency\_control</td></tr>
+</tbody></table></div>
+<p>一句话总结：FAST 关注 VLA/robot policy 中动作序列表示和推理效率，是 π 系列向高频控制落地的重要配套。</p>
+<p>出发点：generalist policy 往往输出长 action chunk，直接生成连续高维动作会带来时延、压缩和稳定性问题。</p>
+<p>核心方法：围绕动作序列压缩、tokenization 或快速生成机制设计，让模型在保持表达能力的同时更适合实际控制频率。</p>
+<p>模型结构：更像 action representation / tokenizer 层，而不是完整 VLA 架构。</p>
+<p>数据与训练：依赖 robot demonstrations 和 π 系列数据/模型生态。</p>
+<p>评测与 insight：重点看推理速度、动作保真度和下游任务成功率之间的 trade-off。</p>
+<p>与 VLA / WAM 关系：它回答“动作如何被高效表达”，是所有 VLA/WAM 部署必须解决的问题。</p>
+<h3 id="p10-helix">P10. Helix</h3>
+<div class="table-wrap"><table>
+<tbody><tr><td>项目</td><td>内容</td></tr>
+<tr><td>-</td><td>-</td></tr>
+<tr><td>类型</td><td>Figure AI official blog</td></tr>
+<tr><td>链接</td><td><a href="<a href="https://www.figure.ai/news/helix">https://www.figure.ai/news/helix</a>" target="_blank" rel="noreferrer">https://www.figure.ai/news/helix">https://www.figure.ai/news/helix</a></a></td></tr>
+<tr><td>团队</td><td>Figure AI</td></tr>
+<tr><td>发布时间</td><td>2025-02</td></tr>
+<tr><td>主类</td><td>Humanoid VLA / Deployment</td></tr>
+<tr><td>副类标签</td><td>humanoid, fleet\_data, system\_integration</td></tr>
+</tbody></table></div>
+<p>一句话总结：Helix 是 Figure 对 humanoid 端到端 VLA/控制系统的官方技术发布，但公开论文细节有限。</p>
+<p>出发点：humanoid 需要把语言指令、视觉感知、双手协调和全身控制接进一个可部署系统。</p>
+<p>核心方法：官方信息更偏系统级描述，强调单一神经网络或统一模型控制 humanoid 完成多任务。相比论文，缺少可复现实验和消融。</p>
+<p>模型结构：可理解为高层视觉语言理解 + 低层动作控制的 humanoid policy，但具体训练细节未公开。</p>
+<p>数据与训练：官方没有像 OpenVLA/GR00T 那样公开完整数据规模与训练配方。</p>
+<p>评测与 insight：适合作为产业侧 humanoid VLA 方向信号，不适合作为严格论文基准。</p>
+<p>与 VLA / WAM 关系：与 VLA/embodied control 强相关，但技术可信度依赖官方披露，不能和 arXiv 论文同等权重。</p>
+<h3 id="p11-gr00t-n1">P11. GR00T N1</h3>
+<div class="table-wrap"><table>
+<tbody><tr><td>项目</td><td>内容</td></tr>
+<tr><td>-</td><td>-</td></tr>
+<tr><td>类型</td><td>arXiv / NVIDIA research page</td></tr>
+<tr><td>链接</td><td><a href="<a href="https://arxiv.org/pdf/2503.14734">https://arxiv.org/pdf/2503.14734</a>" target="_blank" rel="noreferrer">https://arxiv.org/pdf/2503.14734">https://arxiv.org/pdf/2503.14734</a></a> / <a href="<a href="https://research.nvidia.com/publication/2025-03_nvidia-isaac-gr00t-n1-open-foundation-model-humanoid-robots">https://research.nvidia.com/publication/2025-03\_nvidia-isaac-gr00t-n1-open-foundation-model-humanoid-robots</a>" target="_blank" rel="noreferrer">https://research.nvidia.com/publication/2025-03_nvidia-isaac-gr00t-n1-open-foundation-model-humanoid-robots">https://research.nvidia.com/publication/2025-03\_nvidia-isaac-gr00t-n1-open-foundation-model-humanoid-robots</a></a></td></tr>
+<tr><td>团队</td><td>NVIDIA</td></tr>
+<tr><td>发布时间</td><td>2025-03</td></tr>
+<tr><td>主类</td><td>Humanoid Foundation Model / VLA</td></tr>
+<tr><td>副类标签</td><td>dual\_system, diffusion\_transformer, humanoid, synthetic\_data, human\_video</td></tr>
+</tbody></table></div>
+<p>一句话总结：GR00T N1 是 humanoid robot foundation model 的系统化代表，使用 System 2 VLM 理解环境、System 1 diffusion transformer 实时生成动作。</p>
+<p>出发点：humanoid 机器人需要处理多任务、双臂、语言指令、真实世界变化和数据稀缺。单纯 imitation baseline 难以泛化。</p>
+<p>核心方法：双系统架构：视觉语言模块负责环境和指令理解，diffusion transformer 负责流畅动作生成，二者端到端耦合训练。训练数据混合真实机器人轨迹、人类视频和合成数据。</p>
+<p>模型结构：System 2 类 VLM 输出高层语义/状态表示，System 1 类 action diffusion module 输出实时运动控制。</p>
+<p>数据与训练：异构数据金字塔，包括 real robot、synthetic、human video。NVIDIA 还配套 Isaac/Omniverse/Cosmos 数据生成工具。</p>
+<p>评测与 insight：在多种仿真 benchmark 与 Fourier GR-1、1X humanoid 上展示语言条件双臂操控。关键 insight 是 humanoid foundation model 必须同时解决模型结构和数据来源。</p>
+<p>与 VLA / WAM 关系：GR00T N1 仍是 VLA，但它后续自然连接到 Cosmos Policy / DreamZero 等 world/video model policy 线。</p>
+<h3 id="p12-agibot-world-colosseo-go-1">P12. AgiBot World Colosseo / GO-1</h3>
+<div class="table-wrap"><table>
+<tbody><tr><td>项目</td><td>内容</td></tr>
+<tr><td>-</td><td>-</td></tr>
+<tr><td>类型</td><td>arXiv + project + blog + GitHub</td></tr>
+<tr><td>链接</td><td><a href="<a href="https://arxiv.org/pdf/2503.06669">https://arxiv.org/pdf/2503.06669</a>" target="_blank" rel="noreferrer">https://arxiv.org/pdf/2503.06669">https://arxiv.org/pdf/2503.06669</a></a> / <a href="<a href="https://opendrivelab.com/AgiBot-World/">https://opendrivelab.com/AgiBot-World/</a>" target="_blank" rel="noreferrer">https://opendrivelab.com/AgiBot-World/">https://opendrivelab.com/AgiBot-World/</a></a> / <a href="<a href="https://agibot-world.com/blog/go1">https://agibot-world.com/blog/go1</a>" target="_blank" rel="noreferrer">https://agibot-world.com/blog/go1">https://agibot-world.com/blog/go1</a></a> / <a href="<a href="https://github.com/OpenDriveLab/AgiBot-World">https://github.com/OpenDriveLab/AgiBot-World</a>" target="_blank" rel="noreferrer">https://github.com/OpenDriveLab/AgiBot-World">https://github.com/OpenDriveLab/AgiBot-World</a></a></td></tr>
+<tr><td>团队</td><td>AgiBot / OpenDriveLab</td></tr>
+<tr><td>发布时间</td><td>2025-03</td></tr>
+<tr><td>主类</td><td>Data Engine / VLA</td></tr>
+<tr><td>副类标签</td><td>million\_trajectories, latent\_action, dexterous, long\_horizon</td></tr>
+</tbody></table></div>
+<p>一句话总结：AgiBot World 用百万级真实轨迹和 GO-1 generalist policy 推动机器人数据规模化。</p>
+<p>出发点：Open X-Embodiment 虽然重要，但真实工业/家庭场景还需要更大规模、更标准化、更高质量的数据采集。</p>
+<p>核心方法：构建包含 1M+ trajectories、217 tasks、多个部署场景的大规模 manipulation platform，并提出 GO-1 policy 利用 latent action representations 提高数据利用率。</p>
+<p>模型结构：GO-1 侧重 generalist policy 与 latent action 表征，服务跨任务和 dexterous/long-horizon tasks。</p>
+<p>数据与训练：标准化采集 pipeline + human-in-the-loop verification，覆盖 gripper、dexterous hand、visuo-tactile sensors。</p>
+<p>评测与 insight：报告相对 Open X-Embodiment 预训练有显著提升，并在复杂真实任务上超过 RDT 等 prior。核心 insight 是数据质量和规模仍是 embodied AI 的第一性变量。</p>
+<p>与 VLA / WAM 关系：它是 data engine 线的关键节点，也给 GigaWorld、Kai0、UniVLA 等后续工作提供数据生态。</p>
+<h3 id="p13-gemini-robotics">P13. Gemini Robotics</h3>
+<div class="table-wrap"><table>
+<tbody><tr><td>项目</td><td>内容</td></tr>
+<tr><td>-</td><td>-</td></tr>
+<tr><td>类型</td><td>arXiv + official page</td></tr>
+<tr><td>链接</td><td><a href="<a href="https://arxiv.org/pdf/2503.20020">https://arxiv.org/pdf/2503.20020</a>" target="_blank" rel="noreferrer">https://arxiv.org/pdf/2503.20020">https://arxiv.org/pdf/2503.20020</a></a> / <a href="<a href="https://deepmind.google/models/gemini-robotics/">https://deepmind.google/models/gemini-robotics/</a>" target="_blank" rel="noreferrer">https://deepmind.google/models/gemini-robotics/">https://deepmind.google/models/gemini-robotics/</a></a></td></tr>
+<tr><td>团队</td><td>Google DeepMind</td></tr>
+<tr><td>发布时间</td><td>2025-03</td></tr>
+<tr><td>主类</td><td>Native Multimodal VLA</td></tr>
+<tr><td>副类标签</td><td>Gemini\_2, multimodal\_reasoning, robot\_control, generalization</td></tr>
+</tbody></table></div>
+<p>一句话总结：Gemini Robotics 把 Gemini 2.0 的 multimodal reasoning 推进到机器人控制，是 Google 从 RT 系列走向 Gemini-native robotics 的标志。</p>
+<p>出发点：RT-2 证明 VLM 知识能转化为动作，但新一代 multimodal foundation model 有更强视频、空间、推理和指令能力。</p>
+<p>核心方法：基于 Gemini 2.0 训练 advanced VLA，用图像、语言和机器人状态控制不同机器人完成复杂任务。</p>
+<p>模型结构：Gemini multimodal backbone + action head / robotics adaptation。官方强调 generality、interactivity 和 safety。</p>
+<p>数据与训练：包含机器人 demonstrations、多模态数据和 Gemini 系列预训练能力。</p>
+<p>评测与 insight：强调对新环境、新指令和复杂任务的适应。公开技术细节比 RT/OpenVLA 少，但方向重要。</p>
+<p>与 VLA / WAM 关系：它是 native multimodality 到 embodied control 的代表，后续 on-device Gemini Robotics 进一步走向本地部署。</p>
+<h3 id="p14-5">P14. π₀.5</h3>
+<div class="table-wrap"><table>
+<tbody><tr><td>项目</td><td>内容</td></tr>
+<tr><td>-</td><td>-</td></tr>
+<tr><td>类型</td><td>arXiv + blog</td></tr>
+<tr><td>链接</td><td><a href="<a href="https://arxiv.org/pdf/2504.16054">https://arxiv.org/pdf/2504.16054</a>" target="_blank" rel="noreferrer">https://arxiv.org/pdf/2504.16054">https://arxiv.org/pdf/2504.16054</a></a> / <a href="<a href="https://www.pi.website/blog/pi05">https://www.pi.website/blog/pi05</a>" target="_blank" rel="noreferrer">https://www.pi.website/blog/pi05">https://www.pi.website/blog/pi05</a></a></td></tr>
+<tr><td>团队</td><td>Physical Intelligence</td></tr>
+<tr><td>发布时间</td><td>2025-04</td></tr>
+<tr><td>主类</td><td>VLA / Open-world Generalization</td></tr>
+<tr><td>副类标签</td><td>open\_world, co\_training, hybrid\_multimodal\_examples, dexterity</td></tr>
+</tbody></table></div>
+<p>一句话总结：π₀.5 试图回答 VLA 在实验室外到底能泛化到多远。</p>
+<p>出发点：π₀ 展示了 generalist policy 潜力，但真实世界任务分布更开放，环境、物体、指令和干扰都更多。</p>
+<p>核心方法：通过 co-training 和 hybrid multi-modal examples 扩大模型对真实世界任务的覆盖，提升长时程与灵巧任务泛化。</p>
+<p>模型结构：延续 π₀ 的 VLM + flow action policy 思路，但训练数据和任务覆盖更开放。</p>
+<p>数据与训练：混合真实机器人、多模态样例和可能的互联网/视频先验，强调 open-world generalization。</p>
+<p>评测与 insight：关注陌生环境和实际有用任务，而不只是 benchmark。局限是部分系统细节仍由官方 blog 描述。</p>
+<p>与 VLA / WAM 关系：它是 flow VLA 从可行性走向开放部署的重要中间版本。</p>
+<h3 id="p15-smolvla">P15. SmolVLA</h3>
+<div class="table-wrap"><table>
+<tbody><tr><td>项目</td><td>内容</td></tr>
+<tr><td>-</td><td>-</td></tr>
+<tr><td>类型</td><td>arXiv + Hugging Face blog + docs</td></tr>
+<tr><td>链接</td><td><a href="<a href="https://arxiv.org/pdf/2506.01844">https://arxiv.org/pdf/2506.01844</a>" target="_blank" rel="noreferrer">https://arxiv.org/pdf/2506.01844">https://arxiv.org/pdf/2506.01844</a></a> / <a href="<a href="https://huggingface.co/blog/smolvla">https://huggingface.co/blog/smolvla</a>" target="_blank" rel="noreferrer">https://huggingface.co/blog/smolvla">https://huggingface.co/blog/smolvla</a></a> / <a href="<a href="https://huggingface.co/docs/lerobot/smolvla">https://huggingface.co/docs/lerobot/smolvla</a>" target="_blank" rel="noreferrer">https://huggingface.co/docs/lerobot/smolvla">https://huggingface.co/docs/lerobot/smolvla</a></a></td></tr>
+<tr><td>团队</td><td>Hugging Face / LeRobot</td></tr>
+<tr><td>发布时间</td><td>2025-06</td></tr>
+<tr><td>主类</td><td>Efficient VLA / Flow Policy</td></tr>
+<tr><td>副类标签</td><td>450M, flow\_matching, asynchronous\_inference, community\_data, open\_source</td></tr>
+</tbody></table></div>
+<p>一句话总结：SmolVLA 是轻量开源 VLA 的代表，用 450M 参数、社区数据和 flow matching action expert 做低门槛机器人控制。</p>
+<p>出发点：OpenVLA/π₀ 等模型虽强，但成本较高。社区需要能在消费级硬件训练、微调和部署的 VLA。</p>
+<p>核心方法：SmolVLM-2 作为 VLM backbone，action expert 使用 Flow Matching Transformer。额外设计视觉 token reduction、layer skipping、interleaved attention 和异步推理。</p>
+<p>模型结构：VLM 负责视觉语言理解，flow action expert 负责动作 chunk 生成。异步推理让机器人执行当前动作时并行计算下一段动作。</p>
+<p>数据与训练：只用 LeRobot 社区共享且 license 兼容的数据，强调任务标注和相机视角标准化。</p>
+<p>评测与 insight：在 LIBERO、Meta-World、SO100/SO101 等任务上胜过更大模型或强 baseline，并报告约 30% 更快响应和 2x throughput。</p>
+<p>与 VLA / WAM 关系：它是“VLA 应该可复现、可部署、可社区共建”的代表。</p>
+<h3 id="p16-genie-2">P16. Genie 2</h3>
+<div class="table-wrap"><table>
+<tbody><tr><td>项目</td><td>内容</td></tr>
+<tr><td>-</td><td>-</td></tr>
+<tr><td>类型</td><td>Google DeepMind official blog</td></tr>
+<tr><td>链接</td><td><a href="<a href="https://deepmind.google/blog/genie-2-a-large-scale-foundation-world-model/">https://deepmind.google/blog/genie-2-a-large-scale-foundation-world-model/</a>" target="_blank" rel="noreferrer">https://deepmind.google/blog/genie-2-a-large-scale-foundation-world-model/">https://deepmind.google/blog/genie-2-a-large-scale-foundation-world-model/</a></a></td></tr>
+<tr><td>团队</td><td>Google DeepMind</td></tr>
+<tr><td>发布时间</td><td>2024-12</td></tr>
+<tr><td>主类</td><td>World Model / Simulator</td></tr>
+<tr><td>副类标签</td><td>action\_controllable\_world, playable\_3D, counterfactual\_rollout, agent\_training</td></tr>
+</tbody></table></div>
+<p>一句话总结：Genie 2 是可由人或 agent 控制的 3D foundation world model，目标是生成训练和评估 embodied agents 的交互环境。</p>
+<p>出发点：训练 general embodied agents 需要大量、多样且安全的环境，真实/手工仿真环境成本高。</p>
+<p>核心方法：从单张 prompt image 生成可交互 3D 世界，用键鼠动作控制，模型预测 action-conditioned future frames。</p>
+<p>模型结构：官方描述为 autoregressive latent diffusion world model：视频经 autoencoder 到 latent frames，再由大 transformer dynamics model 用 causal mask 建模。</p>
+<p>数据与训练：大规模视频数据训练，使用 classifier-free guidance 增强 action controllability。</p>
+<p>评测与 insight：展示 counterfactual trajectories、long horizon memory、SIMA agent acting inside world model。局限是交互时长、物理一致性和精确可控性仍有限。</p>
+<p>与 VLA / WAM 关系：它不是 robot policy，但为 world model as environment 的路线奠定了方向。</p>
+<h3 id="p17-genie-3">P17. Genie 3</h3>
+<div class="table-wrap"><table>
+<tbody><tr><td>项目</td><td>内容</td></tr>
+<tr><td>-</td><td>-</td></tr>
+<tr><td>类型</td><td>Google DeepMind official blog</td></tr>
+<tr><td>链接</td><td><a href="<a href="https://deepmind.google/blog/genie-3-a-new-frontier-for-world-models/">https://deepmind.google/blog/genie-3-a-new-frontier-for-world-models/</a>" target="_blank" rel="noreferrer">https://deepmind.google/blog/genie-3-a-new-frontier-for-world-models/">https://deepmind.google/blog/genie-3-a-new-frontier-for-world-models/</a></a></td></tr>
+<tr><td>团队</td><td>Google DeepMind</td></tr>
+<tr><td>发布时间</td><td>2025-08</td></tr>
+<tr><td>主类</td><td>World Model / Interactive Environment</td></tr>
+<tr><td>副类标签</td><td>real\_time\_world, 720p, 24fps, promptable\_events, agent\_training</td></tr>
+</tbody></table></div>
+<p>一句话总结：Genie 3 把交互 world model 推到实时 720p/24fps 和分钟级一致性，进一步接近 agent training environment。</p>
+<p>出发点：Genie 2 的交互时长和一致性有限，离真实 agent 训练环境还有距离。</p>
+<p>核心方法：从文本 prompt 生成动态可导航环境，并支持 promptable world events。核心能力包括视觉记忆、一致性和实时交互。</p>
+<p>模型结构：官方未公开完整论文，但可视为更强的 action-conditioned generative world model。</p>
+<p>数据与训练：基于大规模视频/世界建模数据，具体配方未公开。</p>
+<p>评测与 insight：技术指标包括 720p、24fps、几分钟一致性。它的重要性在于将 world model 从“视频生成”推向“可交互世界接口”。</p>
+<p>与 VLA / WAM 关系：对 VLA 的直接价值是 synthetic curriculum 和闭环评估；对 WAM 的价值是 action-conditioned dynamics 的大模型化。</p>
+<h3 id="p18-gigaworld-0">P18. GigaWorld-0</h3>
+<div class="table-wrap"><table>
+<tbody><tr><td>项目</td><td>内容</td></tr>
+<tr><td>-</td><td>-</td></tr>
+<tr><td>类型</td><td>arXiv</td></tr>
+<tr><td>链接</td><td><a href="<a href="https://arxiv.org/pdf/2511.19861">https://arxiv.org/pdf/2511.19861</a>" target="_blank" rel="noreferrer">https://arxiv.org/pdf/2511.19861">https://arxiv.org/pdf/2511.19861</a></a></td></tr>
+<tr><td>团队</td><td>GigaWorld Team</td></tr>
+<tr><td>发布时间</td><td>2025-11</td></tr>
+<tr><td>主类</td><td>World Model / Data Engine</td></tr>
+<tr><td>副类标签</td><td>video\_generation, 3D\_generation, Gaussian\_splatting, synthetic\_data, FP8</td></tr>
+</tbody></table></div>
+<p>一句话总结：GigaWorld-0 把 world model 明确定位为 VLA 数据引擎，结合视频生成和 3D 物理一致性来合成 embodied training data。</p>
+<p>出发点：真实机器人数据昂贵且难扩展，纯视频生成又可能缺少几何和物理一致性。</p>
+<p>核心方法：两个组件协同：GigaWorld-0-Video 生成多样、纹理丰富、时序一致的视频；GigaWorld-0-3D 结合 3D generative modeling、Gaussian Splatting、系统辨识和可执行 motion planning 确保几何/物理可用。</p>
+<p>模型结构：world generation pipeline + GigaTrain 高效训练框架，服务下游 VLA 如 GigaBrain-0。</p>
+<p>数据与训练：用合成 embodied data 训练 VLA，并使用 FP8、sparse attention 降低训练成本。</p>
+<p>评测与 insight：关键 claim 是不经真实机器人 interaction 也能提高真实机器人泛化和成功率。需要重点看生成数据与真实评测之间的 causal link。</p>
+<p>与 VLA / WAM 关系：这是 world model as data engine 的典型代表，对未来数据飞轮很关键。</p>
+<h3 id="p19-ctrl-world">P19. Ctrl-World</h3>
+<div class="table-wrap"><table>
+<tbody><tr><td>项目</td><td>内容</td></tr>
+<tr><td>-</td><td>-</td></tr>
+<tr><td>类型</td><td>arXiv</td></tr>
+<tr><td>链接</td><td><a href="<a href="https://arxiv.org/pdf/2510.10125">https://arxiv.org/pdf/2510.10125</a>" target="_blank" rel="noreferrer">https://arxiv.org/pdf/2510.10125">https://arxiv.org/pdf/2510.10125</a></a></td></tr>
+<tr><td>团队</td><td>Yanjiang Guo / Lucy Shi / Jianyu Chen / Chelsea Finn</td></tr>
+<tr><td>发布时间</td><td>2025-10</td></tr>
+<tr><td>主类</td><td>World Model / Policy Evaluation and Improvement</td></tr>
+<tr><td>副类标签</td><td>controllable\_world\_model, multi\_view, DROID, imagination\_rollout, SFT</td></tr>
+</tbody></table></div>
+<p>一句话总结：Ctrl-World 是为机器人操控设计的可控多视角 world model，用 imagination 来评估和改进 generalist robot policies。</p>
+<p>出发点：真实 rollout 评估和收集纠错数据成本太高，现有 world model 又难以支持现代 generalist policy 的多视角、细粒度动作和长时程一致性。</p>
+<p>核心方法：构建 controllable multi-view world model，使用 frame-level action conditioning 和 pose-conditioned memory retrieval。模型可生成 novel scenario / new camera placement 下超过 20 秒的一致轨迹。</p>
+<p>模型结构：action-conditioned video/world model + memory retrieval + multi-view rendering/prediction。</p>
+<p>数据与训练：DROID 数据集，约 95k trajectories、564 scenes。</p>
+<p>评测与 insight：可无真实 rollout 排名 policy performance；通过合成成功 trajectory 做 SFT，policy success 提升 44.7%。这说明 world model 可以做 evaluator 和 data generator。</p>
+<p>与 VLA / WAM 关系：它是从 VLA 到 WAM 的桥：动作条件未来预测已经直接服务 policy 改进。</p>
+<h3 id="p20-wmpo">P20. WMPO</h3>
+<div class="table-wrap"><table>
+<tbody><tr><td>项目</td><td>内容</td></tr>
+<tr><td>-</td><td>-</td></tr>
+<tr><td>类型</td><td>arXiv + project</td></tr>
+<tr><td>链接</td><td><a href="<a href="https://arxiv.org/pdf/2511.09515">https://arxiv.org/pdf/2511.09515</a>" target="_blank" rel="noreferrer">https://arxiv.org/pdf/2511.09515">https://arxiv.org/pdf/2511.09515</a></a> / <a href="<a href="https://wm-po.github.io/">https://wm-po.github.io/</a>" target="_blank" rel="noreferrer">https://wm-po.github.io/">https://wm-po.github.io/</a></a></td></tr>
+<tr><td>团队</td><td>ByteDance Seed</td></tr>
+<tr><td>发布时间</td><td>2025-11</td></tr>
+<tr><td>主类</td><td>World Model + RL / Policy Optimization</td></tr>
+<tr><td>副类标签</td><td>pixel\_world\_model, GRPO, on\_policy, self\_correction, lifelong\_learning</td></tr>
+</tbody></table></div>
+<p>一句话总结：WMPO 用 pixel-based world model 让 VLA 在 imagination 中做 on-policy GRPO，减少真实机器人 RL 成本。</p>
+<p>出发点：VLA 依赖 expert demonstrations，难以从失败中学习；真实机器人 RL 又样本复杂度高。</p>
+<p>核心方法：训练 pixel world model，而不是只做 latent world model，使 imagined trajectories 与 VLA 从 web-scale images 学到的视觉特征对齐。然后在 imagination 中进行 on-policy GRPO。</p>
+<p>模型结构：VLA policy + pixel world model + GRPO optimization loop。</p>
+<p>数据与训练：仿真和真实机器人任务，重点是 world model 中 rollout 生成和 policy update。</p>
+<p>评测与 insight：报告样本效率、性能、自纠错、泛化和 lifelong learning 提升。关键在于它把 world model 作为 RL 环境，而不是只做数据增强。</p>
+<p>与 VLA / WAM 关系：WMPO 是 VLA + world model + RL 闭环的重要范式。</p>
+<h3 id="p21-0-6-recap">P21. π\*0.6 / RECAP</h3>
+<div class="table-wrap"><table>
+<tbody><tr><td>项目</td><td>内容</td></tr>
+<tr><td>-</td><td>-</td></tr>
+<tr><td>类型</td><td>arXiv + PI blog</td></tr>
+<tr><td>链接</td><td><a href="<a href="https://arxiv.org/pdf/2511.14759">https://arxiv.org/pdf/2511.14759</a>" target="_blank" rel="noreferrer">https://arxiv.org/pdf/2511.14759">https://arxiv.org/pdf/2511.14759</a></a> / <a href="<a href="https://www.pi.website/blog/pistar06">https://www.pi.website/blog/pistar06</a>" target="_blank" rel="noreferrer">https://www.pi.website/blog/pistar06">https://www.pi.website/blog/pistar06</a></a></td></tr>
+<tr><td>团队</td><td>Physical Intelligence</td></tr>
+<tr><td>发布时间</td><td>2025-11</td></tr>
+<tr><td>主类</td><td>Post-training / Alignment / Generalist Policy</td></tr>
+<tr><td>副类标签</td><td>correction, preference, steerability, pi\_series</td></tr>
+</tbody></table></div>
+<p>一句话总结：π\*0.6 / RECAP 可视为 π 系列从预训练 policy 走向纠错、后训练和可控部署的一步。</p>
+<p>出发点：通用机器人 policy 只靠 supervised imitation 容易复制数据中的错误，也缺少对用户目标、失败恢复和偏好约束的适配。</p>
+<p>核心方法：根据用户给定名称推断，RECAP 更可能强调 correction / recaption / recap-style feedback 机制，用于增强 policy 对失败和目标的可解释修正能力。</p>
+<p>模型结构：延续 π 系列 VLA/flow policy，但加入后训练或反馈信号。</p>
+<p>数据与训练：需深读论文确认训练目标、反馈来源和是否使用 preference/RL。</p>
+<p>评测与 insight：重点应看是否相对 π₀.5 在长时程、可控性或失败恢复上有显著提升。</p>
+<p>与 VLA / WAM 关系：它属于 VLA post-training 线，和 world model 线并行解决真实部署的可靠性。</p>
+<h3 id="p22-gr00t-n1-6-n1-7">P22. GR00T N1.6 / N1.7</h3>
+<div class="table-wrap"><table>
+<tbody><tr><td>项目</td><td>内容</td></tr>
+<tr><td>-</td><td>-</td></tr>
+<tr><td>类型</td><td>GitHub / HuggingFace public resources</td></tr>
+<tr><td>链接</td><td><a href="<a href="https://github.com/NVIDIA/Isaac-GR00T">https://github.com/NVIDIA/Isaac-GR00T</a>" target="_blank" rel="noreferrer">https://github.com/NVIDIA/Isaac-GR00T">https://github.com/NVIDIA/Isaac-GR00T</a></a> / <a href="<a href="https://huggingface.co/nvidia/GR00T-N1.7-3B">https://huggingface.co/nvidia/GR00T-N1.7-3B</a>" target="_blank" rel="noreferrer">https://huggingface.co/nvidia/GR00T-N1.7-3B">https://huggingface.co/nvidia/GR00T-N1.7-3B</a></a></td></tr>
+<tr><td>团队</td><td>NVIDIA</td></tr>
+<tr><td>发布时间</td><td>2025-12 附近</td></tr>
+<tr><td>主类</td><td>Humanoid Foundation Model</td></tr>
+<tr><td>副类标签</td><td>open\_weight, humanoid, post\_training</td></tr>
+</tbody></table></div>
+<p>一句话总结：GR00T N1.6 当前公开证据不如 N1/N1.7 清晰，应以 NVIDIA Isaac GR00T repo 和 HuggingFace N1.7 为准跟踪。</p>
+<p>出发点：N1 发布后，NVIDIA 持续迭代 humanoid foundation model、训练数据和部署工具链。</p>
+<p>核心方法：延续 N1 的 VLA + diffusion action architecture，可能在数据、模型规模、部署和后训练上迭代。</p>
+<p>模型结构：参考 N1/N1.7 公开资源。</p>
+<p>数据与训练：需核验 release notes。</p>
+<p>评测与 insight：作为版本跟踪项，不建议在严肃报告里和 arXiv 论文同等权重。</p>
+<p>与 VLA / WAM 关系：属于 humanoid VLA 系列工程迭代。</p>
+<h3 id="p23-kai0">P23. χ₀ / Kai0</h3>
+<div class="table-wrap"><table>
+<tbody><tr><td>项目</td><td>内容</td></tr>
+<tr><td>-</td><td>-</td></tr>
+<tr><td>类型</td><td>arXiv + HuggingFace + project</td></tr>
+<tr><td>链接</td><td><a href="<a href="https://arxiv.org/pdf/2602.09021">https://arxiv.org/pdf/2602.09021</a>" target="_blank" rel="noreferrer">https://arxiv.org/pdf/2602.09021">https://arxiv.org/pdf/2602.09021</a></a> / <a href="<a href="https://huggingface.co/OpenDriveLab-org/Kai0">https://huggingface.co/OpenDriveLab-org/Kai0</a>" target="_blank" rel="noreferrer">https://huggingface.co/OpenDriveLab-org/Kai0">https://huggingface.co/OpenDriveLab-org/Kai0</a></a></td></tr>
+<tr><td>团队</td><td>OpenDriveLab / HKU MMLab</td></tr>
+<tr><td>发布时间</td><td>2025-12 project / 2026-02 arXiv</td></tr>
+<tr><td>主类</td><td>Deployment / Long-horizon Manipulation</td></tr>
+<tr><td>副类标签</td><td>model\_arithmetic, stage\_advantage, train\_deploy\_alignment, garment\_manipulation</td></tr>
+</tbody></table></div>
+<p>一句话总结：χ₀ / Kai0 把真实长时程布料操作的瓶颈归结为分布不一致，并用 model arithmetic、stage advantage 和 train-deploy alignment 提升鲁棒性。</p>
+<p>出发点：长时程真实机器人任务失败往往不是模型不够大，而是 demonstrations、policy inductive bias 和部署执行分布不一致。</p>
+<p>核心方法：三根技术柱：Model Arithmetic 用权重空间合并吸收不同 demonstration 分布；Stage Advantage 提供阶段感知 dense progress signal；Train-Deploy Alignment 用时空增强、heuristic DAgger corrections 和 temporal chunk-wise smoothing 缩小部署差距。</p>
+<p>模型结构：更像 robustness framework，可接在已有 policy 上，重点是训练/部署对齐模块。</p>
+<p>数据与训练：据公开模型卡，20 小时数据、8 A100 条件下实现高可靠布料任务，并展示双臂团队长时程运行。</p>
+<p>评测与 insight：强调 24 小时连续运行和相对 π₀.5 的成功率提升。值得重点看其评测是否可复现、任务是否狭窄。</p>
+<p>与 VLA / WAM 关系：它提醒 VLA/WAM 落地时，分布一致性可能比继续堆模型更重要。</p>
+<h3 id="p24-vlaw">P24. VLAW</h3>
+<div class="table-wrap"><table>
+<tbody><tr><td>项目</td><td>内容</td></tr>
+<tr><td>-</td><td>-</td></tr>
+<tr><td>类型</td><td>arXiv + project</td></tr>
+<tr><td>链接</td><td><a href="<a href="https://arxiv.org/pdf/2602.12063">https://arxiv.org/pdf/2602.12063</a>" target="_blank" rel="noreferrer">https://arxiv.org/pdf/2602.12063">https://arxiv.org/pdf/2602.12063</a></a> / <a href="<a href="https://sites.google.com/view/vlaw-arxiv">https://sites.google.com/view/vlaw-arxiv</a>" target="_blank" rel="noreferrer">https://sites.google.com/view/vlaw-arxiv">https://sites.google.com/view/vlaw-arxiv</a></a></td></tr>
+<tr><td>团队</td><td>Yanjiang Guo / Tony Lee / Lucy Shi / Jianyu Chen / Percy Liang / Chelsea Finn</td></tr>
+<tr><td>发布时间</td><td>2026-02</td></tr>
+<tr><td>主类</td><td>VLA + World Model</td></tr>
+<tr><td>副类标签</td><td>iterative\_improvement, action\_conditioned\_video, synthetic\_rollout, real\_robot</td></tr>
+</tbody></table></div>
+<p>一句话总结：VLAW 用真实 rollout 迭代提升 action-conditioned video world model，再用更好的 world model 生成数据改进 VLA policy。</p>
+<p>出发点：world model 物理细节不足，尤其缺少失败案例和接触细节；但真实机器人 rollout 又太贵。</p>
+<p>核心方法：迭代算法：收集真实 policy rollout，提升 world model fidelity；再用 world model 生成 supplemental synthetic rollouts，训练/微调 VLA。</p>
+<p>模型结构：VLA policy + action-conditioned video generation model + iterative data loop。</p>
+<p>数据与训练：真实机器人下游任务；使用生成 rollouts 补充训练。</p>
+<p>评测与 insight：报告 base policy 绝对成功率提升 39.2%，其中生成 synthetic rollouts 带来 11.6% 提升。它的重要性在于把 world model 从离线生成器变成可迭代改进的学习伙伴。</p>
+<p>与 VLA / WAM 关系：VLAW 是 VLA 和 WAM/World Model 结合得最直接的一类工作。</p>
+<h3 id="p25-lap-language-action-pre-training">P25. LAP: Language-Action Pre-Training</h3>
+<div class="table-wrap"><table>
+<tbody><tr><td>项目</td><td>内容</td></tr>
+<tr><td>-</td><td>-</td></tr>
+<tr><td>类型</td><td>arXiv + project</td></tr>
+<tr><td>链接</td><td><a href="<a href="https://arxiv.org/pdf/2602.10556">https://arxiv.org/pdf/2602.10556</a>" target="_blank" rel="noreferrer">https://arxiv.org/pdf/2602.10556">https://arxiv.org/pdf/2602.10556</a></a> / <a href="<a href="https://lap-vla.github.io/">https://lap-vla.github.io/</a>" target="_blank" rel="noreferrer">https://lap-vla.github.io/">https://lap-vla.github.io/</a></a></td></tr>
+<tr><td>团队</td><td>Princeton / UC Berkeley line</td></tr>
+<tr><td>发布时间</td><td>2026-02</td></tr>
+<tr><td>主类</td><td>Cross-Embodiment VLA</td></tr>
+<tr><td>副类标签</td><td>language\_action, zero\_shot\_transfer, action\_representation</td></tr>
+</tbody></table></div>
+<p>一句话总结：LAP 把低层机器人动作直接表示成自然语言，使 VLA 能零样本迁移到未见过的机器人 embodiment。</p>
+<p>出发点：多 embodiment 预训练后，VLA 仍常绑定训练过的机器人和动作空间，需要 expensive fine-tuning。</p>
+<p>核心方法：Language-Action Pre-training 将 low-level action 直接写成自然语言，和 VLM 的输入输出分布对齐，不需要 learned tokenizer 或 embodiment-specific architecture。</p>
+<p>模型结构：LAP-3B 以语言动作格式统一 action prediction 和 VQA。</p>
+<p>数据与训练：语言化动作监督 + VQA / co-training。</p>
+<p>评测与 insight：在多个 novel robots 和 manipulation tasks 上达到 50%+ zero-shot success，约为 prior strongest VLA 的 2x。关键 insight 是 action representation 可以用语言分布解决一部分跨 embodiment gap。</p>
+<p>与 VLA / WAM 关系：它是 action model 表达路线的重要分叉，对 world action model 的动作条件接口也有启发。</p>
+<h3 id="p26-bagelvla">P26. BagelVLA</h3>
+<div class="table-wrap"><table>
+<tbody><tr><td>项目</td><td>内容</td></tr>
+<tr><td>-</td><td>-</td></tr>
+<tr><td>类型</td><td>arXiv + project</td></tr>
+<tr><td>链接</td><td><a href="<a href="https://arxiv.org/pdf/2602.09849">https://arxiv.org/pdf/2602.09849</a>" target="_blank" rel="noreferrer">https://arxiv.org/pdf/2602.09849">https://arxiv.org/pdf/2602.09849</a></a> / <a href="<a href="https://cladernyjorn.github.io/BagelVLA.github.io/">https://cladernyjorn.github.io/BagelVLA.github.io/</a>" target="_blank" rel="noreferrer">https://cladernyjorn.github.io/BagelVLA.github.io/">https://cladernyjorn.github.io/BagelVLA.github.io/</a></a></td></tr>
+<tr><td>团队</td><td>Tsinghua / ByteDance line</td></tr>
+<tr><td>发布时间</td><td>2026-02</td></tr>
+<tr><td>主类</td><td>VLA + Visual Foresight</td></tr>
+<tr><td>副类标签</td><td>interleaved\_generation, residual\_flow\_guidance, long\_horizon, MoT</td></tr>
+</tbody></table></div>
+<p>一句话总结：BagelVLA 把语言规划、视觉预测和动作生成放进统一 interleaved sequence，用 Residual Flow Guidance 降低视觉 foresight 的时延。</p>
+<p>出发点：很多 VLA 只做语言规划或只做视觉预测，无法在长时程操控中同时推理任务和预测物理后果。</p>
+<p>核心方法：初始化自统一理解/生成模型，以 interleaved tokens 同时建模文本推理、视觉预测和动作。RFG 从当前观测出发做 single-step denoising，提取下一关键帧残差视觉特征来指导动作生成。</p>
+<p>模型结构：Mixture-of-Transformers，包括语言、视觉、动作三个专家。</p>
+<p>数据与训练：仿真 + 真实 benchmark，多阶段任务。</p>
+<p>评测与 insight：在长时程、多阶段任务上显著优于 baseline。关键在于把 visual foresight 变成低延迟 action-conditioning feature，而不是昂贵完整视频生成。</p>
+<p>与 VLA / WAM 关系：BagelVLA 处于 VLA 和 WAM 中间：它不一定完整 rollout 世界，但把视觉未来预测嵌入动作生成。</p>
+<h3 id="p27-internvla-a1">P27. InternVLA-A1</h3>
+<div class="table-wrap"><table>
+<tbody><tr><td>项目</td><td>内容</td></tr>
+<tr><td>-</td><td>-</td></tr>
+<tr><td>类型</td><td>arXiv + GitHub + HuggingFace</td></tr>
+<tr><td>链接</td><td><a href="<a href="https://arxiv.org/pdf/2601.02456">https://arxiv.org/pdf/2601.02456</a>" target="_blank" rel="noreferrer">https://arxiv.org/pdf/2601.02456">https://arxiv.org/pdf/2601.02456</a></a> / <a href="<a href="https://github.com/InternRobotics/InternVLA-A1">https://github.com/InternRobotics/InternVLA-A1</a>" target="_blank" rel="noreferrer">https://github.com/InternRobotics/InternVLA-A1">https://github.com/InternRobotics/InternVLA-A1</a></a> / <a href="<a href="https://huggingface.co/InternRobotics/InternVLA-A1-3B">https://huggingface.co/InternRobotics/InternVLA-A1-3B</a>" target="_blank" rel="noreferrer">https://huggingface.co/InternRobotics/InternVLA-A1-3B">https://huggingface.co/InternRobotics/InternVLA-A1-3B</a></a></td></tr>
+<tr><td>团队</td><td>InternRobotics / InternVL line</td></tr>
+<tr><td>发布时间</td><td>2026-01</td></tr>
+<tr><td>主类</td><td>Native Multimodal VLA</td></tr>
+<tr><td>副类标签</td><td>understanding\_generation\_action, MoT, synthetic\_real, visual\_foresight</td></tr>
+</tbody></table></div>
+<p>一句话总结：InternVLA-A1 用 Mixture-of-Transformers 统一 understanding、generation 和 action，试图补足传统 VLA 缺少物理动态预测的问题。</p>
+<p>出发点：MLLM-based VLA 语义强但不懂物理动态；video world model 会预测未来但语义 grounding 不稳。</p>
+<p>核心方法：三个专家分别负责场景理解、视觉未来生成和动作执行，通过统一 masked self-attention 交互。</p>
+<p>模型结构：基于 InternVL3 和 Qwen3-VL，实例化 2B/3B 模型。</p>
+<p>数据与训练：InternData-A1 + AgiBot-World，超过 533M frames 的 synthetic-real hybrid data。</p>
+<p>评测与 insight：在 12 个真实机器人任务和仿真 benchmark 上，相对 π₀、GR00T N1.5 有提升，尤其动态场景如传送带分拣。</p>
+<p>与 VLA / WAM 关系：这是 native multimodal VLA 与 world model 融合的典型新结构。</p>
+<h3 id="p28-demystifying-action-space-design-for-robotic-manipulation-policies">P28. Demystifying Action Space Design for Robotic Manipulation Policies</h3>
+<div class="table-wrap"><table>
+<tbody><tr><td>项目</td><td>内容</td></tr>
+<tr><td>-</td><td>-</td></tr>
+<tr><td>类型</td><td>arXiv</td></tr>
+<tr><td>链接</td><td><a href="<a href="https://arxiv.org/pdf/2602.23408">https://arxiv.org/pdf/2602.23408</a>" target="_blank" rel="noreferrer">https://arxiv.org/pdf/2602.23408">https://arxiv.org/pdf/2602.23408</a></a></td></tr>
+<tr><td>团队</td><td>多机构</td></tr>
+<tr><td>发布时间</td><td>2026-02</td></tr>
+<tr><td>主类</td><td>Action Representation / Evaluation</td></tr>
+<tr><td>副类标签</td><td>delta\_action, joint\_space, task\_space, empirical\_study</td></tr>
+</tbody></table></div>
+<p>一句话总结：Action Space Design 系统研究机器人 action space 对 imitation policy 学习的影响，是很多 VLA 论文容易忽略的底层变量。</p>
+<p>出发点：VLA 论文常把动作空间当工程细节，但不同 action representation 会改变优化景观、稳定性和泛化。</p>
+<p>核心方法：大规模 empirical study 比较 delta action、absolute action、joint-space、task-space 等设计。</p>
+<p>模型结构：不是新 backbone，而是系统消融不同 action interface。</p>
+<p>数据与训练：多 manipulation policy 和 benchmark。</p>
+<p>评测与 insight：delta action prediction 往往提升性能；joint/task space 在控制稳定性和泛化上各有优势。</p>
+<p>与 VLA / WAM 关系：这是所有 VLA/WAM 必须补课的工程科学问题。</p>
+<h3 id="p29-uniact">P29. UniAct</h3>
+<div class="table-wrap"><table>
+<tbody><tr><td>项目</td><td>内容</td></tr>
+<tr><td>-</td><td>-</td></tr>
+<tr><td>类型</td><td>arXiv + GitHub</td></tr>
+<tr><td>链接</td><td><a href="<a href="https://arxiv.org/pdf/2501.10105">https://arxiv.org/pdf/2501.10105</a>" target="_blank" rel="noreferrer">https://arxiv.org/pdf/2501.10105">https://arxiv.org/pdf/2501.10105</a></a> / <a href="<a href="https://github.com/2toinf/uniact">https://github.com/2toinf/uniact</a>" target="_blank" rel="noreferrer">https://github.com/2toinf/uniact">https://github.com/2toinf/uniact</a></a></td></tr>
+<tr><td>团队</td><td>2toINF</td></tr>
+<tr><td>发布时间</td><td>2025-01</td></tr>
+<tr><td>主类</td><td>Action Representation / Embodied Foundation Model</td></tr>
+<tr><td>副类标签</td><td>universal\_action, latent\_action, cross\_embodiment</td></tr>
+</tbody></table></div>
+<p>一句话总结：UniAct 关注 universal actions，用统一动作表征增强 embodied foundation model 的跨任务/跨平台能力。</p>
+<p>出发点：不同机器人动作维度和控制方式不一致，阻碍数据混合和 foundation model 扩展。</p>
+<p>核心方法：构造统一 action 表征或 latent action space，把不同 embodiment 的动作对齐到共享空间。</p>
+<p>模型结构：action tokenizer / latent action module + VLA/backbone policy。</p>
+<p>数据与训练：多 embodiment 数据混合训练。</p>
+<p>评测与 insight：重点看跨 embodiment transfer 和少样本适配。</p>
+<p>与 VLA / WAM 关系：它给 WAM 的 action conditioning 也提供统一接口思路。</p>
+<h3 id="p30-from-flow-to-one-step">P30. From Flow to One Step</h3>
+<div class="table-wrap"><table>
+<tbody><tr><td>项目</td><td>内容</td></tr>
+<tr><td>-</td><td>-</td></tr>
+<tr><td>类型</td><td>arXiv</td></tr>
+<tr><td>链接</td><td><a href="<a href="https://arxiv.org/pdf/2603.09415">https://arxiv.org/pdf/2603.09415</a>" target="_blank" rel="noreferrer">https://arxiv.org/pdf/2603.09415">https://arxiv.org/pdf/2603.09415</a></a></td></tr>
+<tr><td>团队</td><td>TUM / robotics line</td></tr>
+<tr><td>发布时间</td><td>2026-03</td></tr>
+<tr><td>主类</td><td>Flow Policy / Distillation</td></tr>
+<tr><td>副类标签</td><td>CFM, IMLE, one\_step\_policy, real\_time\_control, multimodal\_trajectory</td></tr>
+</tbody></table></div>
+<p>一句话总结：该工作把 Conditional Flow Matching expert 蒸馏成单步 student，解决 flow policy 推理慢和单步蒸馏模式坍塌的问题。</p>
+<p>出发点：flow/diffusion policy 表达力强，但 ODE/denoising 迭代推理慢，不利于高频 closed-loop control。</p>
+<p>核心方法：用 IMLE 和双向 Chamfer distance 进行 distribution distillation，让 student 单步生成仍保留多模态轨迹分布。</p>
+<p>模型结构：CFM expert → one-step student，统一 perception encoder 融合 RGB、depth、point cloud、proprioception。</p>
+<p>数据与训练：多模态 trajectory demonstrations。</p>
+<p>评测与 insight：强调实时 receding-horizon replanning 和动态扰动鲁棒性。</p>
+<p>与 VLA / WAM 关系：这是 action model 加速的关键方向，能直接服务 π₀/SmolVLA 类 flow action head。</p>
+<h3 id="p31-spmem">P31. SPMem</h3>
+<div class="table-wrap"><table>
+<tbody><tr><td>项目</td><td>内容</td></tr>
+<tr><td>-</td><td>-</td></tr>
+<tr><td>类型</td><td>arXiv + project + GitHub</td></tr>
+<tr><td>链接</td><td><a href="<a href="https://arxiv.org/pdf/2506.05284">https://arxiv.org/pdf/2506.05284</a>" target="_blank" rel="noreferrer">https://arxiv.org/pdf/2506.05284">https://arxiv.org/pdf/2506.05284</a></a> / <a href="<a href="https://spmem.github.io/">https://spmem.github.io/</a>" target="_blank" rel="noreferrer">https://spmem.github.io/">https://spmem.github.io/</a></a> / <a href="<a href="https://github.com/spmem/spmem">https://github.com/spmem/spmem</a>" target="_blank" rel="noreferrer">https://github.com/spmem/spmem">https://github.com/spmem/spmem</a></a></td></tr>
+<tr><td>发布时间</td><td>2025-06</td></tr>
+<tr><td>主类</td><td>Memory / Embodied Foundation Model</td></tr>
+<tr><td>副类标签</td><td>spatial\_memory, procedural\_memory, long\_horizon, embodied\_agent</td></tr>
+</tbody></table></div>
+<p>一句话总结：SPMem 代表 memory-augmented embodied policy 路线，核心价值在于让模型不仅看当前帧，还能维护空间和过程记忆。</p>
+<p>出发点：长时程任务里，VLA 常因只依赖短上下文而丢失物体位置、已完成步骤和失败历史。SPMem 关注如何把空间记忆和过程记忆作为可查询状态接入 embodied decision。</p>
+<p>核心方法：构建可更新的 memory module，把环境中空间实体、任务阶段、动作历史和过程知识沉淀下来，并在后续决策时检索。它更偏系统增强模块，而不是替代底层 action head。</p>
+<p>模型结构：感知/语言编码器 + memory writer/reader + policy/action module。关键要看 memory 的写入粒度、检索条件和是否可微训练。</p>
+<p>数据与评测：建议重点看是否在真实机器人或长时程仿真任务上证明比单纯加长上下文更有效。</p>
+<p>与 VLA / WAM 关系：SPMem 补的是 VLA 的长期状态问题；如果和 world model 结合，memory 可以成为 imagination rollout 的 persistent state。</p>
+<h3 id="p32-rynnvla-002">P32. RynnVLA-002</h3>
+<div class="table-wrap"><table>
+<tbody><tr><td>项目</td><td>内容</td></tr>
+<tr><td>-</td><td>-</td></tr>
+<tr><td>类型</td><td>arXiv + GitHub</td></tr>
+<tr><td>链接</td><td><a href="<a href="https://arxiv.org/pdf/2511.17502">https://arxiv.org/pdf/2511.17502</a>" target="_blank" rel="noreferrer">https://arxiv.org/pdf/2511.17502">https://arxiv.org/pdf/2511.17502</a></a> / <a href="<a href="https://github.com/alibaba-damo-academy/RynnVLA-002">https://github.com/alibaba-damo-academy/RynnVLA-002</a>" target="_blank" rel="noreferrer">https://github.com/alibaba-damo-academy/RynnVLA-002">https://github.com/alibaba-damo-academy/RynnVLA-002</a></a></td></tr>
+<tr><td>团队</td><td>Alibaba DAMO Academy</td></tr>
+<tr><td>发布时间</td><td>2025-11</td></tr>
+<tr><td>主类</td><td>Unified VLA + World Model</td></tr>
+<tr><td>副类标签</td><td>autoregressive\_action\_world\_model, continuous\_action\_transformer, LIBERO, LeRobot</td></tr>
+</tbody></table></div>
+<p>一句话总结：RynnVLA-002 把 VLA action model 和 world model 放进同一框架，让未来图像预测和动作生成互相增强。</p>
+<p>出发点：单独的 VLA 可能不懂环境动力学，单独的 world model 又不一定能输出高质量动作。RynnVLA-002 试图把两者互相监督。</p>
+<p>核心方法：world model 用 action 和视觉输入预测未来图像状态，学习环境物理；VLA model 从图像观测生成动作，同时增强视觉理解并支持 world model 的图像生成。</p>
+<p>模型结构：相对 WorldVLA，加入 continuous Action Transformer、wrist camera input/generation 和 state input。整体更像 autoregressive action-world model。</p>
+<p>数据与评测：公开信息显示其在 LIBERO 上达到 97.4% success，不经预训练也表现强；真实 LeRobot 实验中，集成 world model 使整体成功率提升约 50%。</p>
+<p>与 VLA / WAM 关系：这是 WAM 方向的直接代表之一，和 VLAW、Motus、DreamZero 同属“VLA 与 world model 合流”路线。</p>
+<h3 id="p33-being-h0-7">P33. Being-H0.7</h3>
+<div class="table-wrap"><table>
+<tbody><tr><td>项目</td><td>内容</td></tr>
+<tr><td>-</td><td>-</td></tr>
+<tr><td>类型</td><td>arXiv + project</td></tr>
+<tr><td>链接</td><td><a href="<a href="https://arxiv.org/pdf/2605.00078">https://arxiv.org/pdf/2605.00078</a>" target="_blank" rel="noreferrer">https://arxiv.org/pdf/2605.00078">https://arxiv.org/pdf/2605.00078</a></a> / <a href="<a href="https://research.beingbeyond.com/being-h07">https://research.beingbeyond.com/being-h07</a>" target="_blank" rel="noreferrer">https://research.beingbeyond.com/being-h07">https://research.beingbeyond.com/being-h07</a></a></td></tr>
+<tr><td>团队</td><td>BeingBeyond / academic authors</td></tr>
+<tr><td>发布时间</td><td>2026-04/05</td></tr>
+<tr><td>主类</td><td>Latent World-Action Model</td></tr>
+<tr><td>副类标签</td><td>latent\_query, future\_aware\_reasoning, dual\_branch, egocentric\_video</td></tr>
+</tbody></table></div>
+<p>一句话总结：Being-H0.7 用 latent world-action reasoning 替代显式未来帧 rollout，在保持未来感知能力的同时降低部署成本。</p>
+<p>出发点：VLA 容易学 shortcut mapping，缺少 dynamics/contact/task progress 表征；像素级未来预测又昂贵且包含很多与动作无关的视觉细节。</p>
+<p>核心方法：在 perception 和 action 之间插入 learnable latent queries，作为紧凑 reasoning interface。训练时用 dual-branch：prior branch 从当前上下文推断 latent，posterior branch 用未来观测 embedding 替代 query，两者在 latent reasoning space 对齐。</p>
+<p>模型结构：deployable prior branch + training-only posterior branch + action policy。推理时丢弃 posterior，不生成未来画面。</p>
+<p>数据与评测：跨 6 个仿真 benchmark 和多样真实任务评测，主张达到 SOTA 或可比表现。</p>
+<p>与 VLA / WAM 关系：它和 Fast-WAM 观点接近：未来预测的价值可以压到 latent training signal，而不是推理时真的 rollout 视频。</p>
+<h3 id="p34-7-steerable-policies">P34. π₀.7 / Steerable Policies</h3>
+<div class="table-wrap"><table>
+<tbody><tr><td>项目</td><td>内容</td></tr>
+<tr><td>-</td><td>-</td></tr>
+<tr><td>类型</td><td>Physical Intelligence official blog</td></tr>
+<tr><td>链接</td><td><a href="<a href="https://www.pi.website/blog/pi07">https://www.pi.website/blog/pi07</a>" target="_blank" rel="noreferrer">https://www.pi.website/blog/pi07">https://www.pi.website/blog/pi07</a></a></td></tr>
+<tr><td>团队</td><td>Physical Intelligence</td></tr>
+<tr><td>发布时间</td><td>2026</td></tr>
+<tr><td>主类</td><td>Steerable Generalist Policy</td></tr>
+<tr><td>副类标签</td><td>steerability, post\_training, user\_control, pi\_series</td></tr>
+</tbody></table></div>
+<p>一句话总结：π₀.7 / Steerable Policies 是 PI 系列从“泛化执行”进一步走向“可引导、可控制、可校正”的信号。</p>
+<p>出发点：真实机器人不只要完成任务，还要根据人类偏好、约束、风格或在线反馈调整行为。</p>
+<p>核心方法：目前主要依据官方 blog，技术上应关注是否引入 reward/preference、在线纠错、用户 steering signal 或 policy editing。</p>
+<p>模型结构：大概率延续 π 系列 VLA + flow action expert，但新增 steerability/post-training 接口。</p>
+<p>数据与评测：需等待论文或更完整技术说明。当前不能把它和 arXiv 论文同等比较。</p>
+<p>与 VLA / WAM 关系：这是 VLA alignment / controllability 线，和 world model 线共同解决部署可靠性。</p>
+<h3 id="p35-motus">P35. Motus</h3>
+<div class="table-wrap"><table>
+<tbody><tr><td>项目</td><td>内容</td></tr>
+<tr><td>-</td><td>-</td></tr>
+<tr><td>类型</td><td>arXiv + project + HuggingFace</td></tr>
+<tr><td>链接</td><td><a href="<a href="https://arxiv.org/pdf/2512.13030">https://arxiv.org/pdf/2512.13030</a>" target="_blank" rel="noreferrer">https://arxiv.org/pdf/2512.13030">https://arxiv.org/pdf/2512.13030</a></a> / <a href="<a href="https://motus-robotics.github.io/motus">https://motus-robotics.github.io/motus</a>" target="_blank" rel="noreferrer">https://motus-robotics.github.io/motus">https://motus-robotics.github.io/motus</a></a></td></tr>
+<tr><td>团队</td><td>Tsinghua / robotics line</td></tr>
+<tr><td>发布时间</td><td>2025-12</td></tr>
+<tr><td>主类</td><td>Unified Latent Action World Model</td></tr>
+<tr><td>副类标签</td><td>MoT, UniDiffuser\_scheduler, optical\_flow, latent\_action, inverse\_dynamics</td></tr>
+</tbody></table></div>
+<p>一句话总结：Motus 是统一 latent action world model，把理解、视频生成、动作、逆动力学和 joint video-action prediction 放到一个 MoT/UniDiffuser 风格框架中。</p>
+<p>出发点：理解、world modeling 和 control 分离会损失共享运动信息，也难以利用异构大规模数据。</p>
+<p>核心方法：Mixture-of-Transformer 集成 understanding、video generation、action 三个专家；UniDiffuser-style scheduler 允许在 world model、VLA、inverse dynamics、video generation、video-action joint prediction 等模式间切换。</p>
+<p>模型结构：Tri-model joint attention + optical-flow-derived latent actions + three-phase training pipeline + six-layer data pyramid。</p>
+<p>数据与评测：报告在仿真中相对 X-VLA 提升约 15%、相对 π₀.5 提升约 45%，真实场景提升约 11-48%。</p>
+<p>与 VLA / WAM 关系：Motus 是 WAM / unified multimodal policy 的重要形态：用 latent action 把视频和控制真正耦合。</p>
+<h3 id="p36-lingbot-va-causal-world-modeling-for-robot-control">P36. LingBot-VA / Causal World Modeling for Robot Control</h3>
+<div class="table-wrap"><table>
+<tbody><tr><td>项目</td><td>内容</td></tr>
+<tr><td>-</td><td>-</td></tr>
+<tr><td>类型</td><td>arXiv + project</td></tr>
+<tr><td>链接</td><td><a href="<a href="https://arxiv.org/pdf/2601.21998">https://arxiv.org/pdf/2601.21998</a>" target="_blank" rel="noreferrer">https://arxiv.org/pdf/2601.21998">https://arxiv.org/pdf/2601.21998</a></a> / <a href="<a href="https://technology.robbyant.com/lingbot-va">https://technology.robbyant.com/lingbot-va</a>" target="_blank" rel="noreferrer">https://technology.robbyant.com/lingbot-va">https://technology.robbyant.com/lingbot-va</a></a></td></tr>
+<tr><td>团队</td><td>Robbyant / Ant line</td></tr>
+<tr><td>发布时间</td><td>2026-01</td></tr>
+<tr><td>主类</td><td>Video World Model + Robot Control</td></tr>
+<tr><td>副类标签</td><td>causal\_world\_model, autoregressive\_diffusion, shared\_latent\_space, closed\_loop\_rollout</td></tr>
+</tbody></table></div>
+<p>一句话总结：LingBot-VA 用视频 world modeling 与 policy execution 同时训练，强调 actions 和 visual dynamics 的因果关系。</p>
+<p>出发点：vision-language pretraining 是机器人学习一条路线，video world modeling 可能是另一条独立基础，因为它能想象动作导致的近未来变化。</p>
+<p>核心方法：autoregressive diffusion framework 同时学习 frame prediction 和 policy execution；共享 latent space 统一 vision/action tokens；closed-loop rollout 用 ground-truth observations 持续获得环境反馈；异步推理并行动作预测和电机执行。</p>
+<p>模型结构：MoT 架构 + shared latent space + closed-loop rollout pipeline。</p>
+<p>数据与评测：仿真和真实场景，强调长时程 manipulation、post-training 数据效率和 novel configuration 泛化。</p>
+<p>与 VLA / WAM 关系：它是 WAM/VA 路线，不以语言为唯一核心，而是把 visual dynamics 作为控制基础。</p>
+<h3 id="p37-thinkjepa">P37. ThinkJEPA</h3>
+<div class="table-wrap"><table>
+<tbody><tr><td>项目</td><td>内容</td></tr>
+<tr><td>-</td><td>-</td></tr>
+<tr><td>类型</td><td>arXiv + project + GitHub</td></tr>
+<tr><td>链接</td><td><a href="<a href="https://arxiv.org/pdf/2603.22281">https://arxiv.org/pdf/2603.22281</a>" target="_blank" rel="noreferrer">https://arxiv.org/pdf/2603.22281">https://arxiv.org/pdf/2603.22281</a></a></td></tr>
+<tr><td>发布时间</td><td>2026-03</td></tr>
+<tr><td>主类</td><td>Latent World Model / Representation</td></tr>
+<tr><td>副类标签</td><td>JEPA, VLM\_guidance, dual\_temporal\_pathway, hand\_manipulation</td></tr>
+</tbody></table></div>
+<p>一句话总结：ThinkJEPA 用 VLM reasoning 指导 JEPA latent world model，使短窗口 dense dynamics 预测获得长时程语义。</p>
+<p>出发点：JEPA 类 latent world model 擅长局部动态预测，但短观察窗口会让模型偏向低层外推，缺少长时程语义。</p>
+<p>核心方法：dual-temporal pathway：dense JEPA branch 学细粒度运动和交互，稀疏采样的 VLM thinker branch 提供长时程语义指导；hierarchical pyramid representation extraction 将 VLM 多层表征转为 latent prediction guidance。</p>
+<p>模型结构：JEPA predictor + VLM thinker + hierarchical guidance module。</p>
+<p>数据与评测：手部操控轨迹预测，优于 VLM-only 和 JEPA-only baseline，并改善长时程 rollout。</p>
+<p>与 VLA / WAM 关系：它更偏 world representation，不直接输出动作，但可作为 WAM/VLA 的 dynamics-aware 表征模块。</p>
+<h3 id="p38-leworldmodel">P38. LeWorldModel</h3>
+<div class="table-wrap"><table>
+<tbody><tr><td>项目</td><td>内容</td></tr>
+<tr><td>-</td><td>-</td></tr>
+<tr><td>类型</td><td>arXiv + project</td></tr>
+<tr><td>链接</td><td><a href="<a href="https://arxiv.org/pdf/2603.19312">https://arxiv.org/pdf/2603.19312</a>" target="_blank" rel="noreferrer">https://arxiv.org/pdf/2603.19312">https://arxiv.org/pdf/2603.19312</a></a> / <a href="<a href="https://le-wm.github.io/">https://le-wm.github.io/</a>" target="_blank" rel="noreferrer">https://le-wm.github.io/">https://le-wm.github.io/</a></a></td></tr>
+<tr><td>团队</td><td>Mila / NYU / Brown 等</td></tr>
+<tr><td>发布时间</td><td>2026-03</td></tr>
+<tr><td>主类</td><td>Latent World Model / JEPA</td></tr>
+<tr><td>副类标签</td><td>end\_to\_end\_JEPA, SIGReg, pixel\_based, fast\_planning</td></tr>
+</tbody></table></div>
+<p>一句话总结：LeWorldModel 是稳定的 end-to-end pixel JEPA world model，用极简 two-loss objective 解决 representation collapse。</p>
+<p>出发点：现有 JEPA/world model 训练常依赖复杂多项 loss、EMA、冻结 encoder 或辅助监督，工程脆弱。</p>
+<p>核心方法：只用 next-embedding prediction loss 和 Gaussian latent regularizer，后者通过随机投影和 normality test 风格约束防止 collapse。</p>
+<p>模型结构：encoder + latent predictor + SIGReg regularizer。约 15M 参数，可在单卡几小时训练。</p>
+<p>数据与评测：2D/3D control tasks；计划速度相对 foundation-model-based world model 最高 48x，并通过 probing / surprise evaluation 验证 latent 含物理结构。</p>
+<p>与 VLA / WAM 关系：它说明 world model 未必必须巨大；紧凑 latent dynamics 仍可能对 control 有价值。</p>
+<h3 id="p39-neo-unify">P39. NEO-Unify</h3>
+<div class="table-wrap"><table>
+<tbody><tr><td>项目</td><td>内容</td></tr>
+<tr><td>-</td><td>-</td></tr>
+<tr><td>类型</td><td>HuggingFace blog + GitHub</td></tr>
+<tr><td>链接</td><td><a href="<a href="https://huggingface.co/blog/sensenova/neo-unify">https://huggingface.co/blog/sensenova/neo-unify</a>" target="_blank" rel="noreferrer">https://huggingface.co/blog/sensenova/neo-unify">https://huggingface.co/blog/sensenova/neo-unify</a></a> / <a href="<a href="https://github.com/OpenSenseNova/SenseNova-U1">https://github.com/OpenSenseNova/SenseNova-U1</a>" target="_blank" rel="noreferrer">https://github.com/OpenSenseNova/SenseNova-U1">https://github.com/OpenSenseNova/SenseNova-U1</a></a></td></tr>
+<tr><td>团队</td><td>SenseNova</td></tr>
+<tr><td>发布时间</td><td>2026-03</td></tr>
+<tr><td>主类</td><td>Native Multimodal Model</td></tr>
+<tr><td>副类标签</td><td>unified\_multimodal, general\_foundation\_model, boundary\_item</td></tr>
+</tbody></table></div>
+<p>一句话总结：NEO-Unify 更偏原生多模态统一模型，不是典型 robotics VLA，但其 unified token/backbone 思想可能影响未来 embodied control。</p>
+<p>出发点：多模态模型希望统一理解与生成，但 action/control 是否成为一等模态仍不明确。</p>
+<p>核心方法：依据公开 blog，重点在统一多模态能力和 SenseNova-U1 生态。</p>
+<p>模型结构：需要看是否包含 image/video/text/audio generation-understanding 统一架构。</p>
+<p>数据与评测：当前缺少机器人 action benchmark。</p>
+<p>与 VLA / WAM 关系：边界项。只有当它明确接入 action tokens、robot observations 或 control benchmark 时，才应升为核心项。</p>
+<h3 id="p40-cosmos-policy">P40. Cosmos Policy</h3>
+<div class="table-wrap"><table>
+<tbody><tr><td>项目</td><td>内容</td></tr>
+<tr><td>-</td><td>-</td></tr>
+<tr><td>类型</td><td>arXiv + NVIDIA project</td></tr>
+<tr><td>链接</td><td><a href="<a href="https://arxiv.org/pdf/2601.16163">https://arxiv.org/pdf/2601.16163</a>" target="_blank" rel="noreferrer">https://arxiv.org/pdf/2601.16163">https://arxiv.org/pdf/2601.16163</a></a> / <a href="<a href="https://research.nvidia.com/labs/dir/cosmos-policy/">https://research.nvidia.com/labs/dir/cosmos-policy/</a>" target="_blank" rel="noreferrer">https://research.nvidia.com/labs/dir/cosmos-policy/">https://research.nvidia.com/labs/dir/cosmos-policy/</a></a></td></tr>
+<tr><td>团队</td><td>NVIDIA / Stanford / Columbia line</td></tr>
+<tr><td>发布时间</td><td>2026-01</td></tr>
+<tr><td>主类</td><td>Video Model Policy / Planning</td></tr>
+<tr><td>副类标签</td><td>Cosmos\_Predict2, latent\_diffusion\_action, future\_image, value\_prediction, planning</td></tr>
+</tbody></table></div>
+<p>一句话总结：Cosmos Policy 将预训练视频模型单阶段后训练成 robot policy，同时生成 action、future image 和 value 以支持规划。</p>
+<p>出发点：视频生成模型有强物理/时序先验，但机器人工作常需多阶段后训练或新架构才能接入 action。</p>
+<p>核心方法：不改架构地后训练 Cosmos-Predict2，让 robot actions 编码为 latent frames，在视频模型 latent diffusion 过程中直接生成动作。未来状态图像和 expected cumulative rewards 也被编码为 latent frames，用于 test-time planning。</p>
+<p>模型结构：pretrained video model + single-stage robot post-training + latent action/future/value heads encoded in video latent space。</p>
+<p>数据与评测：LIBERO、RoboCasa 和真实 ALOHA 双臂任务；公开摘要报告 LIBERO 98.5%、RoboCasa 67.1% 平均成功率，并优于强 diffusion policy 和 VLA baseline。</p>
+<p>与 VLA / WAM 关系：这是 video foundation model policy 化的代表，和 DreamZero/Fast-WAM 一起定义 2026 WAM 讨论核心。</p>
+<h3 id="p41-dreamzero-world-action-models-are-zero-shot-policies">P41. DreamZero / World Action Models are Zero-shot Policies</h3>
+<div class="table-wrap"><table>
+<tbody><tr><td>项目</td><td>内容</td></tr>
+<tr><td>-</td><td>-</td></tr>
+<tr><td>类型</td><td>arXiv + project</td></tr>
+<tr><td>链接</td><td><a href="<a href="https://arxiv.org/pdf/2602.15922">https://arxiv.org/pdf/2602.15922</a>" target="_blank" rel="noreferrer">https://arxiv.org/pdf/2602.15922">https://arxiv.org/pdf/2602.15922</a></a> / <a href="<a href="https://dreamzero0.github.io/">https://dreamzero0.github.io/</a>" target="_blank" rel="noreferrer">https://dreamzero0.github.io/">https://dreamzero0.github.io/</a></a></td></tr>
+<tr><td>团队</td><td>NVIDIA Deep Imagination Research</td></tr>
+<tr><td>发布时间</td><td>2026-02</td></tr>
+<tr><td>主类</td><td>World Action Model</td></tr>
+<tr><td>副类标签</td><td>WAM, video\_diffusion, zero\_shot\_policy, action\_conditioned\_future</td></tr>
+</tbody></table></div>
+<p>一句话总结：DreamZero 提出 World Action Model 可以直接作为零样本策略，挑战传统 VLA 先理解再动作的范式。</p>
+<p>出发点：VLA 映射 observation/instruction 到 action，但不一定显式理解动作造成的世界变化。WAM 认为 action-conditioned dynamics 本身可以提供更强泛化。</p>
+<p>核心方法：利用 video diffusion/world modeling 学习 physical motion 和 action-conditioned future，并从未来预测中导出可执行策略。</p>
+<p>模型结构：video diffusion world/action model + policy extraction / zero-shot action selection。</p>
+<p>数据与评测：重点看 novel environment / embodiment 下相对 VLA 的泛化优势。</p>
+<p>与 VLA / WAM 关系：这是 WAM 命题最直接的代表：world model 不是辅助，而是 policy 本身。</p>
+<h3 id="p42-fast-wam">P42. Fast-WAM</h3>
+<div class="table-wrap"><table>
+<tbody><tr><td>项目</td><td>内容</td></tr>
+<tr><td>-</td><td>-</td></tr>
+<tr><td>类型</td><td>arXiv + project</td></tr>
+<tr><td>链接</td><td><a href="<a href="https://arxiv.org/pdf/2603.16666">https://arxiv.org/pdf/2603.16666</a>" target="_blank" rel="noreferrer">https://arxiv.org/pdf/2603.16666">https://arxiv.org/pdf/2603.16666</a></a> / <a href="<a href="https://yuantianyuan01.github.io/FastWAM/">https://yuantianyuan01.github.io/FastWAM/</a>" target="_blank" rel="noreferrer">https://yuantianyuan01.github.io/FastWAM/">https://yuantianyuan01.github.io/FastWAM/</a></a></td></tr>
+<tr><td>发布时间</td><td>2026-03</td></tr>
+<tr><td>主类</td><td>World Action Model / Efficiency</td></tr>
+<tr><td>副类标签</td><td>video\_cotraining, no\_test\_time\_rollout, real\_time\_policy, LIBERO, RoboTwin</td></tr>
+</tbody></table></div>
+<p>一句话总结：Fast-WAM 证明 WAM 的主要收益可能来自训练时 video modeling，而不是推理时显式生成未来视频。</p>
+<p>出发点：imagine-then-execute WAM 推理时需要迭代视频 denoising，时延高，不适合实时控制。</p>
+<p>核心方法：保留训练时 video co-training，但测试时跳过 future prediction，直接执行 action。通过多个 variant 分离 video modeling during training 和 test-time future generation 的贡献。</p>
+<p>模型结构：训练阶段 action+video 多任务；推理阶段 direct policy。</p>
+<p>数据与评测：LIBERO、RoboTwin 和真实任务；报告 190ms latency，比 imagine-then-execute WAM 快 4x+。</p>
+<p>与 VLA / WAM 关系：这是 WAM 部署路线的关键论文，提示“世界预测作为训练表征”可能比“推理时想象未来”更实用。</p>
+<h3 id="p43-genesis-engine">P43. Genesis Engine</h3>
+<div class="table-wrap"><table>
+<tbody><tr><td>项目</td><td>内容</td></tr>
+<tr><td>-</td><td>-</td></tr>
+<tr><td>类型</td><td>project + GitHub</td></tr>
+<tr><td>链接</td><td><a href="<a href="https://genesis-embodied-ai.github.io/">https://genesis-embodied-ai.github.io/</a>" target="_blank" rel="noreferrer">https://genesis-embodied-ai.github.io/">https://genesis-embodied-ai.github.io/</a></a> / <a href="<a href="https://github.com/Genesis-Embodied-AI/genesis-world">https://github.com/Genesis-Embodied-AI/genesis-world</a>" target="_blank" rel="noreferrer">https://github.com/Genesis-Embodied-AI/genesis-world">https://github.com/Genesis-Embodied-AI/genesis-world</a></a></td></tr>
+<tr><td>发布时间</td><td>2026</td></tr>
+<tr><td>主类</td><td>Simulator / Generative Environment</td></tr>
+<tr><td>副类标签</td><td>physics\_engine, simulation, robot\_learning\_data\_engine</td></tr>
+</tbody></table></div>
+<p>一句话总结：Genesis Engine 是面向 embodied AI 的仿真/世界生成基础设施，适合放在 world model data engine 与 sim2real 之间看。</p>
+<p>出发点：机器人训练需要可扩展、可控、物理一致的环境；传统仿真精确但资产和场景扩展慢，生成世界模型灵活但物理可靠性不足。</p>
+<p>核心方法：公开项目与代码指向物理仿真和世界生成基础设施，重点在可编程环境、物理交互和机器人学习接口。</p>
+<p>模型结构：更像 engine / platform，而非单一 VLA model。</p>
+<p>数据与评测：应看是否支持大规模并行、可微物理、传感器模拟、数据导出和 sim2real benchmark。</p>
+<p>与 VLA / WAM 关系：它可能成为 VLA/WAM 的训练环境和数据工厂，而不是直接 policy。</p>
+<h3 id="p44-gen-1-beyond-world-models-vlas">P44. GEN-1 / Beyond World Models &amp; VLAs</h3>
+<div class="table-wrap"><table>
+<tbody><tr><td>项目</td><td>内容</td></tr>
+<tr><td>-</td><td>-</td></tr>
+<tr><td>类型</td><td>Generalist AI official blog / methodology blog</td></tr>
+<tr><td>链接</td><td><a href="<a href="https://generalistai.com/blog/apr-02-2026-GEN-1">https://generalistai.com/blog/apr-02-2026-GEN-1</a>" target="_blank" rel="noreferrer">https://generalistai.com/blog/apr-02-2026-GEN-1">https://generalistai.com/blog/apr-02-2026-GEN-1</a></a> / <a href="<a href="https://generalistai.com/blog/beyond-world-models">https://generalistai.com/blog/beyond-world-models</a>" target="_blank" rel="noreferrer">https://generalistai.com/blog/beyond-world-models">https://generalistai.com/blog/beyond-world-models</a></a></td></tr>
+<tr><td>团队</td><td>Generalist AI</td></tr>
+<tr><td>发布时间</td><td>2026-04</td></tr>
+<tr><td>主类</td><td>Robotics Foundation Model / Methodology</td></tr>
+<tr><td>副类标签</td><td>from_scratch_training, physical_interaction_data, goal_driven_research, official_blog</td></tr>
+</tbody></table></div>
+<p>一句话总结：GEN-1 是 Generalist AI 的 physical-interaction foundation model 路线，Beyond World Models &amp; VLAs blog 则解释了为什么他们不愿把模型简单归类为 VLA 或 world model。</p>
+<p>出发点：Generalist 的核心观点是“目标比方法标签重要”。他们认为如果有足够数据和算力，robotics model 不必依赖把现有 VLM fine-tune 成 VLA，也不必把 world model 作为唯一目标，而应围绕可测量物理能力里程碑优化。</p>
+<p>核心方法：blog 明确说 GEN-1 约 99% 参数从 scratch 训练，不是 fine-tuned VLM 加 action head，也不是“只是 world model”，而是面向 physical interaction 的 native foundation model。它强调过去两年一直在组合 VLA、world model 和其他训练思想，但最终按能力目标组织系统，而不是按论文标签组织系统。</p>
+<p>模型结构：公开 blog 没有给出足够 architecture 细节；可确认的信息是从 scratch training、physical interaction data 和 native model design。它与 OpenVLA/π₀/Cosmos3 这类公开论文相比，缺少模块级结构、loss、数据配方和 ablation。</p>
+<p>数据与评测：Beyond World Models &amp; VLAs 提到 Generalist 已有超过 50 万小时 physical interaction data，并提出一个具体里程碑：约 1 小时 task-specific robot data 下达到 99%+ success rate 会具备商业可行性。这个目标很有参考价值，但当前 blog 没有给出完整 benchmark 表。</p>
+<p>与 VLA / WAM 关系：它是“反标签化”的重要产业观点：VLA、world model、WAM 都只是工具，真正目标是 physical AGI 的能力曲线。作为方法论和产业信号很值得读，但在没有论文/技术报告前，不应和 OpenVLA、π₀、Cosmos3、WALL-WM 这类材料同等证据权重。</p>
+<h3 id="p45-univtac">P45. UniVTAC</h3>
+<div class="table-wrap"><table>
+<tbody><tr><td>项目</td><td>内容</td></tr>
+<tr><td>-</td><td>-</td></tr>
+<tr><td>类型</td><td>arXiv + project + GitHub</td></tr>
+<tr><td>链接</td><td><a href="<a href="https://arxiv.org/pdf/2602.10093">https://arxiv.org/pdf/2602.10093</a>" target="_blank" rel="noreferrer">https://arxiv.org/pdf/2602.10093">https://arxiv.org/pdf/2602.10093</a></a> / <a href="<a href="https://univtac.github.io/">https://univtac.github.io/</a>" target="_blank" rel="noreferrer">https://univtac.github.io/">https://univtac.github.io/</a></a> / <a href="<a href="https://github.com/univtac/UniVTAC">https://github.com/univtac/UniVTAC</a>" target="_blank" rel="noreferrer">https://github.com/univtac/UniVTAC">https://github.com/univtac/UniVTAC</a></a></td></tr>
+<tr><td>发布时间</td><td>2026-02</td></tr>
+<tr><td>主类</td><td>Tactile / Benchmark / Simulator</td></tr>
+<tr><td>副类标签</td><td>visuo\_tactile, contact\_rich, tactile\_encoder, simulation\_data</td></tr>
+</tbody></table></div>
+<p>一句话总结：UniVTAC 是统一 visuo-tactile 数据生成、学习和 benchmark 平台，解决接触丰富任务中触觉数据稀缺问题。</p>
+<p>出发点：很多插入、装配、灵巧操作只靠视觉不稳定，但真实触觉数据采集昂贵且缺少统一评测平台。</p>
+<p>核心方法：仿真生成三类常用 visuo-tactile sensor 的可控接触交互数据，训练 UniVTAC Encoder，并构建 8 个代表性触觉操控任务 benchmark。</p>
+<p>模型结构：simulation platform + visuo-tactile encoder + benchmark tasks。</p>
+<p>数据与评测：公开摘要报告 UniVTAC Encoder 在 benchmark 上平均成功率提升 17.1%，真实机器人实验提升 25%。</p>
+<p>与 VLA / WAM 关系：触觉是 VLA 走向 contact-rich manipulation 的关键缺口，UniVTAC 可作为 tactile grounding 数据引擎。</p>
+<h3 id="p46-tactile-vla-taclva">P46. Tactile-VLA / TacLVA</h3>
+<div class="table-wrap"><table>
+<tbody><tr><td>项目</td><td>内容</td></tr>
+<tr><td>-</td><td>-</td></tr>
+<tr><td>类型</td><td>arXiv + project</td></tr>
+<tr><td>链接</td><td><a href="<a href="https://arxiv.org/pdf/2507.09160">https://arxiv.org/pdf/2507.09160</a>" target="_blank" rel="noreferrer">https://arxiv.org/pdf/2507.09160">https://arxiv.org/pdf/2507.09160</a></a> / <a href="<a href="https://jialeihuang.github.io/tactileVLA.github.io/">https://jialeihuang.github.io/tactileVLA.github.io/</a>" target="_blank" rel="noreferrer">https://jialeihuang.github.io/tactileVLA.github.io/">https://jialeihuang.github.io/tactileVLA.github.io/</a></a></td></tr>
+<tr><td>发布时间</td><td>2025-07</td></tr>
+<tr><td>主类</td><td>Tactile VLA</td></tr>
+<tr><td>副类标签</td><td>tactile\_token, contact\_reasoning, manipulation</td></tr>
+</tbody></table></div>
+<p>一句话总结：Tactile-VLA 把触觉作为 VLA 的一等输入模态，目标是提升接触丰富操作的稳定性。</p>
+<p>出发点：视觉能看到外观和几何，但无法稳定判断接触力、滑动、插入误差和材质交互。</p>
+<p>核心方法：将 tactile observations 与视觉、语言、动作统一编码，训练模型在 manipulation task 中利用接触信息决策。</p>
+<p>模型结构：视觉 encoder + tactile encoder + language/action policy。关键问题是触觉时序如何 token 化，以及 tactile feature 是否参与 action head。</p>
+<p>数据与评测：应关注真实触觉传感器、仿真触觉数据、跨物体/跨材质泛化。</p>
+<p>与 VLA / WAM 关系：它扩展了 VLA 的模态边界；如果未来 WAM 要预测 contact dynamics，触觉几乎不可或缺。</p>
+<h3 id="p47-roboclaw">P47. RoboClaw</h3>
+<div class="table-wrap"><table>
+<tbody><tr><td>项目</td><td>内容</td></tr>
+<tr><td>-</td><td>-</td></tr>
+<tr><td>类型</td><td>arXiv</td></tr>
+<tr><td>链接</td><td><a href="<a href="https://arxiv.org/pdf/2603.11558">https://arxiv.org/pdf/2603.11558</a>" target="_blank" rel="noreferrer">https://arxiv.org/pdf/2603.11558">https://arxiv.org/pdf/2603.11558</a></a></td></tr>
+<tr><td>发布时间</td><td>2026-03</td></tr>
+<tr><td>主类</td><td>Robotic Manipulation</td></tr>
+<tr><td>副类标签</td><td>manipulation, benchmark\_or\_policy, needs\_deep\_read</td></tr>
+</tbody></table></div>
+<p>一句话总结：RoboClaw 当前确认有公开 arXiv，但需要进一步深读确认它是 policy、hardware、benchmark 还是 manipulation framework。</p>
+<p>出发点：从命名看可能与抓取/夹爪/操作稳定性相关。</p>
+<p>核心方法：需读原文确认。</p>
+<p>模型结构：未在本轮核验到足够一手细节。</p>
+<p>数据与评测：应重点看是否有真实机器人实验、动作空间、任务集合和失败分析。</p>
+<p>与 VLA / WAM 关系：暂作为 manipulation 相关候选，不进入核心 VLA/WAM 主线判断。</p>
+<h3 id="p48-cot-vla">P48. CoT-VLA</h3>
+<div class="table-wrap"><table>
+<tbody><tr><td>项目</td><td>内容</td></tr>
+<tr><td>-</td><td>-</td></tr>
+<tr><td>类型</td><td>arXiv + project</td></tr>
+<tr><td>链接</td><td><a href="<a href="https://arxiv.org/pdf/2503.22020">https://arxiv.org/pdf/2503.22020</a>" target="_blank" rel="noreferrer">https://arxiv.org/pdf/2503.22020">https://arxiv.org/pdf/2503.22020</a></a> / <a href="<a href="https://cot-vla.github.io/">https://cot-vla.github.io/</a>" target="_blank" rel="noreferrer">https://cot-vla.github.io/">https://cot-vla.github.io/</a></a></td></tr>
+<tr><td>发布时间</td><td>2025-03</td></tr>
+<tr><td>主类</td><td>Reasoning VLA</td></tr>
+<tr><td>副类标签</td><td>chain\_of\_thought, task\_decomposition, language\_reasoning</td></tr>
+</tbody></table></div>
+<p>一句话总结：CoT-VLA 尝试把 chain-of-thought 式中间推理引入 VLA，以增强复杂任务规划和语言 grounding。</p>
+<p>出发点：端到端 VLA 在多步骤任务中容易缺少显式任务分解，模型可能直接把图像映射到动作而忽略高层计划。</p>
+<p>核心方法：引入文本或结构化 reasoning trace，使模型在动作前先生成/利用中间任务推理。</p>
+<p>模型结构：VLM/VLA backbone + CoT reasoning head/context + action head。</p>
+<p>数据与评测：关键要看 CoT 是人工标注、自动生成还是自监督，以及是否提升真实 closed-loop success。</p>
+<p>与 VLA / WAM 关系：它属于 reasoning/action coupling 线。风险是 CoT 好看但不一定改善低层动作 credit assignment。</p>
+<h3 id="p49-thinkact">P49. ThinkAct</h3>
+<div class="table-wrap"><table>
+<tbody><tr><td>项目</td><td>内容</td></tr>
+<tr><td>-</td><td>-</td></tr>
+<tr><td>类型</td><td>arXiv + project</td></tr>
+<tr><td>链接</td><td><a href="<a href="https://arxiv.org/pdf/2507.16815">https://arxiv.org/pdf/2507.16815</a>" target="_blank" rel="noreferrer">https://arxiv.org/pdf/2507.16815">https://arxiv.org/pdf/2507.16815</a></a> / <a href="<a href="https://jasper0314-huang.github.io/thinkact-vla/">https://jasper0314-huang.github.io/thinkact-vla/</a>" target="_blank" rel="noreferrer">https://jasper0314-huang.github.io/thinkact-vla/">https://jasper0314-huang.github.io/thinkact-vla/</a></a></td></tr>
+<tr><td>发布时间</td><td>2025-07</td></tr>
+<tr><td>主类</td><td>Reasoning VLA</td></tr>
+<tr><td>副类标签</td><td>think\_then\_act, long\_horizon, planning\_control</td></tr>
+</tbody></table></div>
+<p>一句话总结：ThinkAct 走“先思考再行动”的 VLA 路线，将高层 reasoning 和低层 action 分解以应对复杂长时程任务。</p>
+<p>出发点：VLA 如果把 reasoning 和 action 完全混在同一 token 序列里，可能在长时程任务中难以稳定对齐。</p>
+<p>核心方法：显式分离或交替建模 thinking phase 与 acting phase，让模型在执行前建立任务语义和阶段计划。</p>
+<p>模型结构：reasoning module / thought token + action generation module。</p>
+<p>数据与评测：要看推理时延、错误 thought 对 action 的影响、真实任务成功率。</p>
+<p>与 VLA / WAM 关系：它和 BagelVLA 的语言规划思路相关，但不一定包含视觉未来预测。</p>
+<h3 id="p50-acot-vla">P50. ACoT-VLA</h3>
+<div class="table-wrap"><table>
+<tbody><tr><td>项目</td><td>内容</td></tr>
+<tr><td>-</td><td>-</td></tr>
+<tr><td>类型</td><td>arXiv + GitHub</td></tr>
+<tr><td>链接</td><td><a href="<a href="https://arxiv.org/pdf/2601.11404">https://arxiv.org/pdf/2601.11404</a>" target="_blank" rel="noreferrer">https://arxiv.org/pdf/2601.11404">https://arxiv.org/pdf/2601.11404</a></a> / <a href="<a href="https://github.com/AgibotTech/ACoT-VLA">https://github.com/AgibotTech/ACoT-VLA</a>" target="_blank" rel="noreferrer">https://github.com/AgibotTech/ACoT-VLA">https://github.com/AgibotTech/ACoT-VLA</a></a></td></tr>
+<tr><td>团队</td><td>AgibotTech</td></tr>
+<tr><td>发布时间</td><td>2026-01</td></tr>
+<tr><td>主类</td><td>Reasoning VLA</td></tr>
+<tr><td>副类标签</td><td>action\_chain\_of\_thought, agibot, reasoning\_control</td></tr>
+</tbody></table></div>
+<p>一句话总结：ACoT-VLA 把 CoT 进一步动作化，关注 action chain-of-thought 如何辅助 VLA 控制。</p>
+<p>出发点：文本 CoT 可能和动作执行脱节，action-oriented CoT 更可能直接表达阶段、子动作和控制意图。</p>
+<p>核心方法：将 action reasoning trace 与 policy learning 结合，可能使用 AgiBot 数据生态和开源实现。</p>
+<p>模型结构：VLA backbone + action CoT representation + action decoder。</p>
+<p>数据与评测：应重点看是否在长时程、多阶段任务上优于普通 VLA 和 CoT-VLA。</p>
+<p>与 VLA / WAM 关系：它属于 reasoning-action interface 研究，能与 world model 的未来状态预测互补。</p>
+<h3 id="p51-univla">P51. UniVLA</h3>
+<div class="table-wrap"><table>
+<tbody><tr><td>项目</td><td>内容</td></tr>
+<tr><td>-</td><td>-</td></tr>
+<tr><td>类型</td><td>arXiv + project</td></tr>
+<tr><td>链接</td><td><a href="<a href="https://arxiv.org/pdf/2506.19850">https://arxiv.org/pdf/2506.19850</a>" target="_blank" rel="noreferrer">https://arxiv.org/pdf/2506.19850">https://arxiv.org/pdf/2506.19850</a></a> / <a href="<a href="https://robertwyq.github.io/univla.github.io/">https://robertwyq.github.io/univla.github.io/</a>" target="_blank" rel="noreferrer">https://robertwyq.github.io/univla.github.io/">https://robertwyq.github.io/univla.github.io/</a></a></td></tr>
+<tr><td>发布时间</td><td>2025-06</td></tr>
+<tr><td>主类</td><td>Unified VLA / Latent Action</td></tr>
+<tr><td>副类标签</td><td>unified\_policy, latent\_action, cross\_embodiment, world\_model\_related</td></tr>
+</tbody></table></div>
+<p>一句话总结：UniVLA 是统一 VLA / latent action 线的重要工作，建议和 UniAct、X-VLA、AgiBot GO-1 一起读。</p>
+<p>出发点：VLA 的跨任务和跨 embodiment 泛化受制于动作表征、数据异构和训练目标不统一。</p>
+<p>核心方法：从命名和相关生态看，重点在统一视觉语言动作建模与 latent/universal action 表征。</p>
+<p>模型结构：VLA backbone + unified action representation / latent action module。</p>
+<p>数据与评测：需要深读确认其训练数据、benchmark 和是否开源。</p>
+<p>与 VLA / WAM 关系：它位于 VLA 和 action representation 主线，是理解 2025 年 cross-embodiment VLA 的补充材料。</p>
+<h3 id="p52-cosmos3-omnimodal-world-models-for-physical-ai">P52. Cosmos3: Omnimodal World Models for Physical AI</h3>
+<div class="table-wrap"><table>
+<tbody><tr><td>项目</td><td>内容</td></tr>
+<tr><td>-</td><td>-</td></tr>
+<tr><td>类型</td><td>NVIDIA technical report + code/model/dataset/benchmark release</td></tr>
+<tr><td>链接</td><td><a href="<a href="https://research.nvidia.com/labs/cosmos-lab/cosmos3/technical-report.pdf">https://research.nvidia.com/labs/cosmos-lab/cosmos3/technical-report.pdf</a>" target="_blank" rel="noreferrer">https://research.nvidia.com/labs/cosmos-lab/cosmos3/technical-report.pdf">https://research.nvidia.com/labs/cosmos-lab/cosmos3/technical-report.pdf</a></a></td></tr>
+<tr><td>资料备注</td><td>PDF 已用于本地抽取分析；仓库内不收录 PDF，保留官方链接</td></tr>
+<tr><td>团队</td><td>NVIDIA</td></tr>
+<tr><td>发布时间</td><td>2026-06-01</td></tr>
+<tr><td>主类</td><td>Omnimodal World Model / Native Multimodal / WAM backbone</td></tr>
+<tr><td>副类标签</td><td>language_image_video_audio_action, MoT, flow_matching, OpenMDW, Cosmos_HUE, RoboArena</td></tr>
+</tbody></table></div>
+<p>一句话总结：Cosmos3 是 NVIDIA 把 VLM、视频生成器、world simulator 和 world-action model 收束到同一 omnimodal MoT backbone 的 Physical AI 技术报告。</p>
+<p>出发点：Physical AI 需要同时理解世界、生成世界、预测动作后果和输出可执行动作；把 VLM、video model、WAM、simulator 拆成多个模型会造成表示割裂、系统复杂和迁移成本。Cosmos3 的核心问题是：能不能用同一个 scalable backbone 处理 language、image、video、audio、action。</p>
+<p>核心方法：Cosmos3 将语言、视觉、音频、动作都编码到统一 token 空间，并用 Mixture-of-Transformers 处理。AR subsequence 负责 reasoning / next-token prediction，diffusion subsequence 负责非语言模态的 denoising generation；action 被视为核心模态，而不是额外附加 head。</p>
+<p>模型结构：模态特定 encoder + 统一 token arrangement + MoT dual-tower layer。Reasoner tower 处理 AR tokens，Generator tower 处理 diffusion tokens，两者共享 self-attention 交互。视觉理解使用 ViT 类 encoder，视觉生成使用 video VAE，action 使用专门 tokenization，非语言生成用 flow matching 预测 velocity。</p>
+<p>训练数据与训练方式：报告区分 reasoner training、generator training、text-to-image post-training、image-to-video post-training 和 robot policy post-training。开源资源包括 Cosmos3-Super、Cosmos3-Nano、Cosmos3-Nano-Policy-DROID，以及 SDG-PhyxSim、SDG-RobotSim、SDG-DriveSim、SDG-SynHuman、SDG-Warehouse 等合成数据。</p>
+<p>评测与 insight：技术报告称 post-trained Cosmos3 在 Artificial Analysis open-source T2I/I2V 上排名靠前，并在 RoboLab / RoboArena robot policy benchmark 上达到当时 open leaderboard 第一。Robot policy post-training 使用 DROID，模型 15Hz 输出 32-step action horizon，推理时跳过 video-latent decoding 降低开销。</p>
+<p>与 VLA / WAM 关系：Cosmos3 是 Cosmos Policy 的上位统一化：不是只把视频模型后训练为 policy，而是让 action 成为 omnimodal world model 的原生模态。它对 WAM 的长期影响在于提供统一 backbone，但短期风险是模型过大、训练复杂、action domain specialization 仍需后训练。</p>
+<p>核心框图速记：<code>language/image/video/audio/action → modality encoders → AR + diffusion token arrangement → MoT reasoner/generator → understanding/generation/world simulation/policy</code>。</p>
+<h3 id="p53-wall-wm-carving-world-action-modeling-at-the-event-joints">P53. WALL-WM: Carving World Action Modeling at the Event Joints</h3>
+<div class="table-wrap"><table>
+<tbody><tr><td>项目</td><td>内容</td></tr>
+<tr><td>-</td><td>-</td></tr>
+<tr><td>类型</td><td>technical report + GitHub</td></tr>
+<tr><td>链接</td><td><a href="<a href="https://x2robot.com/api/files/file/WALL-WM.pdf">https://x2robot.com/api/files/file/WALL-WM.pdf</a>" target="_blank" rel="noreferrer">https://x2robot.com/api/files/file/WALL-WM.pdf">https://x2robot.com/api/files/file/WALL-WM.pdf</a></a> / <a href="<a href="https://github.com/X-Square-Robot/wall-x">https://github.com/X-Square-Robot/wall-x</a>" target="_blank" rel="noreferrer">https://github.com/X-Square-Robot/wall-x">https://github.com/X-Square-Robot/wall-x</a></a></td></tr>
+<tr><td>资料备注</td><td>PDF 已用于本地抽取分析；仓库内不收录 PDF，保留官方链接</td></tr>
+<tr><td>团队</td><td>X Square Robot Team / 自变量机器人</td></tr>
+<tr><td>发布时间</td><td>2026-06-01</td></tr>
+<tr><td>主类</td><td>Event-grounded World Action Model</td></tr>
+<tr><td>副类标签</td><td>semantic_event, variable_length_execution, staircase_decoding, view_interaction_attention, Muon_optimizer</td></tr>
+</tbody></table></div>
+<p>一句话总结：WALL-WM 的核心贡献是把 WAM 的学习原子从固定 action chunk 改成 action-grounded semantic event，让语言、视频和动作在更自然的事件边界上对齐。</p>
+<p>出发点：多数 WAM/VLA 用固定长度 action chunk 训练，但语言描述的是目标和事件，视觉按连续动力学演化，动作在控制频率上执行。固定 chunk 会把三个时间尺度硬切到同一个窗口，导致短时相关拟合、覆盖预训练视觉语义先验，并削弱长时程组合泛化。</p>
+<p>核心方法：WALL-WM 用 event-grounded WAM pretraining：为视频和动作段配 event captions，把 reach、grasp、lift、move、place 这类语义一致的 executable behavior 作为训练单元。它支持两个推理模式：event mode 由 VLM/人/agent 给下一事件描述并执行 variable-length video-action segment；unified mode 用 VLM + Staircase Decoding 生成 event-structured latent reasoning，仍可做固定长度 chunk inference。</p>
+<p>模型结构：视频 tower 继承 Wan-style flow matching，动作 tower 是 action DiT，并在每层 cross-attend 到匹配的视频 DiT layer features。多视角部分用 View-Interaction Self-Attention、Camera RoPE、sight-cone mask 和 tube patch masking 强化 3D-aware cross-view consistency。</p>
+<p>训练数据与训练方式：数据生态由 event-level captions、cluster-balanced sampling 和 Muon optimizer 大规模预训练支撑。训练分视频 flow-matching、event-centric action dynamics、event-conditioned inference 和 latent CoT / Staircase Decoding 等部分。</p>
+<p>评测与 insight：WALL-WM 在 embodied video generation benchmark 上相对 Wan baselines 改善 physical plausibility、interaction quality 和 trajectory accuracy。真实机器人评测使用 Task Progress 而非单纯 binary success；Generalization suite 中 event-mode 平均 Task Progress 53.75，对比 DreamZero 28.50、π0.5 24.00 和 WALL-WM-U-Scratch 18.50。ablation 中 event-mode + view interaction 将 Reasoning Manipulation 平均分从 32.6 提到 71.6，将 Generalization 从 22.0 提到 53.75。</p>
+<p>与 VLA / WAM 关系：WALL-WM 是对 WAM 粒度的关键修正。Fast-WAM/GigaWorld-Policy 主要关注推理成本，WALL-WM 关注学习原子和语义边界：如果 action/video/language 的边界切错了，模型再大也容易学到 chunk shortcut。</p>
+<p>核心框图速记：<code>global instruction + multi-view video → event captions / event segments → video-action flow matching + action DiT → event mode variable-length execution 或 unified chunk inference</code>。</p>
+<h3 id="p54-gigaworld-policy">P54. GigaWorld-Policy</h3>
+<div class="table-wrap"><table>
+<tbody><tr><td>项目</td><td>内容</td></tr>
+<tr><td>-</td><td>-</td></tr>
+<tr><td>类型</td><td>project page + arXiv + models/code links</td></tr>
+<tr><td>链接</td><td><a href="<a href="https://gigaai-research.github.io/GigaWorld-Policy/">https://gigaai-research.github.io/GigaWorld-Policy/</a>" target="_blank" rel="noreferrer">https://gigaai-research.github.io/GigaWorld-Policy/">https://gigaai-research.github.io/GigaWorld-Policy/</a></a></td></tr>
+<tr><td>团队</td><td>GigaAI</td></tr>
+<tr><td>发布时间</td><td>2026-03</td></tr>
+<tr><td>主类</td><td>Action-centered World Action Model</td></tr>
+<tr><td>副类标签</td><td>GigaWorld_0_5, train_complex_infer_simple, action_only_decoding, causal_mask, real_time_control</td></tr>
+</tbody></table></div>
+<p>一句话总结：GigaWorld-Policy 是 action-centered WAM：训练时让 action prediction 受 future video dynamics 监督，推理时完全丢弃未来视频预测，只保留动作生成以满足实时控制。</p>
+<p>出发点：现有 WA/WAM 常同时推理未来视觉动态和动作，带来两类瓶颈：一是视频预测链路太长导致推理成本高；二是视觉和运动表征耦合过强，使动作预测质量受未来视频预测质量牵制。GigaWorld-Policy 的问题意识与 Fast-WAM 一致，但更工程化地提出“训繁推简”。</p>
+<p>核心方法：基于轻量 world model GigaWorld-0.5 构建。训练阶段通过 causal mask 统一建模 action tokens 与 future visual tokens，让动作预测受未来视觉动态提供的高密度监督；推理阶段舍弃视频预测分支，只保留 action decoding。架构上将 visual observations、robot states、action sequences 映射到共享 embedding，由单一 Transformer backbone 处理。</p>
+<p>训练数据与训练方式：三阶段 pipeline：第一阶段用海量互联网视频训练通用世界模型；第二阶段用千小时级多源操作视频做具身场景适配，覆盖 first-person、real-robot、simulation；第三阶段用少量动作标注真机数据对齐 observation-action-future visual 因果映射。</p>
+<p>评测与 insight：项目页报告相对 baseline 实现 10x inference speedup，单次推理 0.36 秒，同时任务成功率提升 35%。在四类真实机器人任务中，平均成功率接近 85%，相对 Cosmos Policy 等主流 WA 模型约 55% 提升近 30 个百分点；并强调相对 Motus 推理速度 10x。</p>
+<p>与 VLA / WAM 关系：GigaWorld-Policy 是 Fast-WAM 方向的强补充：世界预测不一定要在推理时显式生成，但训练时未来视觉动态仍是关键监督。它和 WALL-WM 的区别是：GigaWorld-Policy 改推理路径，WALL-WM 改训练粒度。</p>
+<p>核心框图速记：<code>internet/robot/sim video → GigaWorld-0.5 world pretrain → action+future visual joint training → inference drops video branch → action-only real-time policy</code>。</p>
+<h2 id="6-对-vla-world-model-world-action-model-的迁移启发">6. 对 VLA / World Model / World Action Model 的迁移启发</h2>
+<ol>
+<li><strong>不要只比较模型大小，要比较 action interface。</strong> RT-2/OpenVLA 的 action token、π₀/SmolVLA 的 flow action expert、LAP 的 language action、RDT 的 unified physical action space，代表的是完全不同的控制接口。</li>
+</ol>
+<ol>
+<li><strong>world model 的价值不止“生成好看的未来视频”。</strong> Ctrl-World 用它 ranking policy 和合成成功轨迹，WMPO 用它做 on-policy RL，VLAW 用它与 policy 迭代共进，Fast-WAM 则说明它也可能只在训练时作为表征约束就够了。</li>
+</ol>
+<ol>
+<li><strong>跨 embodiment 的核心不是把所有数据混在一起，而是对齐动作语义。</strong> Open X-Embodiment 解决数据混合，LAP/UniAct/Action Space Design 解决动作表示，χ₀/Kai0 解决部署分布一致性。</li>
+</ol>
+<ol>
+<li><strong>真实部署会惩罚“只在 benchmark 上漂亮”的模型。</strong> 长时程、接触丰富、动态场景、布料、humanoid 都会暴露时延、分布漂移、动作平滑、失败恢复等问题。</li>
+</ol>
+<ol>
+<li><strong>未来的强路线很可能是三件事合体：VLA policy + world model data engine + post-training/RL。</strong> 单靠大规模 BC 或单靠 world model 都不够，真正的系统会把真实 rollout、合成 rollout、失败挖掘、RL/preference 和部署监控接成闭环。</li>
+</ol>
+<ol>
+<li><strong>新增 WAM 工作显示“推理时是否生成未来视频”已经不是唯一关键，粒度和接口同样重要。</strong> Fast-WAM/GigaWorld-Policy 说明 future video 更像训练阶段 dense supervision；WALL-WM 说明固定长度 chunk 可能是错误训练原子；Cosmos3 说明最终可能要把 action 作为 omnimodal backbone 的原生模态。</li>
+</ol>
+<h2 id="7-值得继续跟进的问题">7. 值得继续跟进的问题</h2>
+<ol>
+<li>WAM 推理时到底需不需要显式 future imagination，还是 video prediction 只需要作为训练辅助任务？</li>
+</ol>
+<ol>
+<li>action token、language action、latent action、flow action expert 哪一种最适合跨 embodiment？</li>
+</ol>
+<ol>
+<li>world model 生成数据如何避免把错误物理规律灌进 policy？</li>
+</ol>
+<ol>
+<li>VLA 的 reasoning 文本是否真的参与控制，还是只是解释层面的副产物？</li>
+</ol>
+<ol>
+<li>触觉、力觉、proprioception 如何与 native multimodal backbone 统一？</li>
+</ol>
+<ol>
+<li>长时程任务里，phase / memory / hierarchy 是否比继续扩大 backbone 更有效？</li>
+</ol>
+<ol>
+<li>真实机器人 RL 的 sample efficiency 能否靠 pixel world model / video foundation model 实质突破？</li>
+</ol>
+<ol>
+<li>WAM 的训练原子应该是 fixed-length chunk、latent action、language action，还是 WALL-WM 式 semantic event？</li>
+</ol>
+<ol>
+<li>Omnimodal backbone 如 Cosmos3 是否会统一 VLA/WAM/world simulator，还是会因为后训练成本过高而只成为强 initialization？</li>
+</ol>
+<ol>
+<li>Generalist AI 的从 scratch 训练路线如果有足够 physical interaction data，是否会削弱 web-scale VLM prior 在机器人里的必要性？</li>
+</ol>
+<h2 id="8-资料来源索引">8. 资料来源索引</h2>
+<p>本报告优先使用用户提供的一手链接，并补充核验了以下公开页面：</p>
+<ul>
+<li>RT-1: <a href="<a href="https://arxiv.org/pdf/2212.06817">https://arxiv.org/pdf/2212.06817</a>" target="_blank" rel="noreferrer">https://arxiv.org/pdf/2212.06817">https://arxiv.org/pdf/2212.06817</a></a></li>
+</ul>
+<ul>
+<li>PaLM-E: <a href="<a href="https://arxiv.org/pdf/2303.03378">https://arxiv.org/pdf/2303.03378</a>" target="_blank" rel="noreferrer">https://arxiv.org/pdf/2303.03378">https://arxiv.org/pdf/2303.03378</a></a></li>
+</ul>
+<ul>
+<li>RT-2: <a href="<a href="https://arxiv.org/pdf/2307.15818">https://arxiv.org/pdf/2307.15818</a>" target="_blank" rel="noreferrer">https://arxiv.org/pdf/2307.15818">https://arxiv.org/pdf/2307.15818</a></a></li>
+</ul>
+<ul>
+<li>Open X-Embodiment: <a href="<a href="https://arxiv.org/pdf/2310.08864">https://arxiv.org/pdf/2310.08864</a>" target="_blank" rel="noreferrer">https://arxiv.org/pdf/2310.08864">https://arxiv.org/pdf/2310.08864</a></a></li>
+</ul>
+<ul>
+<li>Prismatic VLMs: <a href="<a href="https://github.com/TRI-ML/prismatic-vlms">https://github.com/TRI-ML/prismatic-vlms</a>" target="_blank" rel="noreferrer">https://github.com/TRI-ML/prismatic-vlms">https://github.com/TRI-ML/prismatic-vlms</a></a></li>
+</ul>
+<ul>
+<li>OpenVLA: <a href="<a href="https://openvla.github.io/">https://openvla.github.io/</a>" target="_blank" rel="noreferrer">https://openvla.github.io/">https://openvla.github.io/</a></a> / <a href="<a href="https://huggingface.co/openvla/openvla-7b">https://huggingface.co/openvla/openvla-7b</a>" target="_blank" rel="noreferrer">https://huggingface.co/openvla/openvla-7b">https://huggingface.co/openvla/openvla-7b</a></a></li>
+</ul>
+<ul>
+<li>π₀: <a href="<a href="https://arxiv.org/pdf/2410.24164">https://arxiv.org/pdf/2410.24164</a>" target="_blank" rel="noreferrer">https://arxiv.org/pdf/2410.24164">https://arxiv.org/pdf/2410.24164</a></a> / <a href="<a href="https://www.pi.website/blog/pi0">https://www.pi.website/blog/pi0</a>" target="_blank" rel="noreferrer">https://www.pi.website/blog/pi0">https://www.pi.website/blog/pi0</a></a></li>
+</ul>
+<ul>
+<li>RDT-1B: <a href="<a href="https://github.com/thu-ml/RoboticsDiffusionTransformer">https://github.com/thu-ml/RoboticsDiffusionTransformer</a>" target="_blank" rel="noreferrer">https://github.com/thu-ml/RoboticsDiffusionTransformer">https://github.com/thu-ml/RoboticsDiffusionTransformer</a></a></li>
+</ul>
+<ul>
+<li>GR00T N1: <a href="<a href="https://research.nvidia.com/publication/2025-03_nvidia-isaac-gr00t-n1-open-foundation-model-humanoid-robots">https://research.nvidia.com/publication/2025-03\_nvidia-isaac-gr00t-n1-open-foundation-model-humanoid-robots</a>" target="_blank" rel="noreferrer">https://research.nvidia.com/publication/2025-03_nvidia-isaac-gr00t-n1-open-foundation-model-humanoid-robots">https://research.nvidia.com/publication/2025-03\_nvidia-isaac-gr00t-n1-open-foundation-model-humanoid-robots</a></a></li>
+</ul>
+<ul>
+<li>AgiBot World: <a href="<a href="https://opendrivelab.com/AgiBot-World/">https://opendrivelab.com/AgiBot-World/</a>" target="_blank" rel="noreferrer">https://opendrivelab.com/AgiBot-World/">https://opendrivelab.com/AgiBot-World/</a></a></li>
+</ul>
+<ul>
+<li>Gemini Robotics: <a href="<a href="https://deepmind.google/models/gemini-robotics/">https://deepmind.google/models/gemini-robotics/</a>" target="_blank" rel="noreferrer">https://deepmind.google/models/gemini-robotics/">https://deepmind.google/models/gemini-robotics/</a></a></li>
+</ul>
+<ul>
+<li>SmolVLA: <a href="<a href="https://huggingface.co/blog/smolvla">https://huggingface.co/blog/smolvla</a>" target="_blank" rel="noreferrer">https://huggingface.co/blog/smolvla">https://huggingface.co/blog/smolvla</a></a></li>
+</ul>
+<ul>
+<li>Genie 2: <a href="<a href="https://deepmind.google/blog/genie-2-a-large-scale-foundation-world-model/">https://deepmind.google/blog/genie-2-a-large-scale-foundation-world-model/</a>" target="_blank" rel="noreferrer">https://deepmind.google/blog/genie-2-a-large-scale-foundation-world-model/">https://deepmind.google/blog/genie-2-a-large-scale-foundation-world-model/</a></a></li>
+</ul>
+<ul>
+<li>Genie 3: <a href="<a href="https://deepmind.google/blog/genie-3-a-new-frontier-for-world-models/">https://deepmind.google/blog/genie-3-a-new-frontier-for-world-models/</a>" target="_blank" rel="noreferrer">https://deepmind.google/blog/genie-3-a-new-frontier-for-world-models/">https://deepmind.google/blog/genie-3-a-new-frontier-for-world-models/</a></a></li>
+</ul>
+<ul>
+<li>Ctrl-World: <a href="<a href="https://arxiv.org/pdf/2510.10125">https://arxiv.org/pdf/2510.10125</a>" target="_blank" rel="noreferrer">https://arxiv.org/pdf/2510.10125">https://arxiv.org/pdf/2510.10125</a></a></li>
+</ul>
+<ul>
+<li>GigaWorld-0: <a href="<a href="https://arxiv.org/pdf/2511.19861">https://arxiv.org/pdf/2511.19861</a>" target="_blank" rel="noreferrer">https://arxiv.org/pdf/2511.19861">https://arxiv.org/pdf/2511.19861</a></a></li>
+</ul>
+<ul>
+<li>WMPO: <a href="<a href="https://wm-po.github.io/">https://wm-po.github.io/</a>" target="_blank" rel="noreferrer">https://wm-po.github.io/">https://wm-po.github.io/</a></a></li>
+</ul>
+<ul>
+<li>VLAW: <a href="<a href="https://sites.google.com/view/vlaw-arxiv">https://sites.google.com/view/vlaw-arxiv</a>" target="_blank" rel="noreferrer">https://sites.google.com/view/vlaw-arxiv">https://sites.google.com/view/vlaw-arxiv</a></a></li>
+</ul>
+<ul>
+<li>LAP: <a href="<a href="https://lap-vla.github.io/">https://lap-vla.github.io/</a>" target="_blank" rel="noreferrer">https://lap-vla.github.io/">https://lap-vla.github.io/</a></a></li>
+</ul>
+<ul>
+<li>RynnVLA-002: <a href="<a href="https://github.com/alibaba-damo-academy/RynnVLA-002">https://github.com/alibaba-damo-academy/RynnVLA-002</a>" target="_blank" rel="noreferrer">https://github.com/alibaba-damo-academy/RynnVLA-002">https://github.com/alibaba-damo-academy/RynnVLA-002</a></a></li>
+</ul>
+<ul>
+<li>Being-H0.7: <a href="<a href="https://research.beingbeyond.com/being-h07">https://research.beingbeyond.com/being-h07</a>" target="_blank" rel="noreferrer">https://research.beingbeyond.com/being-h07">https://research.beingbeyond.com/being-h07</a></a></li>
+</ul>
+<ul>
+<li>Motus: <a href="<a href="https://motus-robotics.github.io/motus">https://motus-robotics.github.io/motus</a>" target="_blank" rel="noreferrer">https://motus-robotics.github.io/motus">https://motus-robotics.github.io/motus</a></a></li>
+</ul>
+<ul>
+<li>LingBot-VA: <a href="<a href="https://technology.robbyant.com/lingbot-va">https://technology.robbyant.com/lingbot-va</a>" target="_blank" rel="noreferrer">https://technology.robbyant.com/lingbot-va">https://technology.robbyant.com/lingbot-va</a></a></li>
+</ul>
+<ul>
+<li>ThinkJEPA: <a href="<a href="https://arxiv.org/pdf/2603.22281">https://arxiv.org/pdf/2603.22281</a>" target="_blank" rel="noreferrer">https://arxiv.org/pdf/2603.22281">https://arxiv.org/pdf/2603.22281</a></a></li>
+</ul>
+<ul>
+<li>LeWorldModel: <a href="<a href="https://le-wm.github.io/">https://le-wm.github.io/</a>" target="_blank" rel="noreferrer">https://le-wm.github.io/">https://le-wm.github.io/</a></a></li>
+</ul>
+<ul>
+<li>Cosmos Policy: <a href="<a href="https://research.nvidia.com/labs/dir/cosmos-policy/">https://research.nvidia.com/labs/dir/cosmos-policy/</a>" target="_blank" rel="noreferrer">https://research.nvidia.com/labs/dir/cosmos-policy/">https://research.nvidia.com/labs/dir/cosmos-policy/</a></a></li>
+</ul>
+<ul>
+<li>DreamZero: <a href="<a href="https://dreamzero0.github.io/">https://dreamzero0.github.io/</a>" target="_blank" rel="noreferrer">https://dreamzero0.github.io/">https://dreamzero0.github.io/</a></a></li>
+</ul>
+<ul>
+<li>Fast-WAM: <a href="<a href="https://yuantianyuan01.github.io/FastWAM/">https://yuantianyuan01.github.io/FastWAM/</a>" target="_blank" rel="noreferrer">https://yuantianyuan01.github.io/FastWAM/">https://yuantianyuan01.github.io/FastWAM/</a></a></li>
+</ul>
+<ul>
+<li>Cosmos3: <a href="<a href="https://research.nvidia.com/labs/cosmos-lab/cosmos3/technical-report.pdf">https://research.nvidia.com/labs/cosmos-lab/cosmos3/technical-report.pdf</a>" target="_blank" rel="noreferrer">https://research.nvidia.com/labs/cosmos-lab/cosmos3/technical-report.pdf">https://research.nvidia.com/labs/cosmos-lab/cosmos3/technical-report.pdf</a></a></li>
+</ul>
+<ul>
+<li>WALL-WM: <a href="<a href="https://x2robot.com/api/files/file/WALL-WM.pdf">https://x2robot.com/api/files/file/WALL-WM.pdf</a>" target="_blank" rel="noreferrer">https://x2robot.com/api/files/file/WALL-WM.pdf">https://x2robot.com/api/files/file/WALL-WM.pdf</a></a> / <a href="<a href="https://github.com/X-Square-Robot/wall-x">https://github.com/X-Square-Robot/wall-x</a>" target="_blank" rel="noreferrer">https://github.com/X-Square-Robot/wall-x">https://github.com/X-Square-Robot/wall-x</a></a></li>
+</ul>
+<ul>
+<li>GigaWorld-Policy: <a href="<a href="https://gigaai-research.github.io/GigaWorld-Policy/">https://gigaai-research.github.io/GigaWorld-Policy/</a>" target="_blank" rel="noreferrer">https://gigaai-research.github.io/GigaWorld-Policy/">https://gigaai-research.github.io/GigaWorld-Policy/</a></a></li>
+</ul>
+<ul>
+<li>Generalist AI / Beyond World Models &amp; VLAs: <a href="<a href="https://generalistai.com/blog/beyond-world-models">https://generalistai.com/blog/beyond-world-models</a>" target="_blank" rel="noreferrer">https://generalistai.com/blog/beyond-world-models">https://generalistai.com/blog/beyond-world-models</a></a></li>
+</ul>
+<ul>
+<li>UniVTAC: <a href="<a href="https://univtac.github.io/">https://univtac.github.io/</a>" target="_blank" rel="noreferrer">https://univtac.github.io/">https://univtac.github.io/</a></a></li>
+</ul></main></div></body></html>
