@@ -1,0 +1,462 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Cosmos 3 网络结构、训练阶段与 Robotics Action 代码级解读</title>
+  <style>
+    :root {
+      --bg: #0b1020;
+      --panel: #121a33;
+      --panel2: #172143;
+      --ink: #eaf0ff;
+      --muted: #aebbe0;
+      --line: #2d3f76;
+      --accent: #7bd88f;
+      --accent2: #7cc7ff;
+      --warn: #ffd166;
+      --bad: #ff8a8a;
+      --code: #08101f;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.58;
+      color: var(--ink);
+      background: radial-gradient(circle at 20% 0%, #1c2c62 0, transparent 32rem), var(--bg);
+    }
+    a { color: var(--accent2); }
+    header {
+      padding: 42px 52px 28px;
+      border-bottom: 1px solid var(--line);
+      background: linear-gradient(135deg, rgba(123,216,143,.12), rgba(124,199,255,.08));
+    }
+    header h1 { margin: 0 0 12px; font-size: 34px; line-height: 1.18; }
+    header p { margin: 6px 0; color: var(--muted); max-width: 1200px; }
+    .download-row { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-top: 18px; }
+    .download-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 11px 16px;
+      border-radius: 999px;
+      border: 1px solid rgba(123,216,143,.65);
+      background: linear-gradient(135deg, rgba(123,216,143,.24), rgba(124,199,255,.16));
+      color: #f4fff7;
+      font-weight: 700;
+      text-decoration: none;
+      box-shadow: 0 8px 22px rgba(0,0,0,.2);
+    }
+    .download-button:hover { border-color: var(--accent); background: rgba(123,216,143,.28); }
+    .download-hint { color: var(--muted); font-size: 14px; }
+    main { max-width: 1380px; margin: 0 auto; padding: 28px; }
+    nav.toc {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 12px;
+      margin-bottom: 22px;
+    }
+    nav.toc a {
+      display: block;
+      padding: 12px 14px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: rgba(18,26,51,.84);
+      text-decoration: none;
+    }
+    section {
+      background: rgba(18,26,51,.92);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 24px;
+      margin: 22px 0;
+      box-shadow: 0 12px 38px rgba(0,0,0,.22);
+    }
+    h2 { margin-top: 0; font-size: 27px; }
+    h3 { color: var(--accent); margin-top: 28px; }
+    h4 { color: var(--accent2); margin: 18px 0 8px; }
+    .note, .warning, .fact {
+      border-left: 4px solid var(--accent2);
+      padding: 12px 14px;
+      background: rgba(124,199,255,.09);
+      border-radius: 10px;
+      margin: 14px 0;
+    }
+    .warning { border-left-color: var(--warn); background: rgba(255,209,102,.10); }
+    .fact { border-left-color: var(--accent); background: rgba(123,216,143,.10); }
+    .grid { display: grid; gap: 14px; }
+    .grid.two { grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); }
+    .grid.three { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+    .card {
+      background: var(--panel2);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 16px;
+    }
+    table { width: 100%; border-collapse: collapse; margin: 14px 0; overflow: hidden; }
+    th, td { border: 1px solid var(--line); padding: 10px 12px; vertical-align: top; }
+    th { background: #1c2b58; color: #f5f8ff; text-align: left; }
+    tr:nth-child(even) td { background: rgba(255,255,255,.025); }
+    code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace; }
+    pre { background: var(--code); border: 1px solid #263967; border-radius: 12px; padding: 14px; overflow-x: auto; color: #d8e3ff; }
+    .diagram {
+      display: grid;
+      gap: 12px;
+      padding: 18px;
+      background: #0a1228;
+      border: 1px solid #293b73;
+      border-radius: 16px;
+      overflow-x: auto;
+    }
+    .lane { display: flex; align-items: stretch; gap: 10px; min-width: 980px; }
+    .box {
+      border: 1px solid #3b579e;
+      border-radius: 12px;
+      background: linear-gradient(180deg, #18264e, #121b38);
+      padding: 12px;
+      min-width: 160px;
+      flex: 1;
+      position: relative;
+    }
+    .box.small { min-width: 120px; flex: 0 0 145px; }
+    .box.wide { flex: 1.6; }
+    .box.green { border-color: #4aa96c; background: linear-gradient(180deg, #173b2a, #12271e); }
+    .box.blue { border-color: #4f9fdc; background: linear-gradient(180deg, #173553, #11243b); }
+    .box.yellow { border-color: #c9a646; background: linear-gradient(180deg, #4b3a12, #261e0d); }
+    .arrow { align-self: center; color: var(--accent2); font-size: 26px; min-width: 24px; text-align: center; }
+    .legend { color: var(--muted); font-size: 14px; }
+    .pill { display: inline-block; padding: 2px 8px; border: 1px solid var(--line); border-radius: 999px; background: #0e1730; color: var(--muted); margin: 2px; }
+    .src { font-size: 13px; color: var(--muted); }
+    .src a { color: #bddfff; }
+    .nowrap { white-space: nowrap; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Cosmos 3 网络结构、训练阶段与 Robotics Action：代码级解读</h1>
+    <p>目标：把 Cosmos 3 的 Reasoner/Generator 网络框图、预训练/中训练/后训练流程、以及 Robotics action 的构造和推理路径整理成一份可直接打开的 HTML 报告。</p>
+    <p>证据范围：本仓库 <code>/workspace/cosmos</code> 的 README/cookbook/notebook/action assets；外部 <code>NVIDIA/cosmos-framework</code> 的公开 raw 源码；Hugging Face 模型配置/模型卡；Cosmos 3 technical report 摘要检索结果。</p>
+    <div class="download-row">
+      <a class="download-button" href="cosmos3_network_training_action_report.html" download="cosmos3_network_training_action_report.html">⬇ 下载 HTML 报告</a>
+      <span class="download-hint">如果浏览器没有直接下载，请右键该按钮选择“链接另存为…”。在 GitHub 文件页可使用 Raw / Download raw file。</span>
+    </div>
+  </header>
+
+  <main>
+    <nav class="toc">
+      <a href="#summary">0. 结论摘要</a>
+      <a href="#architecture">1. 详细网络框图与维度</a>
+      <a href="#freeze">2. Backbone、参数量与 freeze/旁路关系</a>
+      <a href="#training">3. Pre/Mid/Post-training 代码层级逻辑</a>
+      <a href="#robotics-action">4. Robotics action 如何得到</a>
+      <a href="#policy-flow">5. DROID policy 训练/推理路径</a>
+      <a href="#sources">6. 代码证据索引</a>
+    </nav>
+
+    <section id="summary">
+      <h2>0. 结论摘要</h2>
+      <div class="grid three">
+        <div class="card">
+          <h3>统一 MoT，但两种运行面</h3>
+          <p>Cosmos 3 公开为两个 runtime surface：Reasoner 输入 text/vision 输出 text；Generator 输入 text/vision/sound/action 输出 vision/sound/action。本仓库 README 明确写 Cosmos 3 用统一 Mixture-of-Transformers 结构处理语言、图像、视频、音频和 action。</p>
+        </div>
+        <div class="card">
+          <h3>Action 是连续向量模态</h3>
+          <p>公开 cookbook 和 <code>cosmos-framework</code> domain table 都显示 action 是连续数组：AV/camera 9D、hand/egocentric 57D、single-arm robot 10D、dual-arm 20D、AgiBot 29D。没有看到 VLM 离散 action token vocabulary。</p>
+        </div>
+        <div class="card">
+          <h3>DROID policy 默认 8D joint_pos</h3>
+          <p>RoboLab policy server 默认服务 <code>nvidia/Cosmos3-Nano-Policy-DROID</code>，配置为 480p transform、15 FPS、32 action steps、8D <code>joint_pos</code>、guidance 3.0、4 denoising steps、shift 5.0。</p>
+        </div>
+      </div>
+      <div class="warning">
+        <strong>关于 freeze：</strong>公开代码能直接确认的是「Reasoner AR decode 旁路 Generator multimodal embedders/heads」以及「RoboLab 推理使用 <code>model.eval()</code>」；公开 cookbook/可访问源码没有给出完整训练 recipe 中逐模块 <code>requires_grad=False</code> 的冻结表。因此本文把 freeze 分成“代码可证实”和“未公开/需训练配置验证”两类，避免把论文叙述误写成代码事实。
+      </div>
+    </section>
+
+    <section id="architecture">
+      <h2>1. 详细网络框图与维度</h2>
+
+      <h3>1.1 顶层 runtime 框图</h3>
+      <div class="diagram">
+        <div class="lane">
+          <div class="box small blue"><strong>Text</strong><br><span class="legend">prompt / system / captions</span></div>
+          <div class="box small blue"><strong>Vision</strong><br><span class="legend">image / video frames</span></div>
+          <div class="arrow">→</div>
+          <div class="box wide green"><strong>Reasoner surface</strong><br>AR transformer / causal self-attention<br><span class="legend">输出 text：caption、VQA、grounding、temporal reasoning、action reasoning</span></div>
+          <div class="arrow">→</div>
+          <div class="box small green"><strong>Text output</strong><br><span class="legend">next-token decode</span></div>
+        </div>
+        <div class="lane">
+          <div class="box small blue"><strong>Text</strong></div>
+          <div class="box small blue"><strong>Vision latent</strong></div>
+          <div class="box small blue"><strong>Sound latent</strong></div>
+          <div class="box small blue"><strong>Action</strong><br><span class="legend">continuous JSON arrays</span></div>
+          <div class="arrow">→</div>
+          <div class="box wide yellow"><strong>Generator surface</strong><br>Diffusion / rectified-flow transformer<br><span class="legend">full-attention denoising over noisy image/video/audio/action tokens</span></div>
+          <div class="arrow">→</div>
+          <div class="box small yellow"><strong>Vision / Sound / Action</strong><br><span class="legend">video, audio, trajectories</span></div>
+        </div>
+      </div>
+      <p class="src">本地依据：README 将 Cosmos 3 描述为统一 MoT，并列出 Reasoner 和 Generator 两个 surface；README 还说明 Reasoner 使用 causal self-attention，Generator 对 noisy image/video/audio/action tokens 做 denoising。</p>
+
+      <h3>1.2 代码级 Generator / Action 网络框图</h3>
+      <div class="diagram">
+        <div class="lane">
+          <div class="box small blue"><strong>text_ids</strong><br><span class="legend">tokenizer ids</span></div>
+          <div class="arrow">→</div>
+          <div class="box blue"><strong>language_model.model.embed_tokens</strong><br><span class="legend">[N_text, hidden_size]</span></div>
+          <div class="arrow">↘</div>
+          <div class="box wide green"><strong>PackedSequence</strong><br>统一 packed token buffer<br><span class="legend">[N_total, hidden_size]</span></div>
+        </div>
+        <div class="lane">
+          <div class="box small blue"><strong>vision latent</strong><br><span class="legend">[C,T,H,W]</span></div>
+          <div class="arrow">→</div>
+          <div class="box blue"><strong>patchify</strong><br><span class="legend">patch_dim = p²·C</span></div>
+          <div class="arrow">→</div>
+          <div class="box blue"><strong>vae2llm</strong><br><span class="legend">patch_dim → hidden</span></div>
+          <div class="arrow">↗</div>
+          <div class="box wide green"><strong>scatter to vision indexes</strong><br><span class="legend">+ 3D RoPE / mRoPE + timestep embedding</span></div>
+        </div>
+        <div class="lane">
+          <div class="box small blue"><strong>action</strong><br><span class="legend">[T, action_dim]</span></div>
+          <div class="arrow">→</div>
+          <div class="box blue"><strong>pack_action</strong><br><span class="legend">variable T packed</span></div>
+          <div class="arrow">→</div>
+          <div class="box blue"><strong>DomainAwareLinear action2llm</strong><br><span class="legend">action_dim → hidden, conditioned by domain_id</span></div>
+          <div class="arrow">↗</div>
+          <div class="box wide green"><strong>scatter to action indexes</strong><br><span class="legend">+ action modality embedding + action timestep embedding</span></div>
+        </div>
+        <div class="lane">
+          <div class="box wide green"><strong>Shared language_model / MoT transformer</strong><br><span class="legend">hidden_size, num_heads, num_layers from VLM text_config</span></div>
+          <div class="arrow">→</div>
+          <div class="box yellow"><strong>last_hidden_state</strong><br><span class="legend">[N_total, hidden]</span></div>
+          <div class="arrow">→</div>
+          <div class="box blue"><strong>llm2vae</strong><br><span class="legend">vision velocity prediction</span></div>
+          <div class="box blue"><strong>llm2action</strong><br><span class="legend">action velocity prediction</span></div>
+          <div class="box blue"><strong>llm2sound</strong><br><span class="legend">sound velocity prediction</span></div>
+        </div>
+      </div>
+      <p>对应源码路径：<code>cosmos_framework/model/vfm/mot/cosmos3_vfm_network.py</code>。该文件的配置类定义 <code>vision_gen</code>、<code>action_gen</code>、<code>sound_gen</code>、latent patch 参数、action_dim、num_embodiment_domains、temporal compression 等；初始化时创建 <code>vae2llm/llm2vae</code>、<code>DomainAwareLinear action2llm/llm2action</code>、<code>sound2llm/llm2sound</code> 等投影层。</p>
+
+      <h3>1.3 维度表</h3>
+      <table>
+        <thead><tr><th>组件 / 模态</th><th>代码或配置中的维度</th><th>说明</th></tr></thead>
+        <tbody>
+          <tr><td>Nano text backbone</td><td><code>hidden_size=4096</code>, <code>num_hidden_layers=36</code>, <code>num_attention_heads=32</code>, <code>num_key_value_heads=8</code>, <code>head_dim=128</code>, <code>intermediate_size=12288</code></td><td>来自 Hugging Face <code>nvidia/Cosmos3-Nano/config.json</code> 搜索结果；technical report 摘要同样列出这些 Nano LLM 维度。</td></tr>
+          <tr><td>参数量</td><td>Nano 16B；Super 64B；Policy-DROID 16B</td><td>本仓库 README model family 表。社区/博客有时把 Nano 写成 8B reasoner + 8B generator，Super 写成 32B + 32B；本仓库对外 model size 写 16B/64B。</td></tr>
+          <tr><td>Vision latent patch</td><td><code>patch_latent_dim = latent_patch_size² × latent_channel_size</code></td><td>源码中默认 <code>latent_patch_size=2</code>、<code>latent_channel_size=16</code>，因此默认 patch_latent_dim = 64；再经 <code>vae2llm</code> 投到 hidden_size。</td></tr>
+          <tr><td>Action token</td><td><code>[T, action_dim]</code></td><td><code>pack_action</code> 文档说明每个样本 action tensor 是 <code>[T_i, action_dim]</code>；<code>DomainAwareLinear</code> 根据 domain_id 做 action2llm 和 llm2action。</td></tr>
+          <tr><td>AV / camera pose</td><td>9D</td><td>3D translation + 6D continuous rotation。</td></tr>
+          <tr><td>DROID / UMI / Bridge / Fractal single-arm</td><td>10D</td><td>9D end-effector pose delta + 1D gripper；但 DROID policy server 默认服务 8D joint_pos。</td></tr>
+          <tr><td>DROID policy 默认</td><td>8D</td><td>7D joint positions + 1D gripper，32-step chunk，15 FPS。</td></tr>
+          <tr><td>Egocentric / hand_pose</td><td>57D</td><td>公开 domain table 给出 raw_action_dim=57；cookbook 顶层 README 也列出 egocentric motion 57D。</td></tr>
+          <tr><td>Dual-arm Franka</td><td>20D</td><td>两套 10D single-arm action 拼接。</td></tr>
+          <tr><td>AgiBot humanoid</td><td>29D</td><td>domain table 和本仓库 README 均列出 humanoid/AgiBot 29D。</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="freeze">
+      <h2>2. Backbone、参数量与 freeze/旁路关系</h2>
+      <div class="grid two">
+        <div class="card">
+          <h3>代码可证实：Reasoner AR decode 旁路 Generator 头</h3>
+          <p><code>Cosmos3VFMNetwork.generate_reasoner_text</code> 是对 <code>language_model.generate_reasoner_text</code> 的 thin pass-through。源码注释说明 Reasoner text generation 使用 non-generation pathway 权重以及 text embedding / norm / lm_head；VFM 级的 multimodal generation embedders/heads（如 <code>vae2llm</code>、<code>llm2vae</code>、sound heads 等）被 bypass。</p>
+        </div>
+        <div class="card">
+          <h3>代码可证实：Generator 不是三套 FD/ID/Policy head</h3>
+          <p><code>Cosmos3VFMNetwork</code> 的输出头按模态划分：vision 用 <code>llm2vae</code>，action 用 <code>llm2action</code>，sound 用 <code>llm2sound</code>。FD/ID/Policy 的区别体现在数据 batch 的 mode、conditioning/noisy masks 和输入输出组合，而不是源码中出现三套独立 <code>fd_head/id_head/policy_head</code>。</p>
+        </div>
+        <div class="card">
+          <h3>推理 eval，不等于训练 freeze</h3>
+          <p>RoboLab policy server 加载模型后执行 <code>self.model.eval()</code> 并在 <code>torch.inference_mode()</code> 下调用 <code>generate_samples_from_batch</code>。这只是推理关闭 dropout/梯度，不代表训练阶段冻结了某些模块。</p>
+        </div>
+        <div class="card">
+          <h3>未公开/需验证：训练阶段逐模块 requires_grad</h3>
+          <p>在可访问的 cookbook 和公开 raw 源码中，没有看到完整 DROID policy post-training recipe 的逐模块冻结表。因此本文不声称“某模块训练时必然冻结”，而是标注为：公开模型使用预训练 VLM/Generator backbone；Reasoner-only decode bypass generation heads；policy post-training 使用相同架构并输出 action。</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="training">
+      <h2>3. Pre-training、Mid-training、Post-training 分别怎么训：代码层级逻辑</h2>
+
+      <h3>3.1 训练阶段总览</h3>
+      <table>
+        <thead><tr><th>阶段</th><th>训练内容</th><th>代码层级上对应什么</th><th>输出 checkpoint</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>Pre-training</td>
+            <td>Reasoner 做视觉-语言 next-token；Generator 先学 image/video/audio generation。</td>
+            <td>Reasoner：AR text loss 路径；Generator：vision/sound latent noising + rectified-flow/denoising loss。Action mode 尚未作为核心数据行激活。</td>
+            <td>基础 Reasoner / Generator backbone。</td>
+          </tr>
+          <tr>
+            <td>Mid-training</td>
+            <td>加入 action、video transfer、Physical AI synthetic/domain 数据；形成跨 embodiment 的 world-action prior。</td>
+            <td><code>action_gen=True</code> 激活 action2llm/llm2action；batch 中带 <code>domain_id</code>、<code>raw_action_dim</code>、mode、condition_mask/noisy indexes；action loss 与 vision loss 共同训练。</td>
+            <td><code>Cosmos3-Nano</code>、<code>Cosmos3-Super</code> mid-trained base。</td>
+          </tr>
+          <tr>
+            <td>Post-training</td>
+            <td>对特定任务/domain 做专家化，例如 T2I、I2V、DROID policy。</td>
+            <td>沿用同一架构和 modality heads，换成高质量目标数据/任务模式；DROID policy 的 serving config 是 <code>droid_lerobot</code>、8D joint_pos、32-step action chunk。</td>
+            <td><code>Cosmos3-Super-Text2Image</code>、<code>Cosmos3-Super-Image2Video</code>、<code>Cosmos3-Nano-Policy-DROID</code>。</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>3.2 Generator 数据 curriculum（论文级证据 + 代码入口）</h3>
+      <p>technical report 摘要检索结果显示 Generator 训练使用 progressive multi-stage curriculum：pre-training 从 images/videos/audio 开始，mid-training 后加入 actions 和 interleaved multimodal content；mid-trained Nano/Super 再进入 post-training，得到 Text2Image、Image2Video、Policy-DROID 等专家模型。报告摘要还列出：pre-training image 767M、video 约 348M；mid-training 包含更高质量图像/视频、action 和 video transfer；post-training 各专家模型独立进行。</p>
+      <div class="diagram">
+        <div class="lane">
+          <div class="box blue"><strong>Raw data</strong><br><span class="legend">images / videos / audio / text</span></div>
+          <div class="arrow">→</div>
+          <div class="box green"><strong>Pre-training</strong><br>vision/audio generation + reasoner VLM<br><span class="legend">general perception & generation prior</span></div>
+          <div class="arrow">→</div>
+          <div class="box yellow"><strong>Mid-training</strong><br>adds action + transfer + Physical AI data<br><span class="legend">FD / ID / policy mode, domain_id</span></div>
+          <div class="arrow">→</div>
+          <div class="box blue"><strong>Post-training</strong><br>domain/task expert data<br><span class="legend">T2I / I2V / DROID policy</span></div>
+        </div>
+      </div>
+
+      <h3>3.3 代码层级训练 forward：同一模型，多模态 flow matching</h3>
+      <pre><code># 伪代码，来自 cosmos-framework 的结构而非逐字复制
+packed = zeros([N_total, hidden])
+packed[text_indexes]   = embed_tokens(text_ids)
+packed[vision_indexes] = vae2llm(patchify(noisy_vision_latents)) + pos + timestep
+packed[action_indexes] = action2llm(noisy_actions, domain_id) + pos + modality + timestep
+packed[sound_indexes]  = sound2llm(noisy_sound_latents) + modality + timestep
+
+hidden = shared_language_model(packed, packed attention metadata)
+preds_vision = llm2vae(hidden[vision_noisy_indexes])
+preds_action = llm2action(hidden[action_noisy_indexes], domain_id)
+preds_sound  = llm2sound(hidden[sound_noisy_indexes])
+
+loss = vision_flow_matching_loss + action_flow_matching_loss + sound_flow_matching_loss</code></pre>
+      <p>关键点：action training 不是把 action 离散化成 tokenizer token；代码里 action 是 <code>[T, action_dim]</code> 连续张量，先由 <code>DomainAwareLinear(action_dim → hidden)</code> 投到 transformer hidden，再由 <code>DomainAwareLinear(hidden → action_dim)</code> 预测 velocity/denoised target。</p>
+    </section>
+
+    <section id="robotics-action">
+      <h2>4. Robotics action 是怎么得到的：代码层级</h2>
+
+      <h3>4.1 Action domain 与 raw_action_dim</h3>
+      <table>
+        <thead><tr><th>Embodiment / domain</th><th>domain_id</th><th>raw action dim</th><th>解释</th></tr></thead>
+        <tbody>
+          <tr><td><code>av</code></td><td>1</td><td>9</td><td>自动驾驶 ego pose，3D translation + 6D rotation。</td></tr>
+          <tr><td><code>camera_pose</code></td><td>2</td><td>9</td><td>相机运动 pose。</td></tr>
+          <tr><td><code>hand_pose</code></td><td>3</td><td>57</td><td>egocentric/hand motion domain。</td></tr>
+          <tr><td><code>umi</code></td><td>6</td><td>10</td><td>9D end-effector pose delta + 1D gripper。</td></tr>
+          <tr><td><code>droid_lerobot</code></td><td>8</td><td>10</td><td>训练接口中的 DROID/Franka single-arm EEF+gripper 表征；policy serving 默认可切到 8D joint_pos。</td></tr>
+          <tr><td><code>robomind-franka-dual</code></td><td>12</td><td>20</td><td>dual-arm，通常两套 10D 拼接。</td></tr>
+          <tr><td><code>agibotworld</code></td><td>15</td><td>29</td><td>humanoid/AgiBot action。</td></tr>
+          <tr><td><code>fractal</code></td><td>20</td><td>10</td><td>single-arm robot domain。</td></tr>
+        </tbody>
+      </table>
+
+      <h3>4.2 10D midtrain robotics action：relative EEF pose + gripper</h3>
+      <div class="diagram">
+        <div class="lane">
+          <div class="box blue"><strong>absolute EEF state</strong><br><span class="legend">eef_pos [T,3] + eef_quat [T,4]</span></div>
+          <div class="arrow">→</div>
+          <div class="box blue"><strong>build_abs_pose_from_components</strong><br><span class="legend">homogeneous poses [T,4,4]</span></div>
+          <div class="arrow">→</div>
+          <div class="box yellow"><strong>pose_abs_to_rel</strong><br><span class="legend">backward_framewise delta</span></div>
+          <div class="arrow">→</div>
+          <div class="box green"><strong>action row</strong><br><span class="legend">[dx,dy,dz, rot6d(6), gripper] = 10D</span></div>
+        </div>
+      </div>
+      <p><code>pose_utils.py</code> 的模块说明写明：absolute pose shape 是 <code>(T,4,4)</code>，relative-pose action vector 的共享 layout 是 <code>[translation(3), rotation(...)]</code>；rotation block 由请求的 representation 决定，例如 <code>rot6d</code>。RoboLab policy server 的 <code>midtrain</code> action_space 会把 EEF quaternion 转成 rot6d，并把 history absolute poses 变成 relative pose action，再拼 gripper。</p>
+
+      <h3>4.3 DROID policy 默认 action：8D joint_pos</h3>
+      <div class="diagram">
+        <div class="lane">
+          <div class="box blue"><strong>RoboLab observation</strong><br><span class="legend">prompt, image, gripper, joint_position</span></div>
+          <div class="arrow">→</div>
+          <div class="box yellow"><strong>_build_sample</strong><br><span class="legend">action[0] = joint_position[-1] + flipped gripper</span></div>
+          <div class="arrow">→</div>
+          <div class="box green"><strong>Cosmos model</strong><br><span class="legend">mode='policy', domain_id=droid_lerobot</span></div>
+          <div class="arrow">→</div>
+          <div class="box blue"><strong>generated action chunk</strong><br><span class="legend">[32,8] before history trim; gripper flipped back</span></div>
+        </div>
+      </div>
+      <p>这与 midtrain 10D EEF delta 不同：DROID policy serving 的默认 action_space 是 <code>joint_pos</code>，raw action dim 是 8，即 7 个 joint positions + 1 个 gripper。server 文档明确说每个 request 需要 prompt、image、gripper_position，以及 joint state fields 或 EEF pose fields；默认 DROID policy 使用 joint state fields。</p>
+
+      <h3>4.4 FD / ID / Policy 与 action 输出关系</h3>
+      <table>
+        <thead><tr><th>Task mode</th><th>输入</th><th>生成目标</th><th>与 policy 的关系</th></tr></thead>
+        <tbody>
+          <tr><td>Forward Dynamics (FD)</td><td>start image + action trajectory</td><td>future observations/video</td><td>训练“动作导致什么视觉变化”的 world-action dynamics prior；不是最终机器人控制接口。</td></tr>
+          <tr><td>Inverse Dynamics (ID)</td><td>video / visual transition</td><td>action trajectory</td><td>训练“视觉变化对应什么动作”的 action grounding；公开 cookbook 当前 ID 示例是 AV ego-motion，但接口可支持其他 domain 维度。</td></tr>
+          <tr><td>Policy</td><td>instruction + current image + state/history</td><td>future action chunk + optional rollout video</td><td>最终控制机器人使用的闭环接口；共享 action head/backbone，而不是独立 policy-only MLP。</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="policy-flow">
+      <h2>5. DROID policy 训练/推理路径：以实际例子说明</h2>
+
+      <h3>5.1 推理部署路径</h3>
+      <pre><code># cosmos-framework 容器中
+python -m cosmos_framework.scripts.action_policy_server_robolab --port 8000
+
+# RoboLab client
+python policies/cosmos3/run.py --task BananaInBowlTask
+
+# 多环境 headless eval
+python policies/cosmos3/run.py --task BananaInBowlTask --num-envs 10 --headless</code></pre>
+      <p>本仓库 policy cookbook 说明 server 向 client stream actions，client 可以驱动模拟或真实机器人；示例 client 是 RoboLab，任务示例是 <code>BananaInBowlTask</code>。</p>
+
+      <h3>5.2 Server 内部推理流程</h3>
+      <ol>
+        <li>解析 checkpoint，默认 <code>nvidia/Cosmos3-Nano-Policy-DROID</code>。</li>
+        <li>创建 <code>OmniInference</code>，拿到 <code>pipe.model</code>，调用 <code>model.eval()</code>。</li>
+        <li>构建 <code>ActionTransformPipeline</code>；如果 checkpoint/training config 可读，则从训练数据 config 推断 action chunk size、fps、resolution。</li>
+        <li>收到 OpenPI-style WebSocket observation：prompt、image、gripper、joint/eef state。</li>
+        <li>构造 sample：<code>video</code> 是 <code>[3,T,H,W]</code> 且第 0 帧为当前图像；<code>action</code> 是 <code>[chunk + state_rows, action_dim]</code>，第一行可放当前 state。</li>
+        <li>设置 <code>mode='policy'</code>、<code>domain_id=get_domain_id('droid_lerobot')</code>、viewpoint 和多视角描述。</li>
+        <li>调用 <code>generate_samples_from_batch(... guidance, seed, num_steps, shift)</code>。</li>
+        <li>取 <code>samples['action'][0]</code>，裁掉 history rows；默认 joint_pos 下翻转 gripper convention 后返回给 client。</li>
+        <li>如果 <code>--decode-video</code>，再从 <code>samples['vision']</code> decode 预测 rollout video。</li>
+      </ol>
+
+      <h3>5.3 训练路径可见部分</h3>
+      <p>公开 <code>cosmos-framework</code> 的 generic training entry 是 <code>cosmos_framework.scripts.train</code>，examples/toml 当前主要列出 vision/reasoner SFT 类 recipe；可访问的 examples 中没有完整 DROID policy post-training TOML。因此，这份报告把 DROID policy 训练解释为“模型代码支持的 action flow-matching + released checkpoint/serving config”，而不伪造未公开训练超参。</p>
+      <pre><code># 代码层级的 policy post-training 逻辑可抽象为：
+for batch in droid_lerobot_demonstrations:
+    sample = transform(video_frames, language_instruction, robot_state, action_trajectory)
+    sample.mode = "policy"
+    sample.domain_id = get_domain_id("droid_lerobot")
+    noised_action, target_velocity = rectified_flow_action(action_trajectory)
+    noised_vision, target_video_velocity = rectified_flow_vision(video_latent)
+    preds = cosmos3_vfm_network(sample)
+    loss = action_loss_weight * fm_loss(preds.action, target_velocity) + vision_loss_weight * fm_loss(preds.vision, target_video_velocity)
+    update(shared_transformer + modality projections/heads according to training config)</code></pre>
+      <div class="warning">最后一行的“哪些参数 update/freeze”必须以实际 DROID policy post-training recipe 为准；当前公开可访问源码没有给出逐参数冻结表。</div>
+    </section>
+
+    <section id="sources">
+      <h2>6. 代码证据索引</h2>
+      <table>
+        <thead><tr><th>主题</th><th>证据</th></tr></thead>
+        <tbody>
+          <tr><td>本仓库顶层架构与模型族</td><td><code>README.md</code>：Cosmos 3 是统一 MoT；Reasoner/Generator surfaces；模型族 Nano 16B、Super 64B、Policy-DROID 16B；action dim table。</td></tr>
+          <tr><td>Action cookbook</td><td><code>cookbooks/cosmos3/generator/action/README.md</code>：FD/ID/Policy 定义；9D pose delta = 3D translation + 6D rotation；DROID/UMI 10D。</td></tr>
+          <tr><td>Policy server 使用方式</td><td><code>cookbooks/cosmos3/generator/action/run_policy_with_cosmos_framework.md</code>：启动 policy server、RoboLab client、headless eval 命令。</td></tr>
+          <tr><td>Framework setup</td><td><code>cookbooks/cosmos3/README.md</code>：Cosmos Framework clone/install；inference path 依赖 training extras。</td></tr>
+          <tr><td>Generator network code</td><td><a href="https://raw.githubusercontent.com/NVIDIA/cosmos-framework/main/cosmos_framework/model/vfm/mot/cosmos3_vfm_network.py">cosmos3_vfm_network.py</a>：<code>Cosmos3VFMNetworkConfig</code>、<code>vae2llm</code>、<code>action2llm/llm2action</code>、pack/unpack action、encode/decode action。</td></tr>
+          <tr><td>Reasoner bypass</td><td><a href="https://raw.githubusercontent.com/NVIDIA/cosmos-framework/main/cosmos_framework/model/vfm/omni_mot_model.py">omni_mot_model.py</a> 与 <code>cosmos3_vfm_network.py</code>：<code>generate_reasoner_text</code> 只走 reasoner pathway，bypass VFM-level generation heads。</td></tr>
+          <tr><td>Domain dims</td><td><a href="https://raw.githubusercontent.com/NVIDIA/cosmos-framework/main/cosmos_framework/data/vfm/action/domain_utils.py">domain_utils.py</a>：embodiment to domain_id 和 raw_action_dim 表。</td></tr>
+          <tr><td>Pose/action conversion</td><td><a href="https://raw.githubusercontent.com/NVIDIA/cosmos-framework/main/cosmos_framework/data/vfm/action/pose_utils.py">pose_utils.py</a>：absolute pose 与 relative-pose action vector 转换；layout 是 translation + rotation。</td></tr>
+          <tr><td>RoboLab policy server</td><td><a href="https://raw.githubusercontent.com/NVIDIA/cosmos-framework/main/cosmos_framework/scripts/action_policy_server_robolab.py">action_policy_server_robolab.py</a> 与 <a href="https://raw.githubusercontent.com/NVIDIA/cosmos-framework/main/docs/action_policy_robolab_server.md">docs/action_policy_robolab_server.md</a>：默认 checkpoint、8D joint_pos、32 steps、15 FPS、joint/eef action_space、sample 构造与 generate_samples_from_batch。</td></tr>
+          <tr><td>Nano config</td><td><a href="https://huggingface.co/nvidia/Cosmos3-Nano/blob/main/config.json">Hugging Face config.json</a>：Nano hidden size、layers、heads、vision config、model type 等。</td></tr>
+          <tr><td>Training curriculum</td><td><a href="https://research.nvidia.com/labs/cosmos-lab/cosmos3/technical-report.pdf">Cosmos 3 technical report</a>：pre-training/mid-training/post-training data curriculum，action/video-transfer 在 mid-training 引入，post-training 产生 expert models。</td></tr>
+        </tbody>
+      </table>
+    </section>
+  </main>
+</body>
+</html>
