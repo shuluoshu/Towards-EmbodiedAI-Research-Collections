@@ -1,50 +1,55 @@
 # Towards EmbodiedAI Research Collections
 
-生成日期：2026-06-13  
-定位：Embodied AI / VLA / World Model / World Action Model / Robot Foundation Model 技术情报与 must-read paper 汇总库。
+> [!IMPORTANT]
+> **Language Switch:** **English** | [中文版本 / Chinese](./README.zh-CN.md)
 
-## 0. 总览
+Generated: 2026-06-13
 
-这个仓库用于沉淀具身智能方向的结构化技术笔记，当前重点覆盖：
+Scope: a curated technical-intelligence and must-read paper collection for Embodied AI, Vision-Language-Action models, World Models, World Action Models, and Robot Foundation Models.
 
-1. **VLA / Robot Foundation Model：** 从 RT-1、RT-2、OpenVLA、π₀、GR00T 到新一代 native multimodal / flow policy。
-2. **World Model / World Action Model：** 从 world model 数据引擎、policy improvement，到 DreamZero、Fast-WAM、WALL-WM、Discrete-WAM 等 action-aware world modeling。
-3. **统一多模态基础设施：** Cosmos3、Seed-RF 等把 understanding、generation、simulation、action 或 representation forcing 统一到同一模型范式中。
-4. **可复用阅读材料：** 每篇重点论文保留 Markdown 技术解读和 HTML 阅读版本，便于 GitHub 浏览、离线阅读和后续继续扩展。
+## 0. Overview
 
-## 1. 全局技术情报报告
+This repository collects structured research notes for Embodied AI. The current collection focuses on:
 
-| 入口 | 内容 |
+1. **VLA / Robot Foundation Models:** from RT-1, RT-2, OpenVLA, pi0, and GR00T to newer native-multimodal and flow-policy systems.
+2. **World Models / World Action Models:** from world-model data engines and policy improvement to action-aware world modeling such as DreamZero, Fast-WAM, WALL-WM, and Discrete-WAM.
+3. **Unified multimodal infrastructure:** systems such as Cosmos3 and Seed-RF that connect understanding, generation, simulation, action, or representation forcing inside a more unified modeling stack.
+4. **Reusable reading artifacts:** each must-read paper keeps a Markdown technical note plus an HTML reading version for GitHub browsing, local reading, and future expansion.
+
+## 1. Global Technical Intelligence Report
+
+| Entry | Description |
 |---|---|
-| [Markdown 总报告](./reports/vla-worldmodel-tech-intelligence/VLA_WorldModel_Tech_Intelligence_Report.md) | VLA / World Model / WAM 多论文技术脉络、分类图谱、组织路线、依赖关系、技术卡片 |
-| [HTML 阅读版源码](./reports/vla-worldmodel-tech-intelligence/index.html) / [网页预览](https://raw.githack.com/shuluoshu/Towards-EmbodiedAI-Research-Collections/main/reports/vla-worldmodel-tech-intelligence/index.html) | 与 Markdown 总报告对应的 HTML 阅读版 |
-| [核心框图源码](./reports/vla-worldmodel-tech-intelligence/core-diagrams.html) / [网页预览](https://raw.githack.com/shuluoshu/Towards-EmbodiedAI-Research-Collections/main/reports/vla-worldmodel-tech-intelligence/core-diagrams.html) | 为重点工作重画的统一风格机制框图 |
+| [Markdown report](./reports/vla-worldmodel-tech-intelligence/VLA_WorldModel_Tech_Intelligence_Report.md) | Multi-paper technical map covering VLA / World Model / WAM trends, taxonomies, organization timelines, dependency relations, idea clusters, and per-work cards. |
+| [HTML source](./reports/vla-worldmodel-tech-intelligence/index.html) / [web preview](https://raw.githack.com/shuluoshu/Towards-EmbodiedAI-Research-Collections/main/reports/vla-worldmodel-tech-intelligence/index.html) | HTML reading version of the global report. |
+| [Core diagrams source](./reports/vla-worldmodel-tech-intelligence/core-diagrams.html) / [web preview](https://raw.githack.com/shuluoshu/Towards-EmbodiedAI-Research-Collections/main/reports/vla-worldmodel-tech-intelligence/core-diagrams.html) | Redrawn mechanism diagrams for memorization and cross-paper comparison. |
 
 ## 2. Must-Read Papers
 
-| 方向 | 论文 / 工作 | Markdown | HTML |
+| Area | Paper / Work | Markdown | HTML |
 |---|---|---|---|
-| Omnimodal World Model | Cosmos3 | [README](./must-read-papers/Cosmos3/README.md) | [源码](./must-read-papers/Cosmos3/cosmos3_report.html) / [网页预览](https://raw.githack.com/shuluoshu/Towards-EmbodiedAI-Research-Collections/main/must-read-papers/Cosmos3/cosmos3_report.html) |
-| Cosmos3 Code / Framework | Cosmos3 Code Review | - | [源码](./must-read-papers/Cosmos3/analysis-cosmos-framework-and-Code-中文解读.html) / [网页预览](https://raw.githack.com/shuluoshu/Towards-EmbodiedAI-Research-Collections/main/must-read-papers/Cosmos3/analysis-cosmos-framework-and-Code-中文解读.html) |
-| Native Multimodal / Representation Learning | Seed-RF | [README](./must-read-papers/Seed-RF/README.md) | [源码](./must-read-papers/Seed-RF/Seed-RF-faithful-bilingual.html) / [网页预览](https://raw.githack.com/shuluoshu/Towards-EmbodiedAI-Research-Collections/main/must-read-papers/Seed-RF/Seed-RF-faithful-bilingual.html) |
-| Event-grounded WAM | WALL-WM | [README](./must-read-papers/WALL-WM/README.md) | [源码](./must-read-papers/WALL-WM/WALL-WM-faithful-bilingual.html) / [网页预览](https://raw.githack.com/shuluoshu/Towards-EmbodiedAI-Research-Collections/main/must-read-papers/WALL-WM/WALL-WM-faithful-bilingual.html) |
-| Autonomous Driving WAM | Discrete-WAM | [README](./must-read-papers/Discrete-WAM/README.md) | [源码](./must-read-papers/Discrete-WAM/Discrete-WAM-faithful-bilingual.html) / [网页预览](https://raw.githack.com/shuluoshu/Towards-EmbodiedAI-Research-Collections/main/must-read-papers/Discrete-WAM/Discrete-WAM-faithful-bilingual.html) |
+| Omnimodal World Model | Cosmos3 | [README](./must-read-papers/Cosmos3/README.md) | [source](./must-read-papers/Cosmos3/cosmos3_report.html) / [web preview](https://raw.githack.com/shuluoshu/Towards-EmbodiedAI-Research-Collections/main/must-read-papers/Cosmos3/cosmos3_report.html) |
+| Cosmos3 Code / Framework | Cosmos3 Code Review | - | [source](./must-read-papers/Cosmos3/analysis-cosmos-framework-and-Code-中文解读.html) / [web preview](https://raw.githack.com/shuluoshu/Towards-EmbodiedAI-Research-Collections/main/must-read-papers/Cosmos3/analysis-cosmos-framework-and-Code-中文解读.html) |
+| Native Multimodal / Representation Learning | Seed-RF | [README](./must-read-papers/Seed-RF/README.md) | [source](./must-read-papers/Seed-RF/Seed-RF-faithful-bilingual.html) / [web preview](https://raw.githack.com/shuluoshu/Towards-EmbodiedAI-Research-Collections/main/must-read-papers/Seed-RF/Seed-RF-faithful-bilingual.html) |
+| Event-grounded WAM | WALL-WM | [README](./must-read-papers/WALL-WM/README.md) | [source](./must-read-papers/WALL-WM/WALL-WM-faithful-bilingual.html) / [web preview](https://raw.githack.com/shuluoshu/Towards-EmbodiedAI-Research-Collections/main/must-read-papers/WALL-WM/WALL-WM-faithful-bilingual.html) |
+| Autonomous Driving WAM | Discrete-WAM | [README](./must-read-papers/Discrete-WAM/README.md) | [source](./must-read-papers/Discrete-WAM/Discrete-WAM-faithful-bilingual.html) / [web preview](https://raw.githack.com/shuluoshu/Towards-EmbodiedAI-Research-Collections/main/must-read-papers/Discrete-WAM/Discrete-WAM-faithful-bilingual.html) |
 
-## 3. 当前重点工作索引
+## 3. Current Focus Index
 
-| ID | 工作 | 主类 | 为什么值得读 |
+| ID | Work | Category | Why it matters |
 |---|---|---|---|
-| P52 | Cosmos3 | Omnimodal World Model | 把 language / image / video / audio / action 统一到 MoT backbone，代表 Physical AI 基础模型融合方向。 |
-| P53 | WALL-WM | Event-grounded WAM | 用 action-grounded semantic event 替代固定 action chunk，重新定义 WAM 的训练原子。 |
-| P54 | GigaWorld-Policy | Action-centered WAM | 训练时联合 video/action，推理时 action-only decoding，回应 WAM 实时部署成本。 |
-| N01 | Seed-RF | Native Multimodal / Pixel-space Generation | 移除冻结 VAE 瓶颈，用内部 representation tokens 支撑 pixel-space flow generation。 |
-| N02 | Discrete-WAM | Autonomous Driving World-Policy Learning | 把未来视觉、ego action 与决策统一到离散 token editing 空间。 |
+| P52 | Cosmos3 | Omnimodal World Model | Unifies language, image, video, audio, and action in a Mixture-of-Transformers backbone, representing a major Physical AI foundation-model direction. |
+| P53 | WALL-WM | Event-grounded WAM | Replaces fixed action chunks with action-grounded semantic events, reframing the training unit for WAMs. |
+| P54 | GigaWorld-Policy | Action-centered WAM | Jointly trains on video and action while decoding actions only at inference time, directly addressing real-time WAM deployment cost. |
+| N01 | Seed-RF | Native Multimodal / Pixel-space Generation | Removes the frozen-VAE bottleneck and uses internal representation tokens to guide pixel-space flow generation. |
+| N02 | Discrete-WAM | Autonomous Driving World-Policy Learning | Puts future visual states, ego actions, and high-level decisions into one discrete token-editing space. |
 
-## 4. 组织方式
+## 4. Repository Layout
 
 ```text
 .
 ├── README.md
+├── README.zh-CN.md
 ├── must-read-papers/
 │   ├── Cosmos3/
 │   ├── Seed-RF/
@@ -57,9 +62,9 @@
         └── core-diagrams.html
 ```
 
-## 5. 维护原则
+## 5. Curation Principles
 
-- 优先收录论文、官方技术报告、官方博客、项目页、GitHub 仓库、模型卡和 benchmark 页面。
-- 明确区分“已确认工作”和“待核验/边界项”，避免把名称相似但来源不足的条目混入主线。
-- 每个 must-read paper 尽量保留 `README.md` 技术解读和对应 HTML 阅读材料。
-- 不提交 PDF 二进制文件，报告中保留官方链接或 HTML 阅读版，保持仓库轻量。
+- Prioritize papers, official technical reports, official blogs, project pages, GitHub repositories, model cards, and benchmark pages.
+- Separate confirmed works from ambiguous or weakly sourced items.
+- Keep both a `README.md` technical note and the corresponding HTML reading artifact for each must-read paper whenever possible.
+- Avoid committing PDF binaries; preserve official links or HTML reading versions instead to keep the repository lightweight.
