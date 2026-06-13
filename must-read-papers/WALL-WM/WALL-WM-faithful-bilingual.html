@@ -1,0 +1,2841 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>WALL-WM: Carving World Action Modeling at the Event Joints | Faithful Bilingual Reader</title>
+<style>
+:root { --accent: #ea580c; --line: #d9dee8; --ink: #172033; --muted: #667085; }
+* { box-sizing: border-box; }
+body { margin: 0; background: #f4f6fa; color: var(--ink); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", Arial, sans-serif; }
+.top { position: sticky; top: 0; z-index: 10; background: rgba(255,255,255,.96); border-bottom: 1px solid var(--line); backdrop-filter: blur(12px); }
+.title { padding: 14px 18px 10px; border-top: 6px solid var(--accent); }
+h1 { margin: 0 0 6px; font-size: 21px; line-height: 1.3; letter-spacing: 0; }
+.meta { color: var(--muted); font-size: 13px; }
+.nav { display: flex; gap: 6px; overflow-x: auto; padding: 8px 18px 12px; }
+.nav a { flex: 0 0 auto; min-width: 32px; text-align: center; color: #344054; text-decoration: none; border: 1px solid var(--line); border-radius: 6px; padding: 3px 7px; background: #fff; font-size: 12px; }
+main { max-width: 1680px; margin: 0 auto; padding: 16px 14px 80px; }
+.notice { background: #fff7ed; border: 1px solid #fdba74; color: #7c2d12; padding: 12px 14px; border-radius: 8px; line-height: 1.65; margin-bottom: 16px; }
+.spread { background: #fff; border: 1px solid var(--line); border-radius: 8px; margin: 0 0 20px; overflow: hidden; }
+.spread header { display: flex; justify-content: space-between; align-items: center; background: #1f2937; color: #fff; padding: 8px 12px; }
+.spread header a { color: #dbeafe; text-decoration: none; font-size: 13px; }
+.cols { display: grid; grid-template-columns: minmax(420px, 1.05fr) minmax(380px, .95fr); gap: 0; align-items: start; }
+.original { margin: 0; padding: 12px; background: #e5e7eb; border-right: 1px solid var(--line); }
+.original img { display: block; width: 100%; height: auto; background: white; box-shadow: 0 2px 10px rgba(15,23,42,.16); }
+.translation { min-height: 100%; }
+.label { background: var(--accent); color: #fff; font-weight: 700; font-size: 13px; padding: 7px 10px; }
+pre { margin: 0; padding: 14px 16px 24px; white-space: pre-wrap; overflow-wrap: anywhere; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", Arial, sans-serif; font-size: 15px; line-height: 1.78; }
+@media (max-width: 980px) { .cols { grid-template-columns: 1fr; } .original { border-right: 0; border-bottom: 1px solid var(--line); } }
+@media print { .top { position: static; } .nav { display: none; } .spread { break-after: page; } body { background: white; } }
+</style>
+</head>
+<body id="top">
+<div class="top">
+  <div class="title">
+    <h1>WALL-WM: Carving World Action Modeling at the Event Joints</h1>
+    <div class="meta">左栏为 PDF 原页图片，英文原文视觉保持不改；右栏为对应中文翻译与解释。Source: WALL-WM-自变量.pdf · Pages: 45</div>
+  </div>
+  <nav class="nav"><a href="#page-1">1</a><a href="#page-2">2</a><a href="#page-3">3</a><a href="#page-4">4</a><a href="#page-5">5</a><a href="#page-6">6</a><a href="#page-7">7</a><a href="#page-8">8</a><a href="#page-9">9</a><a href="#page-10">10</a><a href="#page-11">11</a><a href="#page-12">12</a><a href="#page-13">13</a><a href="#page-14">14</a><a href="#page-15">15</a><a href="#page-16">16</a><a href="#page-17">17</a><a href="#page-18">18</a><a href="#page-19">19</a><a href="#page-20">20</a><a href="#page-21">21</a><a href="#page-22">22</a><a href="#page-23">23</a><a href="#page-24">24</a><a href="#page-25">25</a><a href="#page-26">26</a><a href="#page-27">27</a><a href="#page-28">28</a><a href="#page-29">29</a><a href="#page-30">30</a><a href="#page-31">31</a><a href="#page-32">32</a><a href="#page-33">33</a><a href="#page-34">34</a><a href="#page-35">35</a><a href="#page-36">36</a><a href="#page-37">37</a><a href="#page-38">38</a><a href="#page-39">39</a><a href="#page-40">40</a><a href="#page-41">41</a><a href="#page-42">42</a><a href="#page-43">43</a><a href="#page-44">44</a><a href="#page-45">45</a></nav>
+</div>
+<main>
+  <div class="notice">新版修正：左栏不再使用抽取文本，因此不会出现硬换行破坏原文的问题。右栏会读取 <code>faithful_translations/WALL-WM/page-XXX.txt</code>；尚未翻译的页面会临时显示待填充提示和抽取文本，便于逐页补齐。</div>
+  
+    <section class="spread" id="page-1">
+      <header><span>Page 1</span><a href="#top">Top</a></header>
+      <div class="cols">
+        <figure class="original">
+          <img src="faithful_page_images/WALL-WM/page-001.png" alt="WALL-WM page 1" loading="lazy" />
+        </figure>
+        <article class="translation">
+          <div class="label">中文翻译 + 简单解释</div>
+          <pre># WALL-WM：在事件关节处雕刻世界动作建模
+
+X Square Robot Team（X Square Robot 团队）
+
+WALL-WM 是一种 World Action Model（WAM，世界动作模型），它将视频-动作学习从以 chunk 为中心的优化，转向以事件为基础的 Vision-Language-Action（VLA）预训练，使用语义连贯的动作事件作为学习的原子单元。现有的 WAM 通常从多模态或视频基础模型初始化，然后在当前观测和指令条件下优化固定长度的 action chunks。虽然这样做方便，但这种以 chunk 为中心的表述造成了根本性的粒度不匹配。语言描述的是语义目标和事件，视觉通过连续的场景动态演化，而动作则在控制层时间尺度上运行；把三者强行塞进同一个固定长度的预测窗口，会把 VLA 训练变成短视野的相关性拟合。这不仅没有充分利用预训练得到的视觉-语义先验，还可能用 chunk 特定的动作捷径主动覆盖这些先验，削弱组合性和长时程泛化能力。WALL-WM 通过围绕语义事件来组织监督信号和数据，来解决这种不匹配。具体而言，它将事件级 caption 与 cluster-balanced sampling 构成的数据生态，与以事件为基础的 VLA 预训练配对，从而支持在多样行为、场景和任务结构上的可扩展学习。基于同一个经过事件预训练的 backbone，WALL-WM 支持两种互补的推理模式。event 模式接收下一事件描述，并支持可变长度的执行 chunk；而 unified 模式使用带有 Staircase Decoding 的 VLM，在保持梯度连续的 VLA 路径的同时，条件化传统的固定长度 chunk 推理。再结合基于 Muon-optimizer 的大规模预训练基础设施，WALL-WM 为通用型 WAM 提供了一套实用的规模化方案。实验表明，WALL-WM 在语言、场景和任务上都具有广泛的泛化能力，并在大规模真实世界泛化评测中取得了 state-of-the-art 的性能。
+
+简要解释：这一段是在说明 WALL-WM 的核心思想是把学习单位从“固定长度动作块”改成“语义事件”，这样更贴合语言、视觉和动作各自不同的时间与语义尺度，也更利于长程泛化。
+
+“沿着其关节雕刻自然。”
+——据柏拉图《斐德罗》（Phaedrus）265e
+
+日期：2026年5月29日
+
+代码：https://github.com/X-Square-Robot/wall-x
+
+1
+
+## 引言
+
+近年来，具身基础模型（embodied foundation models）(97, 41, 9, 36, 8, 14, 17) 的进展，越来越多地由从多模态理解模型和视频基础模型继承而来的大规模先验所驱动（20, 37, 13, 95）。在本报告中，我们用 VLA 广义地指代那些从视觉-语言输入预测动作的具身基础模型，并用 WAM 指代那些显式地将未来观测建模与动作预测耦合起来的 world-action models（世界动作模型）。
+
+简要解释：这一段先界定了本文中 VLA 和 WAM 的用法，并指出当前具身模型的能力主要来自多模态和视频基础模型的大规模预训练先验。
+
+现有大多数具身基础模型，都是通过根据当前观测和语言指令来预测固定长度的动作块（fixed-length action chunks），从而对这些先验进行适配。这种以 chunk 为中心的表述是有效且方便的，但它掩盖了一个结构性不匹配：它用外部时钟切割具身动态，而语言、视觉和动作却是在不同的语义尺度和时间尺度上演化。语言指定目标和事件；视觉通过连续的场景动态演化；动作运行在控制级时间尺度上，并对接触、时机以及微小扰动非常敏感。因此，将预训练得到的视觉-语义先验适配到具身控制，并不只是一个微调问题。首先要回答的是：视频-动作学习的原子单元应该放在哪里。这个区别正是 WALL-WM 的起点：
+
+简要解释：这一段强调问题不只是“怎么微调”，而是“学习单位切在哪里”。如果把语言、视觉和动作都硬塞进同一个固定窗口，就会忽略它们天然不同的结构。
+
+固定 chunk 是由时钟切分的；语义事件是由具身动态切分的。</pre>
+        </article>
+      </div>
+    </section>
+
+    <section class="spread" id="page-2">
+      <header><span>Page 2</span><a href="#top">Top</a></header>
+      <div class="cols">
+        <figure class="original">
+          <img src="faithful_page_images/WALL-WM/page-002.png" alt="WALL-WM page 2" loading="lazy" />
+        </figure>
+        <article class="translation">
+          <div class="label">中文翻译 + 简单解释</div>
+          <pre>论文标题：WALL-WM: 在事件交界处雕刻世界动作建模（Carving World Action Modeling at the Event Joints）
+
+时间对齐
+
+指令
+
+视觉
+
+触觉-力
+
+投影
+
+动作
+
+潜在-动作
+
+流形
+
+语义对齐
+
+a) 模态流形对齐（Modality Manifold Alignment）
+
+WALL-WM
+
+b) 通用性能（General Performance）
+
+适用于推理、灵巧操作以及多样化机器人任务的泛化，并且能够实现具备物理基础的视频预测。
+
+图 1 模态层级与 WALL-WM 通用性能的概念示意。左：在语义抽象与时空精度维度上的一种风格化对齐景观。文本提供粗粒度的语义对齐，视觉提供更稠密的时空落地，而动作则要求细粒度、对接触敏感的精度。如果有触觉-力输入，则将其视为一种可选的、富接触信息的信号，而不是必须的模态。右：WALL-WM 在操控任务性能和视频生成指标上都表现出明显优势，说明以事件为基础的预训练同时提升了可执行控制与未来观测建模能力。下：真实机器人任务的代表性快照为这些物理任务提供了示意性例子。
+
+简要解释：这张图强调，不同模态在语义、时空和接触精度上的角色不同；WALL-WM 试图把这些模态按层次对齐，并证明这种“事件驱动”的预训练能同时增强控制能力和视频预测能力。
+
+其余论证都源于这种不匹配。核心挑战通常不是多模态融合本身，而是保持几何结构的对齐（geometry-preserving alignment）。文本、视觉和动作并不共享同一种邻域概念：语义上相似的指令可能诱发不同的视觉轨迹，而视觉上相似的状态可能需要不兼容的控制响应。如图 1 所示，文本提供粗粒度的语义对齐，视觉提供更稠密的时空落地，而动作则要求最精细的局部精度。一个有用的 WAM 必须把这些模态连接起来，而不能把它们压扁成一个无差别的嵌入空间。
+
+简要解释：作者认为难点不只是把多种输入拼在一起，而是要保留它们各自的结构关系，避免不同模态在同一个空间里被“混平”。
+
+视频是语言与动作之间最自然的支架（scaffold）。互联网规模（Internet-scale）的视频预训练捕获了丰富的视觉动态，否则这些动态只能通过具身交互来学习 (37, 20)。视频在语义上也足够结构化，能够在事件边界上与语言对齐；同时，它在时间上又足够稠密，能够暴露动作执行所需的时机、过渡与状态变化。未来视频与动作共享因果时间结构，这使得从视觉到动作的落地（visual-to-action grounding）以及逆动力学（inverse dynamics）成为可能 (20, 43)。从这个意义上说，视频提供了一条从高层语义意图到低层执行的、较少依赖具身经验的桥梁。
+
+简要解释：视频既有语义结构，又有时间连续性，因此可以作为语言和动作之间的中介，帮助模型把“想做什么”连接到“怎么做”。
+
+把这个支架转化为一个 WAM 并不是一个短暂的适配阶段。它是一种保留先验的提升（prior-preserving lift）：模型必须继承从大规模视频中学到的语义和时间结构，同时获得具身动作所需的可控性、接触敏感性和因果落地能力。简单地附加一个动作解码器，确实可以把动作接到视觉先验上，但它并不能决定这个先验应该在什么单位上变得可执行（executable）。如果没有这样的单位，联合优化就可能塌缩到数据最丰富的模态，或者用短时域的动作相关性覆盖掉有用的视觉-语义结构。
+
+简要解释：作者强调，真正难的是“保留并升级”视频先验，而不是只在其上叠一个动作头；否则训练可能偏向数据最多的模态，破坏已有的高层语义结构。
+
+这种提升带来两个要求。第一，WAM 必须保留视频先验：视频生成模型偏好语义不变性、视觉合理性和时间平滑性，而具身控制要求对动作诱发的分歧和接触过渡保持敏感 (86, 44)。第二，WAM 必须提供时间落地（temporal grounding）：语言指令通常描述全局任务或语义事件，而观测和动作……
+
+简要解释：这里作者提出 WAM 的两个基本条件：一是不能丢掉视频模型已有的“像真、连贯、语义稳定”的能力，二是要把语言中的任务描述和具体时间上的观测、动作对应起来。</pre>
+        </article>
+      </div>
+    </section>
+
+    <section class="spread" id="page-3">
+      <header><span>Page 3</span><a href="#top">Top</a></header>
+      <div class="cols">
+        <figure class="original">
+          <img src="faithful_page_images/WALL-WM/page-003.png" alt="WALL-WM page 3" loading="lazy" />
+        </figure>
+        <article class="translation">
+          <div class="label">中文翻译 + 简单解释</div>
+          <pre>展开在许多帧和控制步上。固定长度的分块与这两个要求都不匹配。它们可能太短，无法包含一个完整的语义事件；也可能太长，难以在上下文与预测目标之间保持清晰的因果分离。  
+简要解释：这里指出了“固定长度 chunk”的核心问题：它既不一定能覆盖完整事件，也不利于把过去上下文和未来要预测的内容分开。
+
+同样的推理也说明了：要从视频先验中提升（lift）到一个通用的 WAM（world-action model，世界-动作模型），必须包含什么：  
+T1. 推理：把全局指令和任务进度转换为事件结构化的意图。  
+T2. 视觉预测：保留从 caption 到 video 的归纳偏置，同时让未来观测能够被可执行事件所控制。  
+T3. 精细操作：显式呈现动作执行所需的时序、接触转换以及局部状态变化。  
+简要解释：这三点分别对应高层推理、视觉生成/预测和低层操作控制，强调 WAM 不能只做单一能力，而要把三层能力统一起来。
+
+这些层次不能通过把一个 VLM、一个视频模型和一个动作头作为彼此独立的模块堆叠起来获得。它们需要一种训练范式，其中对齐单元同时对语言有意义、在视频中可见，并且能够通过动作执行。  
+简要解释：作者强调，真正关键的不是模块堆叠，而是设计一个能同时对齐语言、视觉与动作的训练单位。
+
+这给出了对齐单元的三个设计原则：  
+• 几何保持（Geometry preservation）：在不把各自原生结构压缩为一个共享空间的前提下，连接语言、视频和动作。  
+• 先验保持（Prior preservation）：与视频基础模型继承下来的 caption-to-video 结构保持兼容。  
+• 可执行因果性（Executable causality）：提供一个具有清晰时间支撑的预测目标，同时允许持续时间跟随任务本身，而不是固定时钟。  
+简要解释：这三条原则规定了理想的对齐单元应同时保留三种模态的结构、继承视频模型的先验，并且具备可执行、可控的时间因果关系。
+
+这些原则排除了把固定长度动作块作为基本单元的做法。chunk 便于批处理和部署，但它并不是语言、视频和动作共同拥有的自然对象。它可能切到某个语义行为的中间，把多个行为合并成一个目标，或者甚至需要历史上下文来判断这个 chunk 到底应该表示什么。  
+简要解释：这里说明固定长度 chunk 虽然工程上方便，但语义上不自然，容易破坏事件边界，导致表示混乱。
+
+因此，WALL-WM 用一个以动作为基础的语义事件（action-grounded semantic event）来替代固定长度 chunk：也就是一个在时间上连贯的可执行行为片段，例如 reaching、grasping、lifting、moving 或 placing。它可以用语言表达，在视频中观察到，并通过动作实现。不同于遵循外部时钟的固定时间 chunk，这种以动作锚定的语义事件会在底层可执行行为发生变化时开始和结束。因此，它满足上述原则：语言命名该事件，视频锚定其空间-时间演化，动作通过控制将其实现。  
+简要解释：这一段给出 WALL-WM 的核心单位定义。模型不再对齐“等长时间片”，而是对齐“语义事件”，即一个真正有动作意义的行为段。
+
+WALL-WM 通过事件锚定的 WAM 预训练（event-grounded WAM pretraining）来实例化这一原则。事件 caption 与对应的视频和动作片段配对，模型被训练去在事件对齐的区间上对未来的视频和动作进行去噪。这不仅仅是把事件当作辅助条件；它是在事件层面上锚定训练问题本身。其结果是一条从视频基础模型走向可执行世界-动作模型的、保持先验的路径。  
+简要解释：这里说明训练方式本身也按“事件”组织，而不是只把事件当额外输入，从而让模型学习到事件级别的未来预测能力。
+
+在推理时，同一个经过事件预训练的 backbone 支持两种互补模式：  
+Event mode. 系统在事件空间中展开。一个 VLM、人类或 agent 提出下一个事件描述，而 WALL-WM 在观察下一个状态之前，先执行与之对应的可变长度视频-动作片段。该模式遵循任务的自然持续时间，而不是固定的控制视野长度。  
+Unified mode. 仍然保留传统的固定长度 chunk 推理，但该 chunk 不再仅仅以原始全局指令作为条件。带有 Staircase Decoding 的 VLM 提供关于任务进度的事件结构化潜在推理，生成一个潜在事件表示，用它来指导下一个局部 chunk，同时保持一条梯度连续的 VLA 路径。  
+简要解释：这里给出两种推理方式。Event mode 直接按事件执行；Unified mode 仍按 chunk 运行，但通过事件级潜在推理来改进传统 VLA 流程。
+
+图2总结了这两种方案，Sec.3 给出了详细表述。  
+简要解释：这一句是导航说明，提示读者图2看整体框架，Sec.3 看具体公式和定义。
+
+本文把 WALL-WM 同时作为一个模型实例，以及一条用于保持先验并进行规模扩展（scale-up）的 WAM 路线图。其主要组成部分是：  
+简要解释：这句话在引出后文将要展开的模型模块和方法组成；原文在此页末尾转入列表。</pre>
+        </article>
+      </div>
+    </section>
+
+    <section class="spread" id="page-4">
+      <header><span>Page 4</span><a href="#top">Top</a></header>
+      <div class="cols">
+        <figure class="original">
+          <img src="faithful_page_images/WALL-WM/page-004.png" alt="WALL-WM page 4" loading="lazy" />
+        </figure>
+        <article class="translation">
+          <div class="label">中文翻译 + 简单解释</div>
+          <pre>图中标注：
+左臂将球放入左侧绿色篮子  
+右臂将口红圆柱体放入右侧红色篮子  
+左臂将骰子立方体放入中间白色篮子  
+
+视频  
+文本  
+VLM Rollouts  
+先验对齐训练  
+匹配 T2V 先验  
+无时间混淆  
+文本  
+动作  
+2.5 秒  
+7.5 秒  
+最大化网页规模图文描述视频的利用率  
+5.0 秒  
+下一事件预测  
+全局指令：将零散物品整理成整齐有序的摆放  
+具身部署  
+视频  
+指令在时间上是全局的  
+动作  
+用于消歧的历史  
+历史窗口  
+动作  
+文本  
+指令  
+事件字幕  
+下一块预测  
+指令  
+事件块  
+等长块  
+定义良好  
+歧义  
+需要因果执行  
+指令  
+历史  
+等长块  
+定义良好  
+简要解释：这张图在对比两种训练/预测设定：一种是事件级对齐，事件字幕、视频和动作对应同一语义区间；另一种是块级预测，如果只有全局指令会产生歧义，加入历史窗口后才能把下一块预测变成定义良好的问题。  
+
+图 2 下一事件训练与等长块（equilong-chunk）方案。在先验对齐训练中，事件字幕、事件视频和事件动作描述的是同一个语义区间，因此从字幕到视频/动作的目标是定义良好的。在等长块模式中，单独一个全局指令对于局部块来说是歧义的；加入历史窗口后，下一块预测问题恢复为定义良好的问题。  
+简要解释：图注说明了本文为什么强调“事件对齐”和“历史窗口”：它们分别解决了目标定义不清和局部块歧义这两个核心问题。  
+
+• 以事件为基础的 WAM 预训练。WALL-WM 将以动作为基础的语义事件视为原子训练单元，将其与事件字幕配对，并训练一个视频-动作去噪器，在保留继承而来的视频先验的同时，把与事件对齐的视觉证据转化为可执行动作。  
+简要解释：这一点强调训练粒度不是任意固定片段，而是“事件”；模型一方面保留视频基础模型的先验，另一方面把视觉信息直接转成动作。  
+
+• 来自同一个事件预训练骨干的两种推理模式。事件模式执行事件空间中的 rollout，生成长度可变的可执行片段。统一模式通过基于 VLM 的 Staircase Decoding 生成事件结构化的潜在推理，同时保持梯度连续的 VLA 路径，从而支持固定长度块预测。  
+简要解释：这里说明同一个底座可以同时支持事件级长短可变推演和固定长度块预测，兼顾灵活性与统一性。  
+
+• 面向事件 grounded 具身建模的规模化基础设施。WALL-WM 结合了事件 grounding 数据生态、集群均衡采样，以及基于 Muon 优化器的大规模预训练基础设施，以支持跨多样行为、场景和任务的可扩展 WAM 训练。  
+简要解释：这一点讲的是训练系统层面的支撑，包括数据组织、采样策略和优化器配置，目标是让模型能够稳定扩规模。  
+
+WALL-WM 在语言指令、场景和任务上都表现出广泛泛化能力，在大规模真实世界泛化评测中取得了很强的性能。总体而言，WALL-WM 通过以动作为基础的语义事件把文本、视频和动作连接起来。我们将 WALL-WM 视为一种更少着眼于对视频基础模型做短期适配、而更侧重于保持先验并进行规模化扩展的方法论，用于下一代具身基础模型。  
+简要解释：这一段是在总结本文的定位：WALL-WM 不只是对视频模型做微调，而是借助“事件”把文本、视频和动作统一起来，作为可扩展的具身基础模型方法。  
+
+2 相关工作  
+
+2.1 视觉-语言-动作模型（Vision-Language-Action Models）  
+
+越来越多的具身基础模型，通常被称为视觉-语言-动作（Vision-Language-Action, VLA）策略，在预训练视觉语言模型之上扩展出动作接口，用于将视觉观测和自然-  
+简要解释：这一小节在引出 VLA 研究脉络，说明它们的基本思路是给视觉语言模型加上动作输出接口，把感知和控制连接起来。  
+
+第 4 页</pre>
+        </article>
+      </div>
+    </section>
+
+    <section class="spread" id="page-5">
+      <header><span>Page 5</span><a href="#top">Top</a></header>
+      <div class="cols">
+        <figure class="original">
+          <img src="faithful_page_images/WALL-WM/page-005.png" alt="WALL-WM page 5" loading="lazy" />
+        </figure>
+        <article class="translation">
+          <div class="label">中文翻译 + 简单解释</div>
+          <pre>论文标题：WALL-WM: 在事件交界处雕刻世界行动建模（Carving World Action Modeling at the Event Joints）
+
+将语言指令映射为可执行的运动指令（97, 41, 70, 9, 36, 8, 14, 77, 68）。通过继承来自 VLM 预训练的网页规模语义先验，这些模型在物体、场景和语言指令之间表现出强泛化能力，并为模块化的感知-规划-控制流水线提供了一种统一替代方案。近期工作在这一 observation-to-action 范式内探索了广泛的设计选择，包括用于长时程控制的高效动作分词与分块（chunking）（90, 60, 41）、基于 diffusion 或 flow-matching 的动作专家（16, 45, 74, 9）、轻量且数据高效的 backbone（75）、潜在动作预训练与跨具身路由（cross-embodiment routing）（82, 11）、在适配过程中保持预训练先验的知识隔离式微调（knowledge-insulated fine-tuning）（19）、空间增强或 3D 感知的策略表示（61, 56），以及与动作生成交错的视觉 chain-of-thought 推理（87, 89）。尽管具备广泛的语义能力，现有 VLA 仍面临系统性局限。首先，其底层 VLM 主要在静态图像-文本数据上进行预训练（97, 9），因此即使在遥操作数据集上进行大规模监督微调（41, 8），学到的也主要是动作模仿，而非显式建模物理世界在外部干预下如何演化。其次，大多数 VLA 将控制表述为一种反应式的 observation-to-action 映射，而没有 action-conditioned 的未来预测，也缺乏显式的 temporal-dynamics 先验（45, 14）。第三，向真正新颖的运动、技能、具身形式或环境泛化时，往往仍需要大量任务特定或机器人特定的适配数据（36, 17）。这些局限推动了另一条并行研究路线：将策略建立在“世界如何演化”的生成式模型之上，下面我们将回顾这一方向。
+
+简要解释：这一段是在总结 VLA 的优势与瓶颈。核心观点是：当前模型很强于“理解”和“模仿”，但对真实世界在动作作用下如何变化的显式建模还不够，因此研究者开始转向世界模型路线。
+
+2.2
+
+生成式具身世界模型
+
+生成式世界模型近年来已成为具身 AI 的一个有前景的范式，其中智能体学习预测物理世界未来状态，并利用这些预测进行规划和控制。早期基于模型的强化学习方法，如 PlaNet、Dreamer 和 DreamerV3（28, 27, 29），学习用于控制的紧凑预测状态；而 JEPA 系列，包括 V-JEPA 和 LeWorldModel（2, 54），表明在特征空间中进行预测可以在不显式重建像素的情况下捕捉有意义的时间结构和物理结构。更近期的具身世界模型进一步利用生成式视频和 world-action modeling 目标，从大规模异构数据中学习机器人-环境动力学。这些模型使用预测的未来帧或中间视觉表示作为计划（plans），再通过逆动力学模型（20）、中间特征动作解码器（59）、密集对应（dense correspondence）（43）、面向规划的轨迹解码（21, 94），或从人类视频和新场景中迁移而来的合成示范（6, 5, 15, 37, 51）恢复出可执行动作。近期工作进一步表明，视频生成器编码了有用的 3D 和交互先验（32, 42, 93, 78, 46），这促使人们将其用作具身动力学模型。沿着这一方向，LaDi-WM、AdaWorld、Motus、LDA-1B 和 MotuBrain（33, 23, 7, 53, 69）探索了潜在扩散（latent diffusion）、结构化视觉预测、潜在动作条件化以及统一的视频-动作建模，而 LingBot-VA（44）及相关的统一去噪架构（26, 22, 95, 13, 83, 76, 12, 88, 47）则联合建模未来预测和动作生成。更近期的方法，如 Fast-WAM（86），通过在测试时避免显式的视频解码或未来想象（future imagination），进一步提升了推理效率。总体而言，这些进展表明，显式的未来状态建模能够改善样本效率、鲁棒性和泛化能力。
+
+简要解释：这一段说明“世界模型”为什么重要。它不只是输出动作，而是先预测未来会发生什么，再据此规划，因此通常更省样本、更加稳健，也更容易泛化。
+
+2.3
+
+潜在推理
+
+另一条互补的研究路线是：将 chain-of-thought（CoT）推理导入紧凑的潜在表示中，而不是直接输出完整的文本推理轨迹，其动机在于推理效率，以及能够探索超越离散 token 序列的语义级推理轨迹（30, 24, 38, 39, 50, 92）。LaDiR（38）通过 VAE 将推理步骤编码为连续的“thought tokens”块，并用 latent diffusion model 对其进行细化；其强化学习扩展版本（39）进一步优化潜在轨迹，以保持解的多样性。近期 VLA 方法进一步将这一思想扩展到具身约束下的潜在推理：LaST0（49）提出了 latent spatio-temporal CoT，用于捕捉机器人操作中的未来视觉动态、3D 结构和本体感觉（proprioceptive）状态；LaST-VLA（52）将几何约束和 world-model 远见（foresight）蒸馏到用于自动驾驶的 latent spatio-temporal 表示中；LaRA-VLA（3）则将文本与视觉 CoT 监督逐步转移到潜在推理动力学中，以实现高效动作生成。相比之下，WALL-WM 使用 staircase parallel decoder，将潜在 CoT token 注入并沿着 VLM backbone 的错位深度（staggered depths）传播。这一设计在尽可能保留预训练 VLM 的层级视觉-语言先验和因果计算结构的同时，分摊了潜在推理的层级代价（layer cost）。
+
+简要解释：这一段讲的是“把思维压缩到潜空间里”的思路。WALL-WM 的重点不是直接吐出长推理文本，而是把推理信息塞进模型内部的不同层里传播，这样更高效，也更能保留原始 VLM 学到的结构化先验。
+
+5</pre>
+        </article>
+      </div>
+    </section>
+
+    <section class="spread" id="page-6">
+      <header><span>Page 6</span><a href="#top">Top</a></header>
+      <div class="cols">
+        <figure class="original">
+          <img src="faithful_page_images/WALL-WM/page-006.png" alt="WALL-WM page 6" loading="lazy" />
+        </figure>
+        <article class="translation">
+          <div class="label">中文翻译 + 简单解释</div>
+          <pre>3
+
+**架构设计：以事件为中心的世界动作建模**
+
+**3.1**
+
+**概述**
+
+如图 3 所总结，WALL-WM 通过一个与先验对齐的多模态预训练堆栈来实例化以事件为中心的世界动作建模：一个继承自 Wan Series 文本到视频模型 (72) 的视频塔，与一个随机初始化的 action DiT 进行层耦合（layer-coupled），其中预训练编码器保持冻结，并通过逐层的视频-动作耦合学习跨模态对齐。预训练以事件级别组织：每个样本都是从长时程 episode 中切分出的原子事件 (V𝑒, a𝑒)，而不是固定长度的片段，模型被训练去从当前观测中对与事件对齐的未来进行去噪（denoise）。在每个 block 中，动作流（action stream）会对匹配的视频特征进行 cross-attend，而不修改视频流本身。
+
+简要解释：这一段说明了 WALL-WM 的核心训练范式。它不是把长视频随便切块，而是按“事件”来建模，并且只让动作分支去吸收视频信息，从而保留视频塔原有能力，同时学习动作与视频的对应关系。
+
+形式化地，WALL-WM 建模为 𝑝𝜃(V𝑒, a𝑒 | V0, s, 𝑐𝑒)，其中 V0 是当前多视角观测（每个相机一张关键帧），s 是当前本体感受状态（proprioceptive state），(V𝑒, a𝑒) 是与事件对齐的未来多视角视频和末端执行器轨迹（两者都具有事件相关长度），𝑐𝑒 是描述同一动作支撑语义事件的逐事件 caption。第 3 节剩余部分遵循图 2 的两种范式：在子图 (A) 中采用事件中心布局进行下一事件预测，用于预训练和 event-mode 推理；在子图 (B) 中采用观测中心布局进行下一片段预测，用于 unified-mode 部署。首先，第 3.2 节和第 3.3 节通过逐层耦合与时间对齐，从事件中心预训练构建共享的视频-动作去噪器，并扩展到带历史增强的观测中心窗口。其次，第 3.4 节把推理时的语言路径接到同一个事件预训练骨干上：一个具备视觉感知能力的 VLM bridge 支持 event mode 下的下一事件条件化，以及 unified mode 下的指令落地（instruction grounding）；同时，Staircase decoding 在不进行逐 token 自回归的情况下，为固定长度片段预测提供事件结构。
+
+简要解释：这一段给出了概率建模目标和整篇第 3 节的组织方式。作者把系统分成两种推理布局：一种偏事件预测，一种偏统一模式的片段预测，并说明后文分别如何构建共享去噪器和语言接口。
+
+**3.2**
+
+**多视角视觉世界事件建模**
+
+视频塔继承了 Wan 单视角 DiT，并将其扩展到多视角、多 embodiment 的视频生成。继承下来的视图内（within-view）计算保持不变；我们在同一个 backbone 上 graft 了三项新增模块：(i) 从单视角先验出发的多视角适配（multi-view adaptation），它在按帧重排后的跨视角 token 上执行 cross-view self-attention，并通过一个零初始化输出投影器把结果合并回去；(ii) Camera RoPE，它在该跨视角分支中为每个相机提供一个可学习、无需标定（calibration-free）的身份标识，使同一个 DiT 能够在异构的多 embodiment 相机配置上运行；(iii) 跨视角几何 masking（cross-view geometric masking），这是一个互补的训练期配对机制，用于增强跨视角几何一致性。随后，该 tower 在事件潜变量（event latents）上按照 Wan 风格的 𝑣-prediction flow matching (31, 64, 48) 进行训练。
+
+简要解释：这一段说明视频塔如何从单视角扩展到多视角。关键思路是保留原始单视角能力，再额外加上跨视角信息交换、相机身份编码，以及训练时的几何约束，从而让模型学会多相机一致生成。
+
+**从单视角先验到多视角适配。** 当 𝑁𝑣 &gt; 1 时，每个 DiT block 在常规的视图内 Wan self-attention 之后，会再运行一个额外的跨视角分支。每个相机流仍然作为独立的 batch item 输入；在一个 view-attention block 内，我们按帧重新组织隐藏状态，把每个 latent frame 上来自 𝑁𝑣 个相机的所有空间 token 拼接成一个序列，并在这个联合布局上执行 self-attention——同时使用也会编码相机轴的 rotary codes（Camera RoPE，见下一段）。注意力权重从该 block 的视图内 self-attention 初始化；其输出经过一个零初始化投影器后，再在 AdaLN gate 下加回到每个视图的流中。令 h𝑉𝑖 表示第 𝑖 个 DiT block 中的隐藏状态（处于 per-view Wan 布局），CrossViewAttn𝑖(·) 表示上述重排后的跨视角 self-attention，𝑊view 表示其零初始化输出投影器，𝑔𝑖 表示该分支上的 AdaLN gate，则
+
+公式说明：  
+h𝑉𝑖 ← h𝑉𝑖 + 𝑔𝑖 𝑊view CrossViewAttn𝑖 h𝑉𝑖 ,  
+𝑊view initialized to 0.  
+(1)
+
+由于 𝑊view 从零开始初始化，这个分支在初始化时不会贡献任何输出，只有当投影器在训练中逐渐学到有效映射后，跨视角信息交换才会真正开启。除此之外，视图内的 Wan stack 保持不变，因此预训练得到的外观与语言对齐行为得以保留，而跨视角交换则是在其上叠加学习得到的。
+
+简要解释：这里给出的机制本质上是“先冻结原有单视角能力，再逐步打开跨视角通信”。零初始化保证新分支一开始不会破坏原模型行为，训练稳定后才逐渐学到多视角融合。
+
+**Camera RoPE。** 为了支持大规模多 embodiment 训练，Camera RoPE 为每个视图提供一个可学习的旋转位置身份，而无需在运行时向模型输入标定信息。我们将 RoPE (67) 扩展到一个 view 轴上，把每个 attention head 的频率库按 (𝑓, ℎ, 𝑤, view) 进行分区；view rotation 由一个可学习的逐视图 embedding 生成，并在所有 view-attention layers 中共享。因此，添加或移除一个相机只会改变 embedding table。这个 rotary code 告诉网络每个 token 来自哪一个相机；在训练期间，下文的 sight-cone mask 进一步指定了它可能与哪些其他 token 合理相关。
+
+简要解释：这一段的重点是“相机身份编码”。它让模型知道 token 来自哪一个相机，但不依赖显式标定参数，因此更适合真实系统中相机数量和布局经常变化的场景。
+
+6</pre>
+        </article>
+      </div>
+    </section>
+
+    <section class="spread" id="page-7">
+      <header><span>Page 7</span><a href="#top">Top</a></header>
+      <div class="cols">
+        <figure class="original">
+          <img src="faithful_page_images/WALL-WM/page-007.png" alt="WALL-WM page 7" loading="lazy" />
+        </figure>
+        <article class="translation">
+          <div class="label">中文翻译 + 简单解释</div>
+          <pre>图中文字：
+1. 用左手抓住刀……放到盘子的右侧。  
+2. 用……把土豆/葡萄放置。  
+3. 抓起花朵放入花瓶。  
+4. ……  
+执行：用左手抓住刀，将其转移到右手……这需要 4 秒来执行。  
+回滚（Rollout）  
+文本模型（Text Model）  
+VLM/人类/智能体（VLM/Human/Agent）  
+历史观测与执行（Historical Observations and Executions）  
+开/关（ON/OFF）  
+动作 Transformer（Action Transformer）  
+多视角视频 DiT（Multi-View Video DiT）  
+事件模式：自然语言（Nature Language）  
+Qwen3.5  
+阶梯式解码器（Staircase Decoder）  
+统一模式：嵌入（Embedding）  
+S1. 视图内注意力（Intra-view Attn）  
+T5 嵌入（T5 Embeds）  
+视频潜变量（video latents）  
+a) 语言引导推理（Language-Guided Reasoning）  
+S2. 跨视图注意力（Cross-view Attn）  
+b) 事件世界建模（Event World Modeling）  
+S3. 视图拼接（View Concat）  
+视图 1  
+视图 2  
+视图 3  
+将各视图并入批量轴（views into the batch axis）  
+跨视图融合（cross-view fusion）  
+状态与动作（state &amp; action）  
+S4. 按块耦合（Block-wise Coupling）  
+将 KV 送入动作分支（KV to Action）  
+沿序列轴的视图 token（views tokens along sequence axis）  
+c) 空间-时间融合（Spatial-Temporal Fusion）
+
+图 3：WALL-WM 的整体框架。WALL-WM 将事件中心的世界-动作建模实现为一个层耦合的 video-action 去噪器：给定当前多视角观测和下一事件指令，它联合去噪未来视频潜变量以及对应的末端执行器轨迹。该图分为三个子图。(a) 提供指令：事件模式将下一事件语言路由到共享文本条件器中（图中的 T5 (62) 进行嵌入），而统一模式则通过一个 Staircase 解码器路由到 CoT 潜变量。(b) 是事件中心的世界模型——一个 Multi-View Video DiT 去噪视频潜变量，而一个 Action Transformer 去噪动作；Execute 和 Rollout 在上方闭合控制回路。(c) 总结了贯穿堆栈的空间-时间融合，其中将 𝑁𝑣 = 3 路相机流送入该堆栈：视图折叠在保留继承的视图内自注意力及其 3D RoPE 位置编码（S1）的同时，将每个 DiT 块中的跨视图混合（S2）、沿 token 轴的 ViewConcat（S3），以及在每一层把融合后视频的 key/value 单向耦合到动作塔（S4）。
+
+简要解释：这一整幅图说明了 WALL-WM 如何把“看视频”和“做动作”统一到一个框架里：先根据任务语言决定推理方式，再把多视角视频与动作生成/预测连接起来，并通过多层融合机制让视觉信息持续影响动作输出。
+
+跨视图几何掩码（Cross-View Geometric Masking）。仅靠视图注意力，即使不同相机的 patch 之间没有共享视野，也可能把 token 混在一起；而当确实存在可共视区域时，网络又常常通过单个视图内部更短的时间路径把它们恢复出来，因此跨视图注意力要么被滥用成通用特征混合器，要么在真正重要的 pair 上训练不足。训练时，我们通过一对互补的、几何感知的掩码来同时解决这两种失效模式，这两个掩码都由同一套逐机器人标定信息构建；在推理时它们都会被丢弃，因此 rollout 仍然不依赖标定。
+
+简要解释：作者的核心意思是，跨视图注意力如果不加约束，会把本来不该关联的相机信息乱混在一起，所以他们只在训练时借助几何关系限制注意力范围，推理时则不需要这些额外标定约束。
+
+视锥注意力掩码（Sight-cone attention masking）。对于同一潜在帧上的两个视频 token 𝑢=( 𝑣𝑢 , ℎ𝑢 , 𝑤𝑢 ) 和 𝑢′ =( 𝑣𝑢′ , ℎ𝑢′ , 𝑤𝑢′ )，如果它们在原始视频中对应 patch 的视锥体相交，我们就称这对 token 是可共视的（也就是说，像素空间中可以从不同视角观测到同一区域）。为了计算方便，我们把每个视锥建模为一个圆锥 𝐶 (𝑢) = (p0 ( 𝑢) , v̂( 𝑢) , 𝛾 (𝑢))，其顶点位于相机中心，轴向 v̂ 指向 patch 中心，半顶角 𝛾 初始化为刚好包住该 patch（也可按 𝑙 ≥1 进行缩放）。圆锥参数由逐机器人外参、内参和畸变确定；在景深带 [ 𝑑min , 𝑑max ] 内并行测试相交关系：
+
+p( 𝑢, 𝑡 ) = p0 ( 𝑢) + 𝑡 v̂( 𝑢) ，
+
+(2)
+
+( 𝑡1 , 𝑡2 ) = arg min ∥p( 𝑢, 𝑡1 ) − p( 𝑢′ , 𝑡2 ) ∥ 2 ，
+
+(3)
+
+( 𝑡1 ,𝑡2 )
+
+𝑡ˆ1 = clamp ( 𝑡1 , 𝑑min , 𝑑max ) ， 𝑡ˆ2 = clamp arg min p( 𝑢, 𝑡ˆ1 ) − p( 𝑢′ , 𝑡2 ) 2 ， 𝑑min , 𝑑max ，
+
+(4)
+
+𝑡2
+
+𝐶 ( 𝑢) intersects 𝐶 ( 𝑢′ ) ⇐⇒
+
+p( 𝑢, 𝑡ˆ1 ) − p( 𝑢′ , 𝑡ˆ2 ) 2 ≤ 𝑡ˆ1 𝛾 (𝑢) + 𝑡ˆ2 𝛾 (𝑢′ )
+
+（约略成立）。
+
+(5)
+
+简要解释：这一段在定义如何判断两个相机视角里的 patch 是否真的“看见”了同一空间区域。方法是把每个 patch 近似成一个圆锥视锥，再在限定深度范围里计算两者是否相交，从而决定跨视图注意力该不该放行。</pre>
+        </article>
+      </div>
+    </section>
+
+    <section class="spread" id="page-8">
+      <header><span>Page 8</span><a href="#top">Top</a></header>
+      <div class="cols">
+        <figure class="original">
+          <img src="faithful_page_images/WALL-WM/page-008.png" alt="WALL-WM page 8" loading="lazy" />
+        </figure>
+        <article class="translation">
+          <div class="label">中文翻译 + 简单解释</div>
+          <pre>公式（6）：  
+由此得到一个二值掩码：
+
+\[
+M_{sc}[u, u&#x27;] = 1 \iff C(u)\ \text{与}\ C(u&#x27;)\ \text{相交}.
+\]
+（6）
+
+我们将 \((1 - M_{sc}) \cdot (-\infty)\) 作为每个视角注意力块（view-attention block）中的注意力偏置，禁止几何上不兼容的 patch 之间进行跨视角路由；该掩码对每个样本只计算一次，并在网络深度方向上复用。推理时去掉这个偏置，恢复为带 Camera RoPE 的无掩码注意力。\(M_{sc}\) 与上面的 Camera RoPE 形成闭环：旋转编码标识每个 token 来自哪台相机，而视锥掩码则标识它可以与哪些其他 token 相关联。
+
+简要解释：这一段说明了视锥掩码的作用是把跨视角注意力限制在“物理上看得到彼此”的 token 对之间，从而避免模型在几何上不合理的跨视角连接。
+
+Tube patch masking. 第二种机制会显式地要求跨视角注意力。以概率 \(p_{tube}\) 选取一个视角 \(v^*\) 和一个 \(k \times k\) 的空间窗口，其中 \(k \in \{l_{min}, \ldots, l_{max}\}\)，并在
+\[
+U = \{u \mid \exists u&#x27;,\ v_{u&#x27;} \neq v^*,\ M_{sc}[u, u&#x27;] = 1\}
+\]
+内部均匀采样，这样就可以从其他视角恢复。随后得到的 tube, 即在 \(v^*\) 的所有潜变量帧上使用同一个空间窗口, 会在加噪输入 \(z_V^t\) 中被掩蔽，方法是把这些 token 替换为纯噪声；在嵌套概率 \(p_{tube}^{cond}\) 下，同一个 tube 也会在条件通道 \(y\) 上被掩蔽。重建目标保持不变，但被掩蔽的 tube 不再具有视角内的时间捷径，因此恢复必须通过其他 \(N_v - 1\) 个视角来完成。在强化跨视角对应关系时会使用非平凡的 \((p_{tube}, p_{tube}^{cond})\)；被掩蔽 tube 如何进入视频损失，将在下面的 flow-matching 段落中说明。
+
+简要解释：这一段讲的是第二种训练约束，它故意遮住某个视角里的连续时空块，迫使模型不能只靠本视角的时序信息，而必须借助其他视角来补全。
+
+图 4：WALL-WM 的视角注意力中的跨视角掩蔽。  
+(a) 视锥掩码（sight-cone mask）。当且仅当一个 token 对 \((u, u&#x27;)\) 的反投影视锥在两台相机前方共享一个 3D 区域时，它们才允许相互注意；由此得到的二值掩码 \(M_{sc}\) 被加为 \((1 - M_{sc})(-\infty)\) 的注意力偏置，而同一视角内的 token 对始终允许（矩阵对角线）。  
+(b) Tube 掩码。一个视角 \(v^*\) 上的某个空间窗口会在所有潜变量帧上被掩蔽，并且在嵌套概率下也会在 InP 条件通道 \(y\) 上被掩蔽，从而只剩下对其他视角的跨视角注意力这一条路径来恢复被掩蔽内容；tube 内的 \(v\)-prediction 损失会按下面的 flow-matching 目标进行加权。两种掩码都只在训练时使用，因此运行时路径保持无需标定（calibration-free）。
+
+图中标签与步骤：  
+1. 随机选择一个视角（Pick a random View）。  
+2. 计算共视区域（Calculate co-visible region）。  
+3. 在其中随机采样一个 patch \(\tau\)（Sample a random patch \(\tau\)）。  
+4. 以概率 \(P_{tube}\) 将 \(x_i\) 中所有 \(\tau\) 区域掩蔽。  
+5. 以嵌套概率 \(P_{tube}^{cond}\) 将 \(y\) 中的 \(\tau\) 掩蔽。  
+还可见的标注包括：Camera \(C\)、Camera \(C&#x27;\)、\(U\)、\(U&#x27;\)、\(V\)、\(V&#x27;\)、\(\tau\)、Sampling、\(K \times K\)、Latents \(x_t, x_{t+1}, x_{t+2}, x_{t+3}, \ldots\)、Condition \(y\)、Set patch \(\tau\) as noise to mask information、Enhance the final loss weight for the masked patch \(\tau\)、以及 “Patches with intersecting cones are valid in cross-view attention”。
+
+简要解释：这幅图把两种训练掩蔽方式画出来了。左边强调“只允许几何上能看见彼此的 token 互相注意”，右边强调“通过遮挡内容迫使模型借助其他视角恢复”。
+
+为什么二者是互补的。视锥掩码作用于注意力拓扑：它让跨视角图结构反映真实的物理可见性，但并不会推动信息沿着剩余边传播。Tube patch masking 作用于输入内容：它移除了可通过视角内时序自注意力恢复的信息，但并不会阻止几何上不合理的相关性。训练时把二者结合起来，模型只能在几何允许且完成视频目标所必需的地方跨视角注意（见图 4）来最小化下面的视频目标。
+
+简要解释：这一段解释了两种掩码各自解决不同问题，一个约束“能不能连边”，另一个制造“必须跨视角补信息”的需求，所以组合起来效果更强。
+
+视频 Flow-Matching 目标。视频塔（video tower）继承了 Wan 风格的 flow matching，并在接上 action tower 之前先用 event latents 进行训练（第 5.1 节）。给定干净潜变量 \(z_V^0\)、噪声 \(\epsilon_V\)，以及一个采样的视频
+
+简要解释：这一段开始引入视频分支的训练目标，说明视频塔先单独按 flow matching 学习事件潜变量，再与 action tower 结合。</pre>
+        </article>
+      </div>
+    </section>
+
+    <section class="spread" id="page-9">
+      <header><span>Page 9</span><a href="#top">Top</a></header>
+      <div class="cols">
+        <figure class="original">
+          <img src="faithful_page_images/WALL-WM/page-009.png" alt="WALL-WM page 9" loading="lazy" />
+        </figure>
+        <article class="translation">
+          <div class="label">中文翻译 + 简单解释</div>
+          <pre>**WALL-WM：在事件接缝处雕刻世界动作建模**
+
+在时间步 \(t_V \sim \Phi_V\) 下，我们构造带噪潜变量 \(z_V^{t_V}\)，并回归流目标 \(C_V^\star = \epsilon_V - z_V^0\)。所有视频侧监督都汇总到一个流匹配损失中。默认情况下，
+
+\[
+L_V = w_V(t_V)\, \hat C_V - C_V^\star ,
+\tag{7}
+\]
+
+其中可选地使用逐时间步加权 \(w_V(t_V)\)，且只在有效的空间 token 上评估。画面外区域和合成的边界区域始终从这个 MSE 中排除，我们将其称为损失中的边界遮罩（border masking）；它独立于上面的视锥（sight-cone）和 tube 机制，并应用于所有视频运行（第 5.1 节）。当 tube-patch 遮罩启用（\(p_{\text{tube}} &gt; 0\)）时，记被遮罩的时空 tube 为 \(T\)。位于 \(T\) 内的 token 使用相同的 \(C\) 目标，但会额外乘以损失权重 \(\lambda_{\text{mask}}\)：
+
+\[
+L_V
+=
+\sum_{u \notin T} w_V(t_V)\, \hat C_u^V - C_u^{V\star}
++
+\lambda_{\text{mask}}
+\sum_{u \in T} \hat C_u^V - C_u^{V\star},
+\tag{8}
+\]
+
+其中 \(C_u^{V\star}\) 是 \(C_V^\star\) 的第 \(u\) 个分量。令 \(\lambda_{\text{mask}}=1\) 或令 \(T=\varnothing\)，即可恢复公式（7）的均匀形式。视锥遮罩（sight-cone masking）只影响跨视图注意力，绝不会修改哪些 token 参与 \(L_V\)。我们的、保持先验（prior-preserving）的主方案始终保留边界遮罩和视锥注意力监督，禁用 tube 采样和 tube 加权（\(p_{\text{tube}}=0\)，或在 \(T\) 为空时取 \(\lambda_{\text{mask}}=1\)）；非平凡的 tube 设置只保留给那些用于强化跨视图对应关系的实验。
+
+简要解释：这一段说明了视频侧训练时如何计算流匹配损失，以及哪些区域会被排除或重加权。核心思想是：默认训练尽量稳定、保守，只在需要时才引入更强的 tube 约束来增强跨视图对应。
+
+**3.3 以事件为中心的动作动力学建模**
+
+动作塔（action tower）是一个与视频塔（video tower）深度相同的 action DiT。在每一层，动作 token 都会从配对的视频 block 中读取多视图视频特征；整个堆栈通过 flow matching 对末端执行器轨迹进行去噪。下面我们介绍逐层耦合、视频-动作时间对齐、视频-动作去噪步映射，以及动作训练目标。
+
+简要解释：这一小节总览动作分支的结构：它不是独立处理动作，而是逐层读取视频特征，并用流匹配去恢复平滑的动作轨迹。
+
+**动作 Transformer 与逐层耦合。** 一个共享的 MLP 编码器 \(E_a:\mathbb{R}^{D_a}\rightarrow \mathbb{R}^d\) 将本体感知状态（proprioceptive state）和带噪动作都嵌入到 Transformer 宽度中；得到的 \(T_s+T_a\) 个 token（\(T_s\) 个状态 token 和 \(T_a\) 个动作 token）送入一串 \(N_{\text{DiT}}\) 个 action block，每个 block 依次执行：(a) 对动作 token 做自注意力；(b) 仅对状态 token 做专门的交叉注意力；(c) 对齐到匹配的视频 DiT 层特征的交叉注意力；(d) 一个 gated FFN；最后由一个 MLP head 将动作 token 解码回 \(\mathbb{R}^{D_a}\)。状态 token 的单独交叉注意力，除了参与自注意力之外，保证了绝对本体感知信息在每一层都能被动作 token 直接访问，而不会被冗长的视频 key/value 序列稀释。在步骤 (c) 中，动作 block \(i\) 对来自匹配视频 block 的视频上下文做交叉注意力：
+
+\[
+\tilde h_V^i = \text{ViewConcat}\, h_V^{\pi(i)} + E_\tau(\tau^V) + E_{\text{abs}}(t_{\text{abs}}),
+\qquad
+\pi(i)\ \text{索引配对的视频 block},
+\tag{9}
+\]
+
+这里 \(h_V^{\pi(i)}\) 表示离开视频 DiT block \(\pi(i)\) 的隐藏状态，它被组织为 \(N_v\) 条彼此独立的、按相机划分的 token 序列，也就是视图还没有沿序列轴合并。深度映射 \(\pi\) 将动作 block \(i\) 与视频 block \(\pi(i)\) 配对，因此 block \(i\) 会对该视频层的特征做交叉注意力；在等深度塔中，我们使用 \(\pi(i)=i\)。`ViewConcat(·)` 收集该层的 \(N_v\) 个视图 token 序列，每个序列都覆盖全部潜帧和空间 patch，然后沿序列轴拼接；再加上 \(E_\tau\) 和 \(E_{\text{abs}}\) 后，就得到 \(\tilde h_V^i\)，它作为交叉注意力的 keys 和 values。耦合只沿一个方向运行：每个动作 block 只对每层的视频特征做交叉注意力，而不会在视频 DiT 里额外添加辅助分支。
+
+简要解释：这段讲的是动作网络如何逐层“读”视频网络的中间特征。关键点是双塔按层一一配对，但耦合是单向的，只让动作从视频吸收信息，不反向改写视频分支。
+
+**视频-动作时间对齐。** 交叉注意力要求视频的 keys/values 和动作的 queries 共享同一个时间索引。动作自注意力使用 1D RoPE 给状态-动作序列排序；而在视频接口处，我们改为给动作 queries 和组装好的视频 keys/values 加上两个可学习查找表 \(E_\tau\) 与 \(E_{\text{abs}}\)。\(E_\tau\) 用来索引当前窗口内的 token；当在一个全局指令下滚动展开多个固定长度 chunk 时，\(E_{\text{abs}}\) 用来索引当前激活的是哪一个窗口。我们先说明这两种窗口布局及其位置编码；随后说明观察中心布局如何在原始帧、VAE 潜变量和动作 token 中实现，而不需要单独的历史编码器。
+
+简要解释：这里在解决“视频和动作怎么对齐到同一个时间坐标系”的问题。做法是同时加入局部窗口位置编码 \(E_\tau\) 和全局窗口位置编码 \(E_{\text{abs}}\)。
+
+**以事件为中心的窗口。** 这用于事件中心预训练（第 5.1 节），其中每个事件的 caption 已经定位了每个片段。我们禁用 \(E_{\text{abs}}\)，并给窗口内每个 token 分配一个整数帧索引 \(\tau\)：
+
+\[
+\tau_V(f,h,w)=f,\qquad
+\tau_0^A=0,\qquad
+\tau_{1+k}^A=\left\lfloor \frac{k}{K_p}\right\rfloor+1
+\quad \text{for } k\in [0,T_a),
+\tag{10}
+\]
+
+简要解释：这一段定义了“以事件为中心”的时间编号方式。视频 token 直接按帧编号，动作 token 则按其在动作序列中的位置映射到离散时间索引，从而让两者能在同一窗口内对齐。</pre>
+        </article>
+      </div>
+    </section>
+
+    <section class="spread" id="page-10">
+      <header><span>Page 10</span><a href="#top">Top</a></header>
+      <div class="cols">
+        <figure class="original">
+          <img src="faithful_page_images/WALL-WM/page-010.png" alt="WALL-WM page 10" loading="lazy" />
+        </figure>
+        <article class="translation">
+          <div class="label">中文翻译 + 简单解释</div>
+          <pre>其中每个潜在帧（latent frame）汇聚 𝐾𝑝 个动作步（action steps）。状态 token 和第 0 个潜在帧共享 𝜏 = 0；动作 token 被划分为 𝑇𝑎 / 𝐾𝑝 组，并与后续的未来潜在帧对齐；潜在帧 𝑓 中的所有空间 token 共享 𝜏 = 𝑓。共享查找表 𝐸𝜏(𝜏) 被加在 cross-attention 的两侧，从而使每个动作组偏向于其匹配的潜在帧。  
+简要解释：这里在定义动作 token 与视频潜在帧之间的时间对应关系，核心是用同一个时间索引 𝜏 让 cross-attention 在动作组和目标潜在帧之间建立对齐。
+
+以观测为中心的窗口（Observation-centered window）。统一部署（unified deployment）是在全局指令下滑动固定长度窗口；仅靠 𝜏 不能区分不同片段。我们把窗口扩展为 𝑀 个历史帧、1 个观测锚点（observation anchor）和 𝑁 个未来帧，并在 cross-attention 的两侧同时启用两种嵌入：  
+h += 𝐸𝜏(𝜏) + 𝐸abs(𝑡abs) .  
+(11)  
+这里 𝑡abs 用于索引滑动窗口；𝐸abs 标记当前属于哪个 chunk，而 𝐸𝜏 覆盖历史索引 −𝑀, . . . , −1、位于 0 的锚点，以及未来索引 +1, . . . , +𝑁。第 3.3 节用 𝑀 = 1 概括了这种布局；下面我们说明一个共享的 codec 窗口如何在视频侧和动作侧具体实现这一点。  
+简要解释：这一段引入了“绝对窗口位置”𝐸abs 来补足仅有相对时间 𝜏 的不足，使模型既知道片段内部的时间顺序，也知道当前窗口在整段序列中的位置。
+
+观察  
+0  
+潜在  
+3D VAE  
+动作  
+
+与 VAE 对齐的视频流（VAE-aligned video stream）。3D VAE 是一个 1+4𝑁 的时间 codec：在“首帧为 1、尾部每 4 帧为一组”的规则下，一个关键帧（keyframe）后接 4𝑁 个原始帧，会压缩成 1+𝑁 个潜在变量（latents）。在以事件为中心的预训练中，当前帧占据关键帧槽位，chunk-DiT 对 𝑁 个尾部潜在变量去噪。对于以观测为中心的窗口，我们在前面加上 4𝑀 个历史帧，并在一次前向中编码整个 1+4𝑀+4𝑁 的缓冲区；观测关键帧把前缀历史与随后 4𝑁 个原始帧分隔开。按照不变的 codec 规则，扩展后的窗口会按时间顺序得到 1+𝑀+𝑁 个潜在变量——最早的历史对应最前面的潜在变量，接下来的 4 帧对应锚点潜在变量，而之后每 4 个原始帧对应一个未来潜在变量——历史与未来之间没有重新编码的缝隙；chunk-DiT 只对 𝑁 个尾部未来潜在变量去噪。  
+
+history obs  
+
+future  
+
+ΔP-4 . . -1 0 ΔP+1 . . 4 ΔP+5 . . 8 ΔP+9 . . 12  
+
+图 5 以观测为中心的窗口（𝑀 = 1）。一次 3D VAE 前向将一个 1+4𝑀+4𝑁 的原始缓冲区编码为 1+𝑀+𝑁 个潜在变量。每个潜在变量携带 𝐾𝑝 个相对位姿（relative-pose）动作 token（在锚点处为 0）  
+简要解释：这部分说明视频侧如何把历史、当前观测和未来帧一起打包进同一个 VAE 编码窗口，并保持时间顺序连续，避免历史和未来之间出现额外的重编码边界。
+
+相对位姿动作流（Relative-pose action stream）。动作侧与 1+𝑀+𝑁 的潜在流（latent stream）相对应：tower 为每个视频潜在变量分配 𝐾𝑝 个 token。所有非锚点 token 都编码相对于观测位姿（observation pose）的末端执行器位移——历史 token 指向锚点的反方向，未来 token 则从锚点向前；锚点 token 为 0，用于固定动作时间原点。体现绝对身体状态（embodiment-absolute proprioception）的信息仍保留在逐层耦合（layer-wise coupling）段落中的专用 state token 里，而不在这一流中。  
+简要解释：这里把动作表示成相对观测位姿的位移序列，锚点动作置零，用来明确动作时间的原点；而绝对本体感知则单独放在 state token 中处理。
+
+视频-动作时间步映射（Video-Action Timestep Mapping）。在 flow matching 下，视频和动作遵循各自独立的去噪日程（denoising schedules），但每个动作块都通过 cross-attention 读取某个去噪步骤的视频特征；因此训练和推理必须明确动作步索引 𝑗 如何映射到视频步索引。我们记 𝑁𝑑 为共享推理日程上的动作去噪步数（例如 𝑁𝑑 = 50），并记 𝑚(𝑗) 为从每个动作步映射到其读取 cross-attention key/value 的视频步的函数。以下两种机制覆盖了我们的方案：  
+• 对称的 1 对 1（验证，validation）：动作步 𝑗 与视频步 𝑗 配对（𝑚(𝑗) = 𝑗；等价地，在每个配对步骤上 𝑡𝐴 = 𝑡𝑉）。当两个 tower 都在小数据上端到端更新时，我们使用这种方式，以联合去噪两个流，从而实现更紧的拟合。  
+• 非对称的 1 对 𝑁𝑑（默认；大规模训练）：固定一个中等噪声的日程锚点 𝑠★，并将其广播到整个动作日程（对所有 𝑗∈{0, . . . , 𝑁𝑑−1}，都有 𝑚(𝑗) = 𝑠★）。在推理时，每次去噪只让视频通过 𝑠★，而动作完成全部 𝑁𝑑 步；每个动作步都从这个单一的锚定视频前向读取 cross-attention 的 key/value（𝑚(𝑗) = 𝑠★；见第 5.5 节）。  
+在我们的主方案中，视频流被冻结，而动作 tower 在非对称 1 对 𝑁𝑑 映射下进行大规模训练。由于视频流被冻结，每个优化步骤只使用一次锚定的视频前向作为 cross-attention 证据，而动作监督来自真实标注（ground truth），而不是来自联合去噪的视频目标。因此，对称的 1 对 1 配对（𝑡𝐴 = 𝑡𝑉）并不适合：高噪声的视频特征未必与真实片段匹配，而近乎干净的特征又保留了太少结构，无法为控制提供指导。我们把 𝑠★ 固定在那个最能平衡“忠实视觉结构”和“可用 cross-attention 证据”的步骤上（见第 5.1 节），并训练  
+简要解释：这一段是在规定动作去噪步与视频去噪步如何对齐。作者最终选择“视频固定、动作多步、视频只在一个锚点步上提供证据”的训练方式，因为它更适合大规模训练并兼顾视觉稳定性与控制可用性。
+
+10</pre>
+        </article>
+      </div>
+    </section>
+
+    <section class="spread" id="page-11">
+      <header><span>Page 11</span><a href="#top">Top</a></header>
+      <div class="cols">
+        <figure class="original">
+          <img src="faithful_page_images/WALL-WM/page-011.png" alt="WALL-WM page 11" loading="lazy" />
+        </figure>
+        <article class="translation">
+          <div class="label">中文翻译 + 简单解释</div>
+          <pre>**3.4 语言引导推理（Language-Guided Reasoning）**
+
+在该锚点上，动作塔（action tower）会在一个独立采样的噪声水平 \(t_A \sim \Phi_A\) 下向前传播每一个动作，同时对同一个锚点进行交叉注意力（cross-attends），因此动作塔可以在完整的动作调度（action schedule）上学习，而不会采样到不匹配的视频步。作为一种与推理无关、仅用于提升训练吞吐的技巧，我们还可以在每个优化器步中可选地抽取 \(K&gt;1\) 个相互独立的动作噪声水平，同时复用同一次带锚定的视频前向传播；\(K\) 只是在计算上起到摊销（amortize）作用，在 rollout 时不起任何作用。符号化地表示为，u.a.r.
+\[
+t_k^A \sim \Phi_A,\quad k=1,\ldots,K,
+\]
+\[
+m^{(j)}=s^\star \quad \text{for all } j \in \{0,\ldots,N_d-1\},
+\tag{12}
+\]
+其中 \(\Phi_A\) 的支持集与密度均不受限制；在每个优化器步中，若启用该吞吐技巧，则代价为一次视频前向加上 \(K\) 次动作前向（否则 \(K=1\)）。
+
+简要解释：这段在说明动作分支的训练方式：视频只前向一次，用它作为锚点，动作端可以在多个噪声层级上并行学习，从而提高训练效率，但不改变推理阶段的行为。
+
+**动作目标（Action Objective）**。在动作预训练阶段，仅优化动作塔，并采用 flow matching 目标，而视频塔保持固定。我们的主实验使用 \(v\)-prediction，这与第 3.2 节中视频侧的目标对应。在上述非对称的 \(1\)-到-\(N_d\) 映射下，每次抽样 \(k\) 都使用独立采样的动作噪声水平 \(t_k^A \sim \Phi_A\)，同时复用同一次锚定的视频前向；主损失是这些抽样上的 flow matching 均方误差（MSE）的平均值，
+\[
+L_A=\frac{1}{K}\sum_{k=1}^{K} L_A^{k},\qquad
+L_A^{k}=w(t_k^A)\,\hat{y}_A^{k}-y_A^{k\star},
+\tag{13}
+\]
+其中 \(w(t_k^A)\) 可像第 3.2 节那样按噪声水平进行重新加权。默认情况下，\(\hat{y}_A^{k}\) 是预测速度 \(\hat{v}_A^{k}\)，目标为 \(v_A^\star=\epsilon_A-a_0\)。如果启用可选的 \(x\)-prediction，则网络改为输出干净动作（\(\hat{y}_A^{k}=\hat{a}_0\)，\(y_A^{k\star}=a_0\)）；上面的加权 MSE 形式不变。对于接触密集型数据（细粒度双臂操作、接触丰富的插入任务、恢复/重新抓取（re-grasp）片段），接触事件只跨越少数几帧。\(v\)-prediction 可能会让这些帧的权重过轻，尤其在高噪声下更明显，因此我们在这类实验中暴露 \(x\)-prediction 作为可选模式。我们还可以在恢复得到的轨迹 \(\hat{a}_0^{(k)}\) 上加入一个 Type-II DCT 辅助项，以强调整体运动形状而不是逐帧抖动（指数分箱衰减），并通过 \((1-t_k^A/T)^2\) 在高噪声下进行降权，其中 \(T\) 是动作扩散的最大时间步（噪声调度的末端）：
+\[
+L_A += \frac{w_{\mathrm{DCT}}}{K}\sum_{k=1}^{K} L_{\mathrm{DCT}}^{k},
+\]
+\[
+L_{\mathrm{DCT}}^{k}=
+\left(1-\frac{t_k^A}{T}\right)^2
+\sum_{j=0}^{T_a^{-1}}
+e^{-j/(T_a/4)}
+\left(\mathrm{DCT}(\hat{a}_0^{(k)})_j-\mathrm{DCT}(a_0)_j\right)^2,
+\tag{14}
+\]
+其中 \(\hat{a}_0^{(k)}\) 由第 \(k\) 次抽样恢复得到。我们的主实验使用 \(v\)-prediction，且 \(w_{\mathrm{DCT}}=0\)，因此除非另有说明，否则 \(x\)-prediction 和 DCT 辅助都处于关闭状态。
+
+简要解释：这段定义了动作分支的训练损失。默认做法是预测速度场 \(v\)，必要时可切换到直接预测干净动作 \(x\)，而 DCT 辅助则是为了让模型更关注整体动作轮廓，尤其适用于接触稠密、短时关键事件很多的任务。
+
+给定当前的多视角观测 \(\{V_0^{(v)}\}_v\) 和语言指令 \(\ell\)，VLM 产生隐藏状态 \(H_q\)。文本 token 通过边界掩码 \(m_{\text{txt}}\) 提取，并投影到 DiT 的条件空间：
+\[
+c_\ell = M_T\,P_Q\!\left(H_q[m_{\text{txt}}]\right),
+\tag{15}
+\]
+其中 \(P_Q\) 表示一个可学习投影层，\(M_T\) 表示 DiT 主干中原生的文本 MLP。得到的条件序列会与图像 token 一起注入到 WAM 的交叉注意力层中。
+
+简要解释：这段说明语言条件如何接入动作生成模型：先由 VLM 编码多视角图像和文本，再把文本表征映射到 DiT/WAM 能使用的条件空间，和图像 token 一起参与跨模态融合。
+
+标准的串行 rollout 解码过程在长链 latent reasoning 上会出现严重的计算低效。传统的自回归 rollout 以串行方式逐个生成 latent reasoning states，这要求 Transformer 层进行穷尽式前向传播，并且在每个推理步骤重复计算重叠的视觉-语言特征。这种串行依赖瓶颈会显著增加推理延迟，限制具身操作任务的实时交互能力，并阻碍长时程推理 rollout 的可扩展性。为了解决传统 latent reasoning rollout 中的串行解码开销和冗余计算，我们提出一种新的 Staircase latent decoding 范式，以高效并行生成连续的 latent reasoning 序列。
+
+简要解释：这段指出了长时程推理的主要瓶颈是串行解码太慢，因此提出 Staircase latent decoding，用并行化方式生成连续的潜在推理状态，从而降低延迟并提升实时性。</pre>
+        </article>
+      </div>
+    </section>
+
+    <section class="spread" id="page-12">
+      <header><span>Page 12</span><a href="#top">Top</a></header>
+      <div class="cols">
+        <figure class="original">
+          <img src="faithful_page_images/WALL-WM/page-012.png" alt="WALL-WM page 12" loading="lazy" />
+        </figure>
+        <article class="translation">
+          <div class="label">中文翻译 + 简单解释</div>
+          <pre>**阶梯式 latent CoT 解码。** 与其逐个自回归地生成推理 token，WALL-WM 将推理建模为一个由 𝐾𝑐 个连续潜在推理状态组成的紧凑序列：
+\[
+\hat{y}_{1:K_c}=\{\hat{y}_1,\ldots,\hat{y}_{K_c}\}.
+\]
+(16)
+
+推理分支从微调后的 Qwen3.5-9B checkpoint 初始化，并实现为一种轻量级的 Mixture-of-Transformers (MoT) 结构，与冻结的 backbone 相耦合。为了实现并行的 latent rollout，我们在一个 relay depth 𝑁𝑟 处对 Transformer 进行分割，其中较低层编码共享的视觉-语言 grounding 特征，而较高层逐步专门化为不同的推理步骤。具体而言，只有第一个 latent position 经过较低的 Transformer 层，生成一个共享的 relay 表示，并在所有推理位置之间复用。随后，其余的 latent states 通过上层 Transformer blocks 并行生成，同时进行彼此独立的因果 cache 更新。这个阶梯式调度机制（staircase scheduling mechanism）将传统的顺序推理过程转换为一种深度并行的 latent rollout：
+\[
+\hat{y}_{1:K_c}=F_{\text{stair}}(x;N_r),
+\]
+(17)
+
+其中 𝑁𝑟 控制将共享 grounding 计算与并行推理计算分隔开的 relay depth。与标准自回归解码相比，所提出的阶梯式设计避免了在每个推理步骤中重复计算底层的视觉-语言特征，从而显著降低了长时域具身 rollout 的推理延迟。由此得到的 latent reasoning states 是完全可微分的，并且无需离散 token 采样即可直接注入 WAM 的 cross-attention 通路中。
+
+简要解释：这一段的核心是在说，WALL-WM 不再用传统“一个 token 接一个 token”的方式做推理，而是把推理压缩成一串连续潜变量，并通过分层并行计算来加速，同时保留可微分性，方便直接接入下游注意力模块。
+
+**冻结的 latent-to-text reconstruction supervision。** WALL-WM 并不是直接蒸馏自回归 hidden states，而是通过一个冻结的 latent-to-text reconstruction objective (38, 92) 来监督 latent reasoning。生成的 latent reasoning states \(\hat{y}_{1:K_c}\) 先通过前缀投影器 \(P_{\text{pref}}\) 投影为 embedding space 中的 soft prefix \(z_{1:K_c}=P_{\text{pref}}(\hat{y}_{1:K_c})\)，该 embedding space 属于一个轻量级冻结语言模型（Qwen3.5-0.8B），后者以自回归方式重建对应的文本 CoT trace：
+\[
+P_{\phi}(r_{1:M_r}\mid z_{1:K_c}).
+\]
+(18)
+
+训练目标定义为 token-level reconstruction loss：
+\[
+L_{\text{CoT}}=-\sum_{m=1}^{M_r}\log P_{\phi}\bigl(r_m\mid z_{1:K_c}, r_{&lt;m}\bigr).
+\]
+(19)
+
+只有阶梯式推理分支和前缀投影器 \(P_{\text{pref}}\) 会在训练中被优化，而 reconstruction language model 在整个训练过程中保持冻结。因此，latent reasoning states 被鼓励编码紧凑的高层推理语义，而不是复制精确的 token-level 解码轨迹。由此得到的 latent CoT 在具身 rollout 中充当一种可微分、紧凑且计算高效的显式文本推理替代方案。
+
+简要解释：这一段说明训练时并不直接让 latent 状态去“模仿每个 token”，而是让它们通过一个冻结语言模型还能还原出原来的 CoT 文本，从而逼迫 latent 表示学到更抽象、更压缩的推理语义。
+
+**推理模式。** 同一个经过 event-pretrained 的 backbone 通过这条 language-guided pathway 暴露出两种互补的 inference mode。在 event mode 中，系统在 event space 里展开：VLM、human 或 agent 会针对当前观测提出下一事件的描述，WALL-WM 则执行对应的可变长度 video–action segment，然后再观察下一个状态，因此 rollout 会遵循每个任务阶段的自然持续时间，而不是固定的控制时域。在 unified mode 中，阶梯式 decoder 会在一次并行前向中发出 𝐾𝑐 个连续 latent CoT states，并将它们精确插入到 WAM cross-attention 中原本由 atomic-instruction condition 所对应的位置。由于这两种模式都通过相同的 reasoning interface 来对 WAM 进行条件控制，WALL-WM 在单一模型中统一了开放式、事件驱动的 rollout，以及标准的固定时域 VLA 执行。
+
+简要解释：这一段在讲同一个模型可以切换两种工作方式：一种按“事件”推进，适合开放式长任务；另一种按固定长度一次性输出 latent CoT，适合标准 VLA 执行。两者共享同一套推理接口，因此模型结构和使用方式被统一起来。
+
+12</pre>
+        </article>
+      </div>
+    </section>
+
+    <section class="spread" id="page-13">
+      <header><span>Page 13</span><a href="#top">Top</a></header>
+      <div class="cols">
+        <figure class="original">
+          <img src="faithful_page_images/WALL-WM/page-013.png" alt="WALL-WM page 13" loading="lazy" />
+        </figure>
+        <article class="translation">
+          <div class="label">中文翻译 + 简单解释</div>
+          <pre>**图6相关可见文字（按原排版顺序翻译）**
+y1  
+y2  
+LM Head  
+LM Head  
+Layer L  
+Layer L  
+...  
+z1  
+...  
+z2  
+z1  
+z2  
+Latent Proj  
+Latent Proj  
+Layer L  
+z3  
+...  
+zk  
+...  
+Layer L  
+Shared Projector  
+Layer L  
+Layer L  
+Layer L  
+Layer L  
+Continuous: \(z_t \in \mathbb{R}\)  
+Layer 2N  
+Layer 2N  
+Layer 2N  
+parallel continuous CoT latents: \(z_t \in \mathbb{R}^d\)  
+Layer kN  
+Discrete: \(y_t \in V\)  
+d  
+Layer 1  
+Layer 1  
+Layer 1  
+Layer 1  
+Layer N  
+Layer N  
+y0  
+y1  
+z0  
+z1  
+Layer 1  
+y0  
+a) 传统 CoT（Traditional CoT）  
+a) 我们的方法：阶梯式潜变量推理（Ours: Staircase Latent Reasoning）  
+图6 三种 CoT 推理调度方式的比较。(a) 传统 CoT 以自回归方式生成离散词表 token。(b) Latent CoT 用连续潜变量向量替代离散 token，同时保持串行依赖关系。(c) 我们的阶梯式潜变量推理通过错位的层深传递中间隐藏状态，经由共享投影器（shared projector）产生并行的连续 CoT 潜变量。
+
+简要解释：这张图在说明三种思维链（CoT）推理范式的区别：传统方法是离散 token 串行生成，Latent CoT 用连续向量替代 token，而本文方法把不同层的中间状态“接力”传递，从而形成并行的连续潜变量推理。
+
+**4 训练数据（Training Data）**
+
+WALL-WM 数据生态包含大规模互联网视频、第一人称视频、无机器人动作的 UMI 风格录制，以及异构遥操作数据，并通过谨慎的后处理与丰富标注，为通用预训练提供支持。该数据生态沿五个轴组织：(i) 来源覆盖：一张数据地图，横跨通用互联网视频、第一人称人类视频、非具身（non-embodiment）UMI 数据，以及机器人遥操作/开放机器人数据；(ii) 时间同步与数据后处理：一个用于训练与部署对齐的数据后处理框架；(iii) 层级化字幕粒度：每个 episode 在四个时间尺度（Task / Subtask / Action / Segment）上都带有标注，并可额外加入一层人工标注；(iv) 视觉-语言联合聚类并配合动作聚类：用于平衡 dataloader，并挖掘长尾的非典型轨迹；(v) 定向恢复增强：覆盖接触密集的动作区域，以及真实机器人数据采集中难以捕获的几何/遮挡工况。
+
+简要解释：这一段概述了 WALL-WM 的训练数据体系设计，不只是堆数据量，而是同时从来源多样性、时间对齐、标注层级、采样平衡和困难场景增强五个方面保证预训练质量。
+
+**4.1 数据组成（Data Composition）**
+
+我们将 WALL-WM 数据集组织为一张数据来源地图，而不是严格层级结构。该地图按视角和动作可用性将来源家族分开。通用互联网视频提供广泛的视觉与时间动态先验，这种规模是任何具身语料库都无法匹配的；在当前版本中，这包括一个 120 万 clip 的 OpenVID (55) 切片以及其他网络视频来源。第一人称与人类动作视频在无需机器人动作的前提下，把这种先验收窄到第一人称操作几何。无机器人 UMI 风格录制则加入了接近部署环境的手和相机几何，以及可重定向（retargetable）的控制器轨迹；而异构机器人数据集与我们自采集的遥操作则在不同平台上提供真实的 [video+action] 配对。人类干预与失败恢复数据被视为核心来源，因为在需要接触密集型纠正行为时，它们可以从多个象限中采样，或附着到多个象限上。机器人数据象限结合了具身公开数据集与几何分布一致的自采集数据，其中观测几何和动作测量都与部署平台对齐。我们内部自研的具身套件覆盖四类部署平台：高性能桌面双臂机器人；两类移动机器人平台，
+
+简要解释：这一段在说明数据集不是按单一层级堆叠，而是按“来源地图”来组织。作者强调不同来源分别承担不同作用：网页视频提供通用先验，第一人称与 UMI 风格数据补足操作几何，机器人与遥操作数据提供真实动作配对，而失败恢复与人工干预数据专门补强难样本和纠错能力。
+
+**图7 内部自研部署平台（Internal self-developed deployment platform）**
+Tabletop Bimanual Robot Arms：桌面双臂机器人  
+QUANTA X1 Pro Moblie Robot：QUANTA X1 Pro 移动机器人  
+QUANTA X1 Moblie Robot：QUANTA X1 移动机器人  
+Quanta X2 Wheeled Humanoid Robot：Quanta X2 轮式人形机器人  
+
+简要解释：图7展示了作者自研的多种机器人部署平台，说明他们的数据采集和验证不局限于单一机器人形态，而是覆盖桌面双臂、移动机器人和轮式人形机器人等不同平台。
+
+第 13 页</pre>
+        </article>
+      </div>
+    </section>
+
+    <section class="spread" id="page-14">
+      <header><span>Page 14</span><a href="#top">Top</a></header>
+      <div class="cols">
+        <figure class="original">
+          <img src="faithful_page_images/WALL-WM/page-014.png" alt="WALL-WM page 14" loading="lazy" />
+        </figure>
+        <article class="translation">
+          <div class="label">中文翻译 + 简单解释</div>
+          <pre>第14页
+
+图8中的标签：
+- 通用互联网视频（General Internet Video）
+- Web 规模 120 万剪辑（1.2M-clip）OpenVID 数据（例如，YouTube、HD-VILA）
+- 机器人自由的 UMI 数据（Robot Free UMI Data）（例如，XRZero-GO、10Kh-RealOmin）
+- 自我中心视频（Egocentric Video）
+- 人类介入（Human-intervention）
+- 与失败恢复相关的数据（Failure Recovery Data）
+- 非具身数据（Non-embodiment Data）
+- 与人类动作相关的视频（Human Action-related Videos）（例如，Ego4D、EPIC-KITCHENS）
+- 自收集与开放数据（Self-collected and Open Data）（例如，X2-Robot、AgiBot、Droid）
+- 异构遥操作（Heterogeneous Teleoperation）
+
+图8 WALL-WM 数据集的数据来源地图。四个象限分别归纳了通用互联网视频、自我中心视频、非具身数据，以及异构遥操作/开放机器人数据；中心表示用于丰富接触丰富修正的人类介入和失败恢复数据。数据来源包括 OpenVID (55)、HD-VILA (79)、Ego4D (25)、EPIC-KITCHENS (18)、DROID (40)、AgiBot World (10) 和自收集数据 (73)。
+简要解释：这张图说明 WALL-WM 不是只依赖单一来源，而是把互联网视频、自我中心视频、机器人数据和人类介入恢复数据组合起来，用于覆盖更广的动作与纠错场景。
+
+QUANTA X1 和 QUANTA X1 Pro；以及轮式人形机器人 QUANTA X2，它配备了高自由度灵巧手。恢复和接管片段显式覆盖接触丰富事件附近的动作解空间，并提供普通名义示范仅靠数量通常无法提供的失败恢复信号。
+简要解释：这一段强调，数据里专门包含机器人出错后的恢复和人工接管过程，这类片段能补足常规演示中缺少的“出错后如何纠正”的训练信号。
+
+采用可穿戴的 UMI 风格设备进行非具身采集。图8中的非具身象限不是通过遥操作机器人采集，而是通过可穿戴、无机器人本体的设备采集。操作者佩戴一个带有多视角自我中心相机的、经过 VR 跟踪的头显，并手持一对物理几何形状已校准为与部署机器人末端执行器一致的手持夹爪（图10 左）；由此得到的 6-DoF 控制器轨迹，在针对部署机器人 URDF 进行 IK 重定向后，会生成一个可接受的动作流，而自我中心 + 双腕视频本身已经处在真实机器人将要看到的几何空间中。我们在这一象限使用自研的 XRZero-G0 系统 (73)（图10 右）：它与主从式和 VR 遥操作并行，而不是替代它们，并提供毫米级姿态精度的 VR 跟踪采集栈。由于操作者不再与机器人绑定，采集吞吐不再受机器人时间约束；在实际生产配比中，会让一小部分真实机器人数据作为锚点，再配以更大规模的无具身片段，这遵循了 (73) 中所描述的小样本物理锚定范式。
+简要解释：这一段说明，作者把“人穿戴设备采集动作”和“真实机器人少量锚定数据”结合起来，用更低成本获得大量动作数据，同时保持动作与真实机器人几何一致。
+
+采集协议：结构化与非结构化流。图8中的自收集机器人数据来自两种采集协议，它们的区别完全发生在采集侧，而不在训练侧。结构化采集遵循预定义的任务范围和重置协议：每个 episode 都是一段遥操作演示，对应一个命名任务，并具有明确的开始/目标条件和清晰的 episode 边界。相对地，非结构化采集允许操作者在部署场景中自由移动机器人，而无需事先承诺任务范围、重置协议或 episode 边界，从而得到一条长的、包含多个事件的分布内运动流，而仅面向演示的数据加载器则不得不将其丢弃。这两种协议都会进入同一条下游流水线：第 4.3 节的层次化 caption schema 会在采集后把原始流切分为 Task / Subtask / Action / Segment 片段，而第 4.4 节的聚类步骤会不加区分地对这些切分后的片段采用相同处理，无论它们由哪种协议产生。允许非结构化采集，正是这一数据源能够突破遥操作演示天然上限的关键：它移除了逐 episode 的协议开销，而这类开销原本会限制采集吞吐；与此同时，先 caption 再 cluster 的流水线把由此产生的异质性吸收到与其他来源相同的平衡采样器中。关于 [video+action] 数据的整体分布统计见图9。
+简要解释：这一段讲的是数据怎么采。结构化采集适合标准任务，非结构化采集则更自由、更高产；二者最后都被同一套切分、聚类和采样流程统一处理，从而提升数据规模与多样性。</pre>
+        </article>
+      </div>
+    </section>
+
+    <section class="spread" id="page-15">
+      <header><span>Page 15</span><a href="#top">Top</a></header>
+      <div class="cols">
+        <figure class="original">
+          <img src="faithful_page_images/WALL-WM/page-015.png" alt="WALL-WM page 15" loading="lazy" />
+        </figure>
+        <article class="translation">
+          <div class="label">中文翻译 + 简单解释</div>
+          <pre>论文标题：WALL-WM：在事件连接处雕刻世界动作建模（WALL-WM: Carving World Action Modeling at the Event Joints）
+
+图9  [video+action] 数据的分布统计。图中展示了在场景类别、回合时长区间以及原子动作标签上的归一化覆盖率。场景与时长类别以百分比分布报告，而原子动作则表示包含每个动作标签的回合百分比。  
+简要解释：这张图说明数据集在不同场景、时长和动作类型上的覆盖是否均衡，也展示了数据的组成结构。
+
+(a) 场景分布  
+(b) 回合时长分布  
+短时（Short，&lt;20 s）  
+中等（Medium，20 s-1 min）  
+长（Long，1-2 min）  
+超长（Extra-long，&gt;2 min）  
+(c) 原子动作分布  
+移动式（Mobile）  
+桌面式（Table Top）  
+% 回合（% Episodes）  
+图中还标出了 42.7%、55.4%、22.0%、21.2%、20.0%、13.3%、9.2%、8.3%、3.8%、3.3%、0.7%、1.0% 等占比值。  
+简要解释：这些标签和百分比共同刻画了数据在不同子任务和场景中的分布情况，便于判断训练数据是否偏向某些特定环境或动作。
+
+图10  XRZero-G0 无具身（no-embodiment）采集装置及其在遥操作（73）中的位置。  
+（左）从两个视角看到的可穿戴装置：一个带有 VR 跟踪的头显承载三路第一人称相机（图中展示了顶部一路 + 两路腕侧画面），操作者随身背负的背包负责同步与边缘侧计算，一对手持夹爪复现部署机器人末端执行器（end-effector）的几何形状；右下角的小缩略图展示了装置上的三路视角（左腕 / 顶部 / 右腕），这些视角最终会被策略模型消费。  
+（右）XRZero-G0 与主从遥操作（master-slave teleoperation）和 VR 遥操作并列，而不是取代它们：在生产配方中，一个较小的真实机器人锚定比例（这两种遥操作模式）与一个更大的无具身体量（XRZero-G0 装置）配对，从而实现了 (73) 中所刻画的 few-shot 物理锚定（physical-anchoring）范式。  
+简要解释：这张图强调 XRZero-G0 不是单独替代遥操作，而是作为大规模无具身数据采集方式，与少量真实机器人遥操作数据一起构成训练配方。
+
+4.2  部署对齐的时间同步与数据后处理
+
+对于通过遥操作采集的无具身数据和机器人数据，只有当视觉观测和动作流对应同一个物理瞬间时，[video+action] 层才是有用的。然而，在实践中，这种对齐并不能保证：相机编码、控制器日志记录、遥操作中间件以及磁盘写入，都可能在同一个录制源内部引入几乎恒定的视频-动作偏移。如果不加校正，  
+简要解释：这一节开始讨论一个关键工程问题，即采集到的视频和动作往往不是严格同步的，因此需要做时间校准和后处理，否则训练出来的配对数据会有误差。</pre>
+        </article>
+      </div>
+    </section>
+
+    <section class="spread" id="page-16">
+      <header><span>Page 16</span><a href="#top">Top</a></header>
+      <div class="cols">
+        <figure class="original">
+          <img src="faithful_page_images/WALL-WM/page-016.png" alt="WALL-WM page 16" loading="lazy" />
+        </figure>
+        <article class="translation">
+          <div class="label">中文翻译 + 简单解释</div>
+          <pre>图中标注：
+t=14.8s  
+t=31.5s  
+t=44.9s  
+t=70.5s  
+t=80.5s  
+
+样本 22  
+样本 73  
+样本 155  
+样本 221  
+样本 347  
+样本 396  
+
+光流（Flow）  
+RGB  
+
+t=4.5s  
+
+视频运动（Video motion）  
+原始动作（Raw action）  
+
+3.0  
+归一化信号（Normalized signal）  
+1.5  
+0.0  
+−1.5  
+
+视频运动（Video motion）  
+同步后的动作（Synced action）  
+
+3.0  
+1.5  
+0.0  
+−1.5  
+
+0  
+20  
+40  
+60  
+80  
+
+时间（s）（Time (s)）  
+
+0  
+20  
+40  
+60  
+
+时间（s）（Time (s)）  
+
+（a）视频光流运动立方体（Video Optical-Flow Motion Cube）  
+（b）同步前（Before Synchronization）  
+（c）同步后（After Synchronization）  
+
+简要解释：这一组图注和坐标标记展示了视频帧、光流与动作信号的时间关系，以及同步前后信号对齐方式的变化。
+
+图 11 [video+action] 层的时间同步（Temporal Synchronization of [video+action] layers）。我们展示了针对某个特定时间步的时间同步过程。（a）从视频数据计算光流运动立方体：我们将相机 RGB 图像转为灰度并归一化，然后从视频数据中计算光流。（b）同步前：视频信号与动作信号之间存在恒定的滞后。（c）我们通过计算视频信号与动作信号之间的相关性来执行时间同步，并根据结果对动作信号进行同步。  
+
+简要解释：图 11 说明了为什么必须先做视频与动作的时间对齐，以及如何用光流和相关性估计残余偏移量。
+
+模型被训练去把时间 𝑡 的一张图像与来自 𝑡 + Δ 或 𝑡 − Δ 的一个动作关联起来。这在接触附近尤其有害，因为只需几帧就可能把语义状态从“接近（approaching）”变成“接触（touching）”、“抓取（grasping）”或“恢复（recovering）”。这还可能在训练后的策略部署到机器人硬件上时导致不希望出现的抖动行为。  
+
+简要解释：这里强调，视频和动作若不同步，模型会学到错误的时序对应，尤其会破坏接触瞬间的行为判断。
+
+因此，我们在进行 captioning、clustering 和 sampling 之前，先对 [video+action] 层做时间同步（temporal-synchronization）。具体而言，对于每个 episode，我们通过测量可用的 ego 和 wrist 相机之间逐帧图像变化来构造视觉运动信号，并通过对左、右末端执行器位置流取有限差分来构造动作运动信号。两种信号都经过平滑和归一化，然后我们扫过一个较小的整数滞后窗口，寻找使二者相关性最大的偏移量。该估计会在多个相机和动作通道上进行聚合，这样短暂遮挡或静止夹爪就不会主导决策。整个过程的示意见图 11。  
+
+简要解释：这一段说明了同步算法的核心做法：先提取视觉运动和动作运动，再用相关性搜索估计时间偏移，并通过多源聚合提升鲁棒性。
+
+我们并不预先假设视频与动作时序完全对齐，而是用这个后处理阶段显式估计残余相位差（phase difference）并在下游使用前对其进行校准。例如，在 20 FPS 下，如果估计某个 episode 存在两帧偏移，对应大约 100 ms，那么同步器就会施加相应的时间位移，把记录的动作流与编码后的视频时间线对齐。该修正是确定性地应用的：动作序列会重新索引到视觉帧时间线，因位移引入的边界帧会被裁掉，而连续动作字段只有在移除偏移后才会重新采样。那些最佳滞后分数较弱、源级投票（source-level vote）不一致，或者所需修正落在预期窗口之外的 episode 不会被悄悄使用；它们要么被隔离出来供人工检查，要么被降低权重，直到可以验证源级修正为止。  
+
+简要解释：这一段给出了同步的具体校正规则，强调结果必须可靠、可验证，不能把可疑样本直接混入训练数据。
+
+在同步之后，我们还会进行第二轮清洗，以对齐部署需求。该轮清洗会移除缺失相机流、非单调或重复的动作记录、异常 FPS、较大的帧/动作长度不匹配、无效机器人状态、运动学不连续、夹爪状态损坏，或者在重定向（retargeting）后违反部署机器人可达工作空间的运动片段。对于结构化演示（structured demonstrations），会移除失败的 reset 以及被截断的起始/目标部分。对于非结构化流（unstructured streams），长录制只在同步之后才切分，这样发现的 Task/Subtask/Action/Segment 范围就会继承一致的视频-动作时钟。该阶段清洗后的输出是一种规范化的 episode 格式：同步的多视角视频、对齐的动作  
+
+简要解释：这一段说明同步后的数据还要再做部署级清理，保证最终样本满足机器人训练和回放所需的格式与一致性。
+
+16</pre>
+        </article>
+      </div>
+    </section>
+
+    <section class="spread" id="page-17">
+      <header><span>Page 17</span><a href="#top">Top</a></header>
+      <div class="cols">
+        <figure class="original">
+          <img src="faithful_page_images/WALL-WM/page-017.png" alt="WALL-WM page 17" loading="lazy" />
+        </figure>
+        <article class="translation">
+          <div class="label">中文翻译 + 简单解释</div>
+          <pre>记录、已标定的相机元数据、机器人状态元数据、来源标识、置信标志以及清洗来源信息。这些标志会在下游被层级式 captioner 和 cluster-balanced dataloader 使用。  
+简要解释：这一句是在说明数据清洗后保留下来的附加元数据会被后续标注与训练流程继续利用。
+
+4.3 事件中心的层级式 Captioning（Event-Centric Hierarchical Captioning）
+
+图 8 中 action-paired sources 里的每个 episode 都配有一个时间上嵌套的 caption 层级，其时间跨度锚定在原子操作动作（66）上——例如 reach、grasp、close、lift 和 place 这类短小、可执行的原语——而不是固定的帧窗口。具体来说，我们先在动作边界处切分同步的视频-动作流，然后再分配 captions，使每个语言区间都与视觉和控制中的同一物理区间对齐。我们并不把单一的自由形式描述分配给整条轨迹，而是把每个 episode 分解为四个核心时间抽象层级，再加上一个可选的人类标注层。这样设计是为了同时保留示范的全局意图，以及决定机器人如何真正完成任务的局部事件结构。四个核心层级分别是 Task、Subtask、Action 和 Segment。Task 层是覆盖整个 episode 的字符串，用来概括总体目标，例如打开抽屉、把物体放入容器，或擦拭表面。Subtask 层把 episode 划分为少量连续、语义上有意义的阶段。这些阶段通常对应中间目标，例如接近目标物体、建立抓取、搬运物体，以及放置或释放它。Action 层进一步把每个 subtask 细化为更短的 manipulation primitives，例如 reaching、对齐夹爪、闭合手指、抬起、平移、插入或回撤。最后，Segment 层提供最细粒度的时间分解，捕捉可能仅持续整条轨迹极小一部分的短暂局部事件。第五个 Human 层保存人工标注的片段。该层只为收到人工标注的 episode 子集填充，并发挥两个互补作用。第一，它为验证自动生成的层级提供高质量监督。第二，它为我们提供一个可信参考，用于评估 caption 准确性、时间边界质量，以及跨任务语义标签的一致性。实际上，Human 层并不是每个 episode 都必需；核心的四层层级使数据集能够扩展，而人工子集则为标注流程提供锚点并支持质量控制。  
+简要解释：这一段在说明数据集采用按动作边界对齐的多层描述体系，把整条示范拆成任务、子任务、动作和片段四个核心层级，再用少量人工标注层做校验和质控。
+
+图 12 单个 episode 的四层 caption 轨迹。可视化叠加了图中所示的四条核心轨道：Task（L3）、Subtask（L2）、Action（L1）和 Segment（L0），并与视频时间线对齐。
+
+L3 任务（TASK）
+
+按照顺序，把沙发上的黑色袜子、米色裤子、浅蓝色袜子、灰色裤子和浅粉色袜子放进洗衣篮里。在扔灰色裤子之前，先把洗衣篮里的黑色方形物体取出来，并在所有衣物都放入后完成收纳任务。
+
+× 1
+
+视频时间线
+
+L2 子任务（SUBTASK）
+
+L1 动作（ACTION）
+
+L0 片段（SEGMENT）
+
+f0
+
+f572
+
+f572
+
+f1744
+
+移动到沙发旁，调整姿态，并抓取黑色...
+
+把裤子放入洗衣篮，调整姿态以便抓取...
+
+移动到沙发附近，调整待收纳的衣物。
+
+调整双臂，与黑色袜子对齐...
+
+松开夹爪，把黑色...
+
+双臂闭合着朝沙发移动以抓取袜子...
+
+调整左臂姿态，接近沙发上的蓝色袜子，为拾取动作做准备。
+
+双臂移动到沙发上方，调整姿态
+
+瞄准...
+
+将手臂移动到沙发衣物区域上方，以...
+
+f2684
+
+f3385
+
+f3832
+
+f4593
+
+调整姿态以接近灰色裤子，完成抓取。
+
+把粉色袜子放入篮子，放置后收回手臂。
+
+调整夹爪位置，为放置米色裤子做准备。
+
+移动到洗衣篮上方，为...
+
+抓取洗衣篮内的黑色方形物体。
+
+抓取沙发上的浅色衣物，朝附近...
+
+用双臂抓住沙发上的米色裤子，抬起并移动...
+
+调整双机器人臂的姿态和位置...
+
+调整夹爪位置，与灰色裤子对齐。
+
+调整左臂姿态，接近沙发上的浅蓝色袜子...
+
+移动到脏衣篮顶部，同时拿着浅...
+
+双臂朝沙发上的灰色裤子移动，调整姿态以...
+
+× 10
+
+松开夹爪，把浅粉色袜子放入洗衣篮。
+
+× 42
+
+从沙发上拿起灰色裤子，移动到脏...
+
+调整双臂姿态，并朝沙发移动以便抓取...
+
+× 109
+
+简要解释：这个图例展示了同一段示范在不同时间尺度上的文本对齐方式，从整局任务到细粒度片段都与视频时间轴同步，便于模型学习长短程语义。
+
+这种多层结构对于机器人恢复行为尤其重要。许多有用的示范并不是任务的完全线性执行。它们包含重新抓取、接触失败、小幅姿态修正、打滑后的重试，以及其他短暂的恢复动作。这些事件通常对稳健策略学习至关重要，因为它们让模型接触到执行偏离名义路径时会出现的状态。然而，如果整段 episode 只用一个 caption 来表示，这些纠正性行为就会被平均进全局任务描述中，变得难以被模型识别。轨迹仍然可能被标记为“pick up the object”，即使 episode 的关键部分实际上涉及抓取失败、重新调整手腕并再次尝试。层级化 caption 结构把这些事件显式化了。在任务层面，  
+简要解释：这一段强调，层级 caption 能把失败、重试和姿态修正等恢复动作单独标出来，避免它们被粗粒度任务描述淹没；本页末尾原文在“在任务层面，”处截断。</pre>
+        </article>
+      </div>
+    </section>
+
+    <section class="spread" id="page-18">
+      <header><span>Page 18</span><a href="#top">Top</a></header>
+      <div class="cols">
+        <figure class="original">
+          <img src="faithful_page_images/WALL-WM/page-018.png" alt="WALL-WM page 18" loading="lazy" />
+        </figure>
+        <article class="translation">
+          <div class="label">中文翻译 + 简单解释</div>
+          <pre>该 episode 仍然与其预期目标保持关联。在更粗粒度的 subtask 和 action 层级上，模型能够观察到执行的主要阶段。在最细粒度的 segment 层级上，短暂的纠正性行为可以在时间上被定位，并被赋予各自的描述。这使 dataloader 能够对特定的时间区域进行采样或重新加权，而不是把一个成功 episode 中的所有帧都视为同等信息量。因此，在训练过程中可以强调与 recovery 相关的区间，同时不丢失更广泛的任务上下文。  
+简要解释：这一段说明，分层标注让模型既能看到宏观执行阶段，也能抓住局部纠错动作，从而在训练采样时更重视“恢复/修正”片段。
+
+**4.4 视觉-语言与动作上的聚类平衡采样（Cluster-Balanced Sampling over Vision-Language and Action）**
+
+production recipe 仅在我们大规模自收集的 embodied corpus 的一个小子集上进行训练，这个子集由下述 cluster-balanced sampler 选出。这个下采样并不只是预算上的妥协：它源于这样一个观察，即原始 embodied corpus 呈现出高度长尾分布，而第 4.3 节中的 multi-level caption schema 揭示了关于 vision、language 和 action 的细粒度统计。尤其是，caption windows 在聚类之前会按照 action boundaries 进行分段，而不是按均匀的时间切片来划分。这个 action-aligned decomposition 会把每个长 demonstration 转化为语义上局部化的单元，使得最终得到的 language 和 vision-language 分布比原始的 task-level mixture 更加平衡。  
+简要解释：这里强调，先按动作边界切分再聚类，能把长视频拆成更有语义的局部单元，从而缓解长尾分布问题。
+
+在这个 multi-level schema 之上，WALL-WM 运行两个离线聚类（offline clustering）流程，其目的是为 dataloader 提供一个可控的采样分布。第一种是 vision-language（VL）聚类：一个冻结的 multimodal encoder 将每个视觉观测与 caption 对映射到联合 embedding 中，随后聚类过程把这个空间划分为 topic clusters，用以概括语料库在 instruction-scene 覆盖上的分布。第二种是 action 聚类：action chunks 在 trajectory space 中分别进行聚类，其中长尾部分集中着非标称（non-nominal）运动，例如 recoveries、re-grasps、retries，以及由接触驱动的 corrections。这些恰恰就是 action-aligned multi-level schema 旨在显露出来的行为。重要的是，在从 task-level captions 经过基于 action 的分解，进一步变为更细粒度的 action 和 segment captions 之后，language-only 和 vision-language 两种聚类视角都会变得更加均匀，被少数主导性 topic 吸收的样本更少。这为平衡采样提供了一个实际基础：稀有但重要的 instruction-scene 模式和 trajectory 模式，成为显式的采样单元，而不再被高频动词和标称运动所淹没。  
+简要解释：这一段说明 WALL-WM 用两套离线聚类来控制采样分布，一套看视觉-语言主题，一套看动作轨迹，从而把稀有但关键的恢复动作单独凸显出来。
+
+在训练期间，dataloader 会采样同时平衡 VL clusters 和 action clusters 的 batches。VL 平衡提升了对 instruction-scene 组合的覆盖率，而 action 平衡则会反复让 action head 接触那些共享相同动词但需要不同运动方式的 trajectory。这种训练状态下，如果直接在原始长尾 mixture 上使用一个普通的 SFT objective，模型就容易塌缩到主导目标上。两种 clustering 都是在离线预先计算好的；训练时只消耗 cluster assignments，因此 cluster-balanced sampling 不会给现有 recipe 增加 encoder forward passes，也不会增加 optimizer state。  
+简要解释：这里说明平衡采样在训练中的实际作用是让模型既覆盖更多指令-场景组合，又能学会“同一动词、不同动作”的细微差别，而且几乎不增加训练开销。
+
+Instruction  
+Task (L3)  
+Subtask (L2)  
+Action (L1)  
+Segment (L0)  
+简要解释：这些是图中的层级标签，表示从指令到任务、子任务、动作，再到片段的粒度逐级细化。
+
+图 13  平衡采样的 caption 粒度分布。五个面板分别比较了在 action-boundary segmentation 之后，Instruction、Task（L3）、Subtask（L2）、Action（L1）和 Segment（L0）五种粒度下的 30K 样本。更细的 caption 层级揭示了更多局部化的长尾模式，这些模式会被 cluster-balanced dataloader 所消费。  
+简要解释：这幅图说明，粒度越细，越能暴露出长尾的局部模式，因此更适合用来做平衡采样。</pre>
+        </article>
+      </div>
+    </section>
+
+    <section class="spread" id="page-19">
+      <header><span>Page 19</span><a href="#top">Top</a></header>
+      <div class="cols">
+        <figure class="original">
+          <img src="faithful_page_images/WALL-WM/page-019.png" alt="WALL-WM page 19" loading="lazy" />
+        </figure>
+        <article class="translation">
+          <div class="label">中文翻译 + 简单解释</div>
+          <pre>**4.5 通过接触丰富的随机初始化恢复数据**
+
+预训练通过加入恢复 / 接管（recovery / takeover）回合来增强，这些回合会显式覆盖接触丰富（contact-rich）事件周围的动作解空间。对于每个这样的事件 \(e\)，我们在末端执行器构型 \(q \in \mathbb{R}^{D_q}\) 上定义一个局部接触位姿分布 \(p(q \mid e)\)。它的支撑集位于以标称接触位姿 \(q^\star_e\) 为中心的小测地球 \(B_\epsilon(q^\star_e)\) 内，因此采样到的状态会保持在事件附近，同时保留其接触几何结构。
+
+由此得到的预训练分布为
+\[
+\tilde{p}_{\text{train}}(q, e) = (1 - \alpha)\, p_{\text{nominal}}(q, e) + \alpha\, \mathbb{E}_e\!\left[p(q \mid e)\right],
+\]
+其中 \(\alpha\) 是一个很小的混合权重。实际中，我们通过在 \(q^\star_e\) 附近扰动机器人初始化，然后要么从扰动后的状态回放原始示范，要么采集一个新的恢复 rollout，来采样第二项。这就在每个接触事件周围形成了受控的局部覆盖，而不是只观察一条穿过该事件的单一标称轨迹。
+
+这种恢复混合占据了图 8 中中央的恢复数据源，并补充了第 4.4 节的聚类平衡采样协议。聚类会挖掘语料库中已经存在的非标称轨迹，而恢复初始化则会主动在那些仅靠聚类不足以提供充分覆盖的接触空间区域中创造这类轨迹。
+
+简要解释：这一节的核心是，除了从已有数据里挑出“异常/非标称”轨迹，还要主动在接触事件附近做局部随机初始化，补齐接触动作空间里的稀疏区域，让模型学到更稳健的恢复与接管能力。
+
+**5 训练与推理配方**
+
+本节详细说明 WALL-WM 的完整训练与推理流程。表 1 总结了各个阶段训练哪些组件。我们首先在图 2(A) 的下一事件预测（next-event prediction）方案下，对层耦合的视频-动作去噪器进行预训练（见第 5.1 节）：先训练视频塔，再在冻结视频塔的情况下训练动作塔。随后，我们适配 VLM 文本条件器（见第 5.2 节），并训练 Staircase 解码器以实现统一模式的并行思维链（parallel chain-of-thought）（见第 5.3 节）。一个可选的微调阶段会在图 2(B) 的下一块（next-chunk）预测方案下，将两个塔都适配到以观测为中心的历史窗口（见第 5.4 节）；事件模式（event-mode）的 rollout 只需要前述阶段。第 5.5 节最后给出由这整套堆栈支持的事件模式与统一模式推理协议。
+
+简要解释：这里是在交代整个方法的训练路线图：先做视频与动作的分阶段预训练，再接入文本条件与 Staircase 结构，最后可选地做下一块适配；推理时则分别支持事件级和统一模式两种使用方式。
+
+**表 1 训练 / 冻结矩阵。**  
+✓ 表示该阶段训练该组件；✗ 表示该阶段该组件保持冻结；“–”表示该组件尚未接入。列按训练流水线顺序排列：面向事件的视频与动作预训练（第 5.1 节，前两列）、VLM 文本条件化（第 5.2 节）、Staircase 蒸馏（第 5.3 节）以及可选的下一块适配（第 5.4 节）。视频与动作预训练使用冻结的 T5 特征；下一块适配在为全局指令保持 T5 冻结的同时，更新 V-A 去噪器。VLM 堆栈从第 3 阶段开始接入；Staircase 阶段只训练 MoT 分支。
+
+| 组件 | Video PT | Action PT | VLM text | Staircase | Next-chunk |
+|---|---:|---:|---:|---:|---:|
+| 3D causal VAE \(E_V\) | ✗ | ✗ | ✗ | ✗ | ✗ |
+| T5 text encoder | – | – | ✗ | ✗ | ✗ |
+| VLM backbone (Qwen3.5-9B) | – | – | ✓ | ✗ | ✗ |
+| VLM project-out / auxiliary heads | – | – | ✓ | ✗ | ✗ |
+| Video DiT (incl. view attention) | ✓ | ✗ | ✗ | ✗ | ✓ |
+| Action DiT (incl. layer coupling) | ✗ | ✓ | ✗ | ✗ | ✓ |
+| Staircase MoT branches | – | – | – | ✓ | – |
+
+简要解释：这张表把“哪个阶段训练哪个模块”讲清楚了。前两阶段主要分别训练视频塔和动作塔；第三阶段接入并训练 VLM 相关部分；第四阶段只训练 Staircase 的 MoT 分支；最后的下一块适配则回到 V-A 去噪器的更新。
+
+**5.1 视频-动作的事件中心预训练**
+
+面向事件的视频-动作预训练在单个语义事件上实现下一事件预测；每个事件都为一个操作片段提供成对的真实视频与动作。训练分两个顺序阶段进行：先视频预训练，后动作预训练。在第一阶段，我们仅在事件潜变量上训练视频 DiT，采用 Equation (7) 中 Wan-style 的 \(v\)-prediction flow-matching 目标 \(L_V\)，把继承来的 Wan 先验适配为一个具身的、多视角的事件未来预测器；此时动作塔尚未接入。
+
+简要解释：这一段说明第一个核心训练阶段的目标是先让模型学会“看事件预测视频未来”，并且只训练视频塔；动作塔要等后续阶段再接入。</pre>
+        </article>
+      </div>
+    </section>
+
+    <section class="spread" id="page-20">
+      <header><span>Page 20</span><a href="#top">Top</a></header>
+      <div class="cols">
+        <figure class="original">
+          <img src="faithful_page_images/WALL-WM/page-020.png" alt="WALL-WM page 20" loading="lazy" />
+        </figure>
+        <article class="translation">
+          <div class="label">中文翻译 + 简单解释</div>
+          <pre>**WALL-WM：在事件连接处雕刻世界行动建模**
+
+在第二阶段，我们冻结 video DiT，只在 action flow matching 下训练 action tower，以预测对齐后的末端执行器轨迹。  
+简要解释：这一阶段把视频生成分支固定住，只让动作分支学习如何根据已对齐的末端执行器轨迹来做预测。
+
+**视频预训练（Video Pretraining）。** 视频预训练包括第 3.2 节中的跨视角分支，其输出 projector 以零初始化。以 Wan prior 为起点，DiT 以当前多视角观测（每个相机一个关键帧）以及第 4.3 节中的事件对齐 caption 为条件，这些 caption 由冻结的 T5 编码；视频时间步均匀采样。由于事件跨度时长不同，我们将每个 clip 截断到最多 65 个 latent frames（在 stride-2 下采样下对应 129 个原始帧）。我们进一步采用一个考虑长度的 caption-drop 调度：令 𝐿𝑒 表示原始事件跨度长度（以帧计），令 𝜌(𝐿𝑒) ∈ [𝜌min, 𝜌max] 表示在一次训练步中省略事件 caption 的概率，
+\[
+\rho(L_e)=
+\begin{cases}
+\rho_{\min}, &amp; L_e \le L_{\min},\\[4pt]
+\rho_{\min} + (\rho_{\max}-\rho_{\min})\dfrac{1-\cos\!\left(\pi \dfrac{L_e-L_{\min}}{L_{\max}-L_{\min}}\right)}{2}, &amp; L_{\min}&lt;L_e&lt;L_{\max},\\[10pt]
+\rho_{\max}, &amp; L_e \ge L_{\max},
+\end{cases}
+\tag{20}
+\]
+
+我们设定 𝜌min = 0.1、𝜌max = 0.9、𝐿min = 129、𝐿max = 220，其中 𝐿min 与上面的截断上限一致。在无 caption 的训练步上，训练就退化为以观测为锚的未来合成：模型仅以当前多视角观测为条件，必须推断接触和末端执行器动力学在物理上合理的延续，而不是依据词面指定的子目标。我们在事件构造过程中剪除准静态帧，使 flow-matching 监督集中在末端执行器运动显著的片段上。我们还使用三种训练做法：(i) 边界掩码，将画外区域和合成黑边从 L𝑉（公式 (7)）中排除；(ii) 对 DiT 权重做 EMA（衰减 𝛽ema = 0.9999），并在每一步更新；(iii) 分辨率/长度分桶，将潜变量形状相近的事件分组，以摊销不同长度 clip 的 padding 开销。训练数据来自第 4.4 节的 cluster-balanced sampler。  
+简要解释：这一大段说明了视频预训练如何处理不同长度的事件、如何随机丢弃 caption，以及如何通过掩码、EMA 和分桶来稳定训练并提升效率。
+
+**动作预训练（Action Pretraining）。** 在视频预训练之后，我们载入得到的视频 DiT，并保持其固定。然后，我们只在第 4.3 节相同的以事件为中心的视频-动作对上，使用 action flow matching 优化 action transformer，同时禁用 video flow-matching 损失，从而使动作梯度不会更新 video tower。遵循第 3.3 节中的非对称 1-to-𝑁𝑑 映射，我们将冻结的视频前向固定在 50 步去噪日程上的 schedule anchor 𝑠★ = 45（经验选定，训练时带一个小的抖动窗口）。这一次锚定的视频前向会把 cross-attention 的 keys/values 提供给每一个动作去噪步（对所有 𝑗 ∈ {0, . . . , 𝑁𝑑 − 1}，令 𝑚(𝑗)=𝑠★，其中 𝑁𝑑 = 50）。我们还在每个优化步设置 𝐾 = 6 个并行动作噪声采样，以复用同一次锚定的视频前向；这个吞吐技巧只用于训练，推理时不使用。action tower 随机初始化；训练遵循第 3.3 节中以事件为中心的布局，并使用第 4.4 节的 cluster-balanced sampler。  
+简要解释：这一段说明动作分支如何在冻结的视频分支条件下训练，并通过固定视频锚点与并行噪声采样来提升训练吞吐量。
+
+**5.2 VLM 文本条件器预训练**
+
+在这一阶段，我们只适配其 project-out 头和两个轻量级辅助头，而不修改下游 DiT。对当前事件进行一次 VLM 前向传播，并监督它输出两个信号：(i) next-event description，即对即将到来的子任务的 task-decomposition caption；以及 (ii) 对当前事件距离结束还剩多少时间的估计。来自同一次前向传播的隐藏状态将作为 DiT 的条件特征，因此其延迟特性与标准的 T5 conditioning 路径一致。关键的是，VLM 的隐藏状态被对齐到下游 DiT 的 T5 特征空间，使升级后的 VLM 对 DiT 而言可以作为 T5 的即插即用替代。这样的对齐保留了 DiT 侧原有的文本条件先验（DiT 继续以它训练时所采用的几何形式接收文本），同时引入了多模态 VLM 更宽的推理带宽，包括基于场景的歧义消解、任务分解，以及通过剩余时间预测获得的时间锚点。在整个阶段中，VLM backbone 保持完全冻结；只有生成 cℓ 的 project-out 头、next-event 头以及 remaining-time 回归器会被训练。具体地，我们最小化一个三项目标：将 VLM conditioning cVLMℓ（即第 3.4 节中 cℓ 的 VLM 生成版本）对齐到原始 T5 编码器在同一指令上产生的对应 cT5ℓ，同时对两个辅助头进行监督，
+\[
+L_{\text{text}}=\lambda_{\text{align}}\|c^{\text{VLM}}_{\ell}-c^{\text{T5}}_{\ell}\|_2^2+\lambda_{\text{next}}\,CE(\hat c_{\text{next}},c_{\text{next}})+\lambda_{\text{time}}\,Huber(\Delta t),
+\tag{21}
+\]
+
+简要解释：这一阶段的目标是让 VLM 学会替代 T5 作为文本条件输入，同时额外预测下一事件内容和剩余时间，从而把语言理解、任务分解和时间定位统一起来。</pre>
+        </article>
+      </div>
+    </section>
+
+    <section class="spread" id="page-21">
+      <header><span>Page 21</span><a href="#top">Top</a></header>
+      <div class="cols">
+        <figure class="original">
+          <img src="faithful_page_images/WALL-WM/page-021.png" alt="WALL-WM page 21" loading="lazy" />
+        </figure>
+        <article class="translation">
+          <div class="label">中文翻译 + 简单解释</div>
+          <pre>在这里，\(c_{\text{next}}\) 是真实的 next-event caption（ground-truth next-event caption，离散 token 序列，写法与第 3.3 节中的逐事件 caption \(c_e\) 相同），而 \(\hat{c}_{\text{next}}\) 是其预测；第一项将特征对齐到原始 T5 编码，第二项是在 next-event caption 上进行 token 级语言建模损失，第三项是在剩余时间标量 \(\Delta t\) 上进行 Huber 回归。在这一阶段中，三个损失权重 \(\lambda_{\text{align}}, \lambda_{\text{next}}, \lambda_{\text{time}}\) 保持固定。
+
+简要解释：这一段说明训练目标由三部分组成，分别约束表征对齐、文本预测和剩余时间回归，用固定权重共同优化。
+
+### 5.3
+
+Staircase Distillation
+
+第 3.4 节中的 staircase latent CoT 模块通过 Mixture-of-Transformers（MoT）架构实现为一个轻量级推理分支，并与冻结的 Qwen3.5-9B 主干相连。该推理分支以预训练的 Qwen3.5 权重初始化，继承原始自回归模型的语义推理能力，同时支持高效的并行 latent rollout。给定视觉-语言输入，staircase 模块生成一个紧凑的连续 latent 推理状态序列 \(\hat{y}_{1:K_c}\)，这些状态充当隐式推理变量，而不是显式文本 token。这些 latent 状态会在具身 rollout 期间直接注入到 WAM cross-attention 层中。
+
+简要解释：这里描述的是把“链式思维”压缩成连续隐状态，并把它直接送入 WAM 的交叉注意力里，以实现更高效的推理。
+
+用于监督时，latent 序列会通过前缀投影器 \(P_{\text{pref}}\) 投影到冻结的轻量级 Qwen3.5-0.8B 语言模型嵌入空间中的 soft prefix 表示 \(z_{1:K_c}\)，该语言模型以自回归方式重建对应的文本 CoT 轨迹 \(r_{1:M_r}\)：
+\[
+P_{\phi}(r_{1:M_r}\mid z_{1:K_c}).
+\tag{22}
+\]
+
+简要解释：这一式子表示用一个更小的冻结语言模型去“读出”latent 推理序列，以重建文字版 CoT，从而让 latent 推理保持可解释性和可监督性。
+
+训练时优化 latent-to-text 重建目标 \(L_{\text{CoT}}\)，梯度只作用于 staircase 推理分支和前缀投影器 \(P_{\text{pref}}\)。在这一阶段，其他所有组件都保持冻结。
+
+简要解释：这说明蒸馏阶段只更新推理分支及其映射层，主体模型不动，以稳定地学习 latent 推理表示。
+
+### 5.4
+
+Next-Chunk Adaptation
+
+在 event-centric 预训练（第 5.1 节）之后，这一可选阶段会在第 3.3 节的 observation-centered 布局上，通过 next-chunk prediction 对 event-pretrained backbone 进行微调。在一个全局指令下，历史帧会对每个 \(H_a\)-step chunk 进行定位，其中 \(H_a\) 表示每个 chunk 中固定的动作步数，即在 event-centric 预训练中使用的可变 event horizon 的固定长度对应物，从而替代 event-centric 预训练期间使用的逐事件 caption。
+
+简要解释：这一段是在说，把按事件组织的预训练模型再适配到按固定步长切块的常规预测任务中，便于统一做固定时长的 VLA 评测。
+
+Observation-centered fine-tuning. 全局指令来自第 4.3 节的 Task level，并由与预训练中相同的冻结 T5 编码；窗口几何结构、相对位姿动作目标，以及扩展的 \(E_{\text{abs}}\) / \(E_{\tau}\) 索引遵循第 3.3 节。两个 DiT towers 都会在这些固定形状窗口上更新，并沿用相同的非对称 1-to-\(N_d\) anchor protocol（\(s^\star=45\), \(m(j)=s^\star\)，在优化期间还可选择性地复用训练时的 \(K=6\) action-noise）。
+
+简要解释：这一段说明微调时保持窗口结构和编码方式不变，只更新 DiT，并继续使用固定的锚点协议来对齐动作序列。
+
+Cluster-balanced sampling. 滑动的统一窗口会改变指令-轨迹共现关系，相较于 event-centric 预训练发生偏移，因此在优化前，我们会在同一语料库上重新运行第 4.4 节中的离线 VL 和 action clustering passes，输入改为 history-conditioned windows。数据加载器会对得到的聚类进行平衡采样，以保留对稀有全局指令以及由第 4.3 节和第 4.5 节揭示的非典型轨迹的覆盖，同时不会在训练时额外增加任何 encoder 前向计算或 optimizer state。
+
+简要解释：这一段强调通过聚类平衡采样来避免数据分布偏斜，确保模型见到长尾指令和少见轨迹，但不增加训练开销。
+
+### 5.5
+
+Inference Recipe
+
+组装后的系统支持两种推理模式，对应于图 2 中的两种方案。Event-mode inference 在 event-centric 方案 (A) 布局上运行 next-event prediction，不需要 history，也不需要固定的 chunk contract。Unified-mode inference 在第 5.4 节之后的 observation-centered 方案 (B) 布局上运行 next-chunk prediction，主要用于传统的固定 horizon VLA 评测。两种模式都使用第 3.3 节中的非对称 1-to-\(N_d\) anchor protocol（默认 50-step schedule 下 \(s^\star=45\), \(m(j)=s^\star\)）。
+
+简要解释：这里总结了两套推理方式：一种按事件预测，灵活但不依赖固定历史长度；另一种按固定 chunk 预测，更适合标准评测。
+
+### 5.5.1
+
+Event-Mode Inference
+
+在每个 rollout step，视频和动作 DiT 会以当前的 multi-view observation、proprioceptive state，以及对即将到来的语义事件的 next-event description 作为条件输入。该描述来自人类或
+
+简要解释：这一段开始描述事件模式下的推理输入来源和条件设置，但原文在此处截断，后文未给出。</pre>
+        </article>
+      </div>
+    </section>
+
+    <section class="spread" id="page-22">
+      <header><span>Page 22</span><a href="#top">Top</a></header>
+      <div class="cols">
+        <figure class="original">
+          <img src="faithful_page_images/WALL-WM/page-022.png" alt="WALL-WM page 22" loading="lazy" />
+        </figure>
+        <article class="translation">
+          <div class="label">中文翻译 + 简单解释</div>
+          <pre>从第 3.4 节经过微调的 Qwen3.5-9B 各个头部（heads）中，模型还会为当前事件输出一个剩余时间估计。模型在方案 (A) 的可变长度窗口（variable-length window）中，对完整的事件对齐视频和动作片段进行去噪；当执行完成后，观测会推进到下一时刻，并由一个新的“下一事件”描述来条件化（condition）下一个片段。  
+简要解释：这里说明了事件级滚动推理的结束与衔接方式：模型不仅生成视频和动作，还同时估计当前事件还剩多少时间，当前事件结束后再切换到下一事件描述继续推理。
+
+### 5.5.2 统一模式推理（Unified-Mode Inference）
+
+统一模式推理（Unified-mode inference）在方案 (B) 的布局上，按固定的 \(H_a\)-步视频-动作块（video-action chunks）进行展开；在每一步，它都以当前观测、一个可配置的历史窗口，以及同一锚定协议（anchor protocol）下的全局指令作为条件。在统一展开过程中，三种可互换的来源为每个块提供文本侧上下文 \(c_\ell\)：可以复用一份已编码的全局指令，也可以每个块提供一条新的描述，并且这些来源可以在不重新训练的情况下混合使用。  
+简要解释：这一段讲的是统一模式下的推理规则。模型可以按固定步长持续输出，每个块都结合当前观测、历史信息和文本指令，而且文本上下文的来源可以灵活切换。
+
+• 梯度连续来源（Gradient-continuous source）。第 3.4 节中的文本编码器（text encoder）将全局指令一次性映射为一个连续的 \(c_\ell\)，该表示原样输入交叉注意力（cross-attention），并在所有滚动块中复用；语言与去噪器（denoiser）之间不存在离散的 CoT（Chain-of-Thought）瓶颈。  
+简要解释：这种方式把整条全局指令编码成连续表示，整段推理都重复使用，避免了离散思维链带来的额外中间步骤。
+
+• 原子指令来源（Atomic-instruction source）。上游规划器（upstream planner）或人工操作员为每个固定的 \(H_a\)-步块边界提供一条简短指令，而不是为一个可变长度的语义事件提供指令；同样的文本编码器会把每条指令映射为驱动对应块的 \(c_\ell\)。  
+简要解释：这种方式把控制粒度固定到每个块边界，每个块单独用一条短指令来指导，适合更离散、更直接的任务分段。
+
+• VLM-CoT 来源（VLM-CoT source）。第 3.4 节中的 Staircase 解码器（decoder），连同第 5.3 节中训练得到的克隆 MoT 分支（cloned MoT branches），以单次并行前向传播（single parallel forward）方式输出 CoT 潜变量（latents），它们的表示作为端到端 VLA（vision-language-action）展开中每个块的文本侧上下文。  
+简要解释：这种方式让视觉语言模型（VLM）直接生成思维链潜表示，并把这些表示作为每个块的文本条件，用于端到端的视觉-语言-动作推理。
+
+由于每一种来源都只是替换交叉注意力中的文本输入，因此在不改变去噪器状态的情况下，可以在展开过程中途切换来源。  
+简要解释：这里强调三种文本上下文方式只是“换输入不换状态”，所以推理过程中可以灵活切换而不会破坏模型内部状态。
+
+## 6 基础设施（Infrastructure）
+
+### 6.1 通用框架（General Frameworks）
+
+在大规模上训练和部署我们的模型，会暴露出一组与纯语言模型不同类型的系统挑战。异构骨干网络（heterogeneous backbone）、预训练的潜变量预测专家（pretrained latent prediction expert）与随机初始化的动作专家（randomly initialized action expert）的共存，以及视频生成与动作预测的混合目标，再加上部署时严格的低延迟预算，共同造成了现成训练与推理栈无法处理的瓶颈。因此，我们开发了一系列针对本模型定制的基础设施级优化。  
+简要解释：这一段在说明为什么需要专门的系统优化。因为模型结构更复杂、训练目标更混合、上线时延要求更严，普通框架不够用。
+
+Muon 优化器（Muon Optimizer）。我们将 Muon 作为模型中大多数模块的优化器，原因是它在收敛速度和训练稳定性方面都能带来持续收益。然而，Newton-Schulz（NS）迭代在直接用于分片训练（sharded training）时会引入显著开销；在朴素实现中，单独的优化器步骤（optimizer step）成本就可能接近前向与反向传播总成本的 2 倍。为了让 Muon 在大规模场景中可用，我们实现了 DMuon，这是一种面向混合并行（hybrid parallelism）并与底层训练框架解耦的 Muon 分布式实现。DMuon 通过协同设计的分布式执行，解决了矩阵级 NS 与分片参数之间的粒度不匹配，将优化器步骤的开销降为次要成本，而不再是主瓶颈。  
+简要解释：这段在讲优化器层面的系统实现。核心目标是把 Muon 的数学优势真正落地到分布式训练中，避免 NS 迭代在分片环境里拖慢训练。
+
+• 流水线调度（Pipeline Scheduling）。我们采用一种专用所有权（dedicated-ownership）方案，其中一个受约束的最长处理时间（Longest-Processing-Time）分配会将每个矩阵参数映射到唯一的 owner rank。原生的 all-reduce / reduce-scatter 模式被替换为 reduce / broadcast；步骤后的 broadcast 会在专用 CUDA 流上异步发出，并与后续前向传播重叠，而自适应运行时监控器会在网络拥塞时回退到同步 broadcast。通过这种细粒度调度优化，计算冗余和通信冗余都被消除。  
+简要解释：这一条主要在减少分布式通信开销。做法是把参数的归属和通信路径重新设计，让广播和计算并行，并在网络不好时自动降级。
+
+• 内核优化（Kernel Optimization）。Gramian 形式（Gramian formulation）显露出一种对称结构，而通用 GEMM 无法利用这种结构，因此按构造就浪费了接近一半的 tile 级计算。我们通过一个与对称因子对齐的 CuteDSL 内核来回收这部分开销，并利用感知形状的自动调优（shape-aware autotuning）在训练过程中遇到的各种矩阵几何形状上持续保持加速效果。  
+简要解释：这一条讲的是把数学结构转化为更高效的 GPU 内核实现。因为 Gramian 矩阵有对称性，所以可以少算很多重复工作。</pre>
+        </article>
+      </div>
+    </section>
+
+    <section class="spread" id="page-23">
+      <header><span>Page 23</span><a href="#top">Top</a></header>
+      <div class="cols">
+        <figure class="original">
+          <img src="faithful_page_images/WALL-WM/page-023.png" alt="WALL-WM page 23" loading="lazy" />
+        </figure>
+        <article class="translation">
+          <div class="label">中文翻译 + 简单解释</div>
+          <pre>**内核库（Kernel Library）**  
+我们开发了一个定制化的内核库，覆盖训练和推理两个阶段。这一设计的动机来自如下观察：现成的 stock kernels 只在单个算子粒度上工作，因此对于那些在数据流图（dataflow graph）的一个很小邻域内生成并被立即消费的张量（tensor），会不必要地把它们溢写（spill）到全局内存（global memory）。我们识别出一组反复出现、可融合（fusable）的模式；在这些模式的默认实现中，其算术强度（arithmetic intensity）受内存带宽（memory bandwidth）而不是 tensor-core 吞吐量（throughput）限制。我们将这些模式整合为复合内核（composite kernels），使中间激活（intermediate activations）在融合区域内始终保留在寄存器（registers）或共享内存（shared memory）中，从而把有效的 roofline 工作点推向计算受限（compute-bound）区间，并在模型的主要成本中心（dominant cost centers）上持续保持较高的 GPU 利用率。  
+简要解释：这一段说明作者通过把多个小算子融合成更大的内核，减少全局内存读写，从而提升 GPU 计算效率和整体吞吐。
+
+我们的内核库构建在 TVM FFI 之上。TVM FFI 是一个与语言无关的 foreign function interface，它通过稳定的 C ABI 暴露已编译内核，并使用 zero-copy tensor handles，从而绕过 PyTorch dispatcher 和 GIL 的逐次调用开销，同时仍然能够与 PyTorch 的训练和推理前端互操作。在这一调度层（dispatch layer）之上，我们提供了一个完整的 wrapper，它与原生 PyTorch op interface 保持一致，因此来自我们库中的内核可以直接替换 PyTorch 对应实现，而不需要对周围的模型代码做任何改动。这样的设计既保留了 host-side launch 的节省，又使得维护训练和推理之间的数值一致性变得简单，因为两条路径都会通过相同的调用面（call surface）触发同一个编译后的内核。  
+简要解释：这一段强调库的接入方式很轻量，既能减少 Python/PyTorch 调度开销，又能让训练和推理共享同一套内核实现，保证一致性。
+
+**细粒度重叠（Fine-Grained Overlapping）**  
+我们在原始的 spatial-temporal attention 之外引入了 view attention，从而使每一层包含两个顺序执行的 attention。在 Ulysses 序列并行（Ulysses sequence parallelism）下，每个 attention 都需要一对 all-to-alls，来在 sequence 维度和 head 维度之间重新分配序列，因此朴素实现会在关键路径（critical path）上串行执行每层四次 all-to-alls，并显著抬高加入 view attention 的通信成本。为缓解这一问题，我们采用细粒度调度（fine-grained scheduling），将前后紧邻的通信隐藏在 attention 计算之中，从而消除了大部分新增的通信开销。  
+简要解释：这一段说明新增 view attention 后通信会变重，因此作者通过计算与通信重叠来把额外开销压下去。
+
+**多事件序列打包（Multi-Event Sequence Packing）**  
+一种常见的训练流程是先按整段 episode 粒度离线编码并缓存视频 latent，然后在优化过程中从这些缓存中采样。每当形成一个 minibatch 时，流水线就必须加载并重新物化（re-materialize）整段 episode 的 latent（或者在线重复执行 VAE 编码）；由于 episode 长度差异很大，若不进行激进的 padding 或 truncation，episode 就无法被打包成统一张量，而有效 batch size 在实践中常常会塌缩。为此，我们改为在 dataloader 层把多个 event 打包成一条更长的序列，并在 packed 序列上并行训练，同时使用 attention mask 阻止跨 event 泄漏（cross-event leakage）。事件会被连接到一个固定的总长度，因此每个训练步都会以完整的配置有效 batch size 运行，GPU 也会尽量保持在计算受限区间；每步成本被摊销到所有打包的 event 上，而不是按每个 episode 单独支付一次。  
+简要解释：这一段说明把多个事件拼成长序列来训练，可以减少 episode 级别的 padding/重复编码浪费，并稳定提升 batch 利用率。
+
+**6.2**
+
+**模型压缩（Model Compression）**  
+世界模型（world models）的部署成本众所周知地高：其底层 diffusion-style backbone 在每一帧生成时都需要执行数十步去噪（denoising）步骤，而每一步本身又涉及一个拥有数十亿参数（multibillion-parameter）的网络的完整前向传播（forward pass），因此朴素部署在根本上无法满足实时机器人控制（real-time robotic control）的延迟预算（latency budgets）。为了弥合这一差距，我们沿着两个正交方向（orthogonal axes）应用两种互补的压缩技术——用 distillation 减少去噪步数，以及用 FP8 quantization 降低每一步的计算和内存成本。  
+简要解释：这一段先说明为什么 world model 难以实时部署，再给出两条压缩路线：少步采样和低精度量化。
+
+**蒸馏（Distillation）**  
+为了减少去噪步数，我们采用 distribution-matching distillation（DMD）(84, 85)。这种方法训练一个少步数的 student generator，使其输出分布与多步 teacher 的输出分布对齐，而不是逐点回归（pointwise regression）到 teacher trajectories。具体而言，distribution-matching 项通过两个 score estimate 之间的差来监督 student：一个来自冻结的 teacher，另一个来自一个在线训练的 auxiliary fake score network，该网络用于跟踪 student 逐步变化的分布；这种机制会把 student 推向那些相对于 teacher 而言其自身样本代表性不足（under-represented）的区域。我们进一步采用联合蒸馏目标（joint distillation objective），在该分布项之外保留原始的 action-prediction loss，使少步 student 同时对齐 teacher 的 video distribution，并锚定在其预训练时所依赖的 action supervision 上，从而防止在去噪轨迹被压缩时 action head 漂移（drifting）。去掉后者会使 action MAE 退化 53%，这证实了：仅在 distributional supervision 下压缩去噪轨迹，会导致 action head 偏离其预训练校准（pre-trained calibration）。我们从 teacher 权重初始化 student，并将其蒸馏到少量采样  
+简要解释：这一段说明 DMD 不只是模仿 teacher 的最终结果，还要同时保留 action 预测约束，避免蒸馏后动作头失准。
+
+</pre>
+        </article>
+      </div>
+    </section>
+
+    <section class="spread" id="page-24">
+      <header><span>Page 24</span><a href="#top">Top</a></header>
+      <div class="cols">
+        <figure class="original">
+          <img src="faithful_page_images/WALL-WM/page-024.png" alt="WALL-WM page 24" loading="lazy" />
+        </figure>
+        <article class="translation">
+          <div class="label">中文翻译 + 简单解释</div>
+          <pre>……在部署时只保留 student，从而在可接受的生成质量下，将去噪步数降低一个数量级。
+
+简要解释：这一句在说明蒸馏后的 student 模型只需在推理阶段保留，不再依赖更重的 teacher，因此能显著减少生成所需的迭代步数，同时不至于明显牺牲质量。
+
+**FP8 量化（FP8 Quantization）**。第二个压缩轴针对的是每一步的计算与内存成本，而不是步数本身；我们将蒸馏后 student 中占主导的矩阵乘法采用数值量化，转换为 8-bit floating-point 精度。FP8 非常适合这一场景，其 exponent-mantissa（指数-尾数）拆分能够保留重尾分布激活值所需的动态范围；对于 INT8 之类的整数格式，即便采用复杂的校准或离群值处理，通常仍会带来明显的精度损失。现代加速器在硬件层面进一步放大了这一优势，通过在更低精度下复用同一条 Tensor Core 数据通路，FP8 矩阵乘法在当前一代 GPU 上的吞吐量大约比 BF16 高 2 倍，同时还将权重加载带宽压力减半，而权重加载成本在机器人控制回路这类典型小 batch size 场景下往往主导推理时延。具体而言，我们对 FP8 采用带 per-block scaling（按块缩放）的 post-training quantization（PTQ，训练后量化）：权重和激活值沿 reduction dimension（归约维度）划分为固定大小的块，每个块分配一个独立的缩放因子，用以吸收局部幅值变化，同时使每个 tensor 的元数据开销保持可忽略不计。这种粒度在量化保真度与运行时效率之间取得了较好的折中：更粗的 tensor-wise scaling（按张量缩放）无法跟踪 transformer 激活值特有的 channel-wise outliers（通道级离群值），而更细的 per-element（逐元素）方案会引入反量化开销，从而侵蚀 FP8 原本希望带来的吞吐优势。
+
+简要解释：这一段说明为什么选择 FP8，以及为什么要用按块缩放的 PTQ。核心是把计算和显存带宽都压下去，同时尽量不损失精度，并且利用现代 GPU 对 FP8 的硬件支持获得实际吞吐收益。
+
+一个天真的 per-block FP8 量化实现会抹去这些吞吐提升中的大部分，因为单独计算 per-block scales（按块缩放因子）以及在运行时对 tensor 做类型转换的成本，相对于 GEMM 本身并不低。为此，我们从两个方面谨慎实现量化算子：权重在离线阶段就被量化为预打包（pre-packed）的 FP8 tensor，并把其缩放因子一并固化进去，因此运行时路径不再承担权重侧量化成本；而激活值的即时（on-the-fly）量化则融合到前一算子的 epilogue（尾部收尾阶段）中，在产生激活值的同一个 kernel 里完成 per-block scale 计算并转换为 FP8，从而避免对 tensor 进行单独的读/写遍历，并把量化开销降低到 GEMM 总时间中可忽略的比例。
+
+简要解释：这里强调“实现方式”决定实际收益。若量化时每步都额外做很多缩放、搬运和转换，理论上的 FP8 加速会被抵消；所以作者把权重量化前置离线完成，把激活量化融合进同一个 kernel 里，最大限度减少额外开销。
+
+结合 CUDA Graph capture 这类通用部署优化，以消除每步关键路径中的 host-side（主机侧）launch overhead（启动开销），上文所述的完整优化栈将端到端推理提升到 10Hz，满足闭环机器人控制所需的时延预算。
+
+简要解释：这一段给出整体部署结果。除了量化本身，还要减少 CPU/host 发起 kernel 的额外开销；综合优化后，系统达到了闭环控制可用的 10Hz 推理频率。
+
+**7**
+
+**实验（Experiments）**
+
+**7.1**
+
+**具身视频生成评测（Embodied Video Generation Evaluation）**
+
+**评测协议（Evaluation Protocol）**。为了评估具身场景下的视频生成能力，我们将 WALL-WM 作为一个具身视频生成器进行评测。给定初始观测和一条语言指令，模型必须预测后续事件，同时保持物体身份（object identity）、机器人运动（robot motion）、接触动力学（contact dynamics）以及跨视角几何一致性（cross-view geometric consistency），从而使生成序列对下游控制仍然有用。除非另有说明，WALL-WM 使用一个初始化自 Wan2.2-5B 的 video tower，而 Wan 系列基线则在不使用 WALL-WM 的 event-centric（事件中心）具身训练的情况下进行评测。不同于主要关注感知保真度的传统视频生成基准，具身 world models 的评测必须反映其在真实具身应用中的实际价值。因此，我们遵循 WorldArena evaluation protocol（65）来检验模型是否已经从通用视频先验（generic video prior）进化为具身 world model prior（具身世界模型先验）。
+
+简要解释：这一段定义了评测目标：不是只看画面像不像，而是看模型是否真的学会了可用于控制的未来状态预测，尤其要保持物体、机器人动作、接触和多视角几何的一致性。
+
+**基准构建（Benchmark construction）**。我们基于泛化后的具身数据混合（generalized embodied data mixture）构建了一个 Embodied Video Generation 基准。保留测试集（held-out split）包含 200 个具有代表性的分布内（in-distribution, ID）任务和 50 个分布外（out-of-distribution, OOD）任务，覆盖了多样的动词、物体类别、场景布局、相机配置以及机器人 embodiment（具身形态）。OOD 切分通过新的 object–verb pairings（物体-动词配对）、改写后的指令、未见过的场景布局以及与训练集共享高层语言但需要不同视觉轨迹的任务组合，来强化文本与组合泛化能力。总体而言，这一协议测试的是：在 next-event prediction paradigm（下一事件预测范式）下，模型是否学会了从语言和观测到未来物理状态的 event-centric（事件中心）映射。
+
+简要解释：这一段说明基准怎么做、为什么这么做。ID 测已见过分布内能力，OOD 测组合泛化和文字泛化，重点是检验模型是否真的理解“下一事件”而不是记忆训练数据。
+
+**主要结果（Main results）**。如表 2 所示，WALL-WM 在与具身相关的维度上持续优于 Wan 系列基线（Wan2.1 和 Wan2.2），包括 Motion Quality（运动质量）、Semantic Consistency（语义一致性）以及 Physical
+
+简要解释：这一句在引出表 2 的结果，说明 WALL-WM 在多个关键具身视频指标上优于基线；但你提供的页内文本在 “Physical” 处截断，因此这里只能忠实翻译到可见内容为止。</pre>
+        </article>
+      </div>
+    </section>
+
+    <section class="spread" id="page-25">
+      <header><span>Page 25</span><a href="#top">Top</a></header>
+      <div class="cols">
+        <figure class="original">
+          <img src="faithful_page_images/WALL-WM/page-025.png" alt="WALL-WM page 25" loading="lazy" />
+        </figure>
+        <article class="translation">
+          <div class="label">中文翻译 + 简单解释</div>
+          <pre>**论文标题：**WALL-WM：在事件连接处雕刻世界动作建模
+
+**表 2：**与基础视频生成模型的定量比较。我们的方法在具身相关的指标上提升了运动质量、语义一致性和物理合理性，同时保持了有竞争力的视觉质量。表现最好的指标已用加粗标出。
+
+**表头（按原文顺序翻译）：**模型；视觉质量；运动质量；语义一致性；物理合理性；指令轨迹；图像美感；动态流畅度；运动；主体；背景；语义；交互；视角；跟随；Acc.；质量；质量；程度；得分；平滑度；一致性；一致性；对齐质量
+
+- Wan2.1-1.3B (72)：0.577，0.389，0.199，0.061，0.619，0.476，0.522，0.857，0.219，0.819，0.308，0.214
+- Wan2.2-5B (72)：0.527，0.409，0.418，0.109，0.683，0.769，0.817，0.805，0.226，0.807，0.298，0.223
+- WALL-WM：0.503，0.393，0.484，0.148，0.771，0.795，0.838，0.886，0.434，0.821，0.391，0.234
+
+简要解释：这张表在比较不同基础视频生成模型时，强调 WALL-WM 在动作、语义和物理层面的表现更强，同时没有牺牲整体视觉质量。
+
+**示例文本：**泡茶。观察并调整杯把手的位置。  
+**图中标签：**我们的方法；Wan2.2-5B；Wan2.1-1.3B。  
+
+**示例文本：**给花浇水。右臂调整喷壶喷嘴位置并喷洒水雾。  
+
+**图 14：**定性结果。我们的方法在与现实世界物理规律的一致性方面表现更好，呈现出更一致的运动和更符合物理规律的交互；而 Wan2.1 和 Wan2.2 经常生成幻觉对象或不真实的动态（例如接触失败、物体变形）。
+
+简要解释：这幅图想说明，WALL-WM 的生成结果不仅“看起来像视频”，而且更符合真实操作中的接触、受力和运动变化规律。
+
+**物理合理性。**这些提升表明，大规模具身训练连同我们的训练配方，把继承而来的视频先验转化成了更强的物理先验，使生成过程能够保持连贯的运动和接触动力学。除了具有竞争力的感知质量之外，WALL-WM 在物理基础和交互导向的指标上也处于领先，这说明它与真实操作动态的对齐更紧密。从定性上看，通用视频模型经常出现语义漂移，而我们的具身世界模型生成的轨迹更连贯，也更符合目标。
+
+简要解释：这里强调的是，WALL-WM 的优势不只是画面质量，而是把“视频生成”推进到更像“理解并模拟真实交互”的层面。
+
+**表 3：**CO3Dv2 (63) 上的 3D 感知基准。我们使用点误差、深度误差和 AUC 指标来评估不同的视觉表征。WALL-WM 取得了有竞争力的 3D 感知能力，这与跨视角评估中观察到的强多视角一致性相辅相成。
+
+**探测特征：**DINOv2 (58)、V-JEPA (4)、CogVideoX (81)、Aether (96)、Open-Sora2.0 (91)、WAN2.1-14B (72)、WALL-WM
+
+**指标：**Point Err(↓)，Depth Err(↓)，AUC@5 (↑)，AUC@30 (↑)
+
+- DINOv2 (58)：0.559，0.209，0.051，0.508
+- V-JEPA (4)：0.439，0.214，0.076，0.619
+- CogVideoX (81)：0.485，0.231，0.051，0.569
+- Aether (96)：0.501，0.249，0.054，0.571
+- Open-Sora2.0 (91)：0.391，0.196，0.096，0.643
+- WAN2.1-14B (72)：0.284，0.151，0.200，0.736
+- WALL-WM：0.271，0.132，0.210，0.727
+
+简要解释：这张表说明 WALL-WM 在 3D 感知上具有竞争力，尤其在点误差和深度误差上表现较好，说明其内部表征不仅能生成视频，也保留了空间结构信息。
+
+**分析。**与 Wan2.1 和 Wan2.2 相比，WALL-WM 在我们的通用具身基准上始终表现得更好。如图 14 所示，物理合理性、交互质量和轨迹准确率的提升表明，大规模具身训练把继承自 Wan 的视频先验转化为了关于机器人-物体交互与接触演化的物理先验。这一效果得益于我们多样化的具身数据混合，其中涵盖不同任务、机器人构型、相机视角和语言指令，因此让模型接触到了更广泛的具身动力学分布。
+
+简要解释：这一段是在总结方法贡献，核心观点是多样的具身数据把模型从“会生成视频”推进到“会模拟交互和接触演化”。  
+
+**第 25 页**</pre>
+        </article>
+      </div>
+    </section>
+
+    <section class="spread" id="page-26">
+      <header><span>Page 26</span><a href="#top">Top</a></header>
+      <div class="cols">
+        <figure class="original">
+          <img src="faithful_page_images/WALL-WM/page-026.png" alt="WALL-WM page 26" loading="lazy" />
+        </figure>
+        <article class="translation">
+          <div class="label">中文翻译 + 简单解释</div>
+          <pre>WALL-WM 还通过跨视图注意力模块（cross-view attention modules）强化多视图协作，这些模块在预训练的 WAN 主干（backbone）内部执行跨视图信息交换。与直接进行多视图拼接相比，这种保留先验（prior-preserving）的设计既保留了 Wan 在纹理合成和语言对齐方面的优势，又注入了同步的多视图交互动态。因此，生成的 rollout 在不同视图之间具有更强的几何一致性。  
+简要解释：这一段说明 WALL-WM 不是简单把多视图输入拼接起来，而是在 WAN 主干内部做视图间交互，所以既不破坏原模型优势，又能提升跨视图几何一致性。
+
+160
+
+CogVideoX
+
+140
+
+对应误差（Correspondence Error，px）
+
+为了定量检验这一性质，我们遵循 VidFM-3D(35) 的评测协议，使用跨视图对应误差（cross-view correspondence error）来衡量多视图一致性，并结合基于点（point）和深度探测（depth probing）的 3D 感知指标进行评估。如图 15 和表 3 所示，WALL-WM 在多视图对应和 3D 感知探测两方面都取得了很强的性能。具体来说，更低的对应误差表明更好的跨视图几何一致性，而具有竞争力的 3D 探测结果则说明，所学习到的表示不仅停留在外观级生成层面，还保留了空间结构。这些结果表明，WALL-WM 不仅提升了视觉保真度和动作生成质量，还学习到了视图一致且具备 3D 感知的动态表示。  
+简要解释：这一段是在讲实验验证方法和结论。核心是：WALL-WM 不只“看起来像”，还真的学到了跨视图一致、能反映三维结构的表示。
+
+120
+
+WAN2.1-1.3B
+
+Open-Sora2.0
+
+100
+
+Aether
+
+WAN2.1-14B
+
+80
+
+V-JEPA
+
+60
+
+WALL-WM
+
+DINOv2
+
+40
+
+20
+
+0.02
+
+0.03
+
+0.04
+
+探测误差（Probe Error）
+
+0.05
+
+0.06
+
+图 15 多视图一致性与 3D 感知能力。3D 探测误差（3D Probe Error）与跨视图对应误差（Cross-view Correspondence Error，越低越好）的关系。WALL-WM 同时取得了较低的探测误差和对应误差，证明其表示同时具备 3D 感知能力和视图一致性。  
+简要解释：图 15 的含义是：模型不仅要在 2D 生成上表现好，还要在 3D 感知和跨视图一致性上同时表现好，WALL-WM 在这两项上都更优。
+
+我们的模型还表现出更强的文本泛化能力。Wan 模型通常能够捕捉广泛的名词和动词，但当提示词描述的是熟悉操作概念的新组合时，就会变得不那么可靠。WALL-WM 使用多层级事件描述（multi-level event captions）和提示词增强（prompt augmentation）进行训练，把语言与局部物理阶段关联起来，例如 reach、contact、grasp、transfer 和 release。这使得生成序列能够更好地遵循改写后的指令或组合式指令，而不只是匹配熟悉的标准化描述。  
+简要解释：这一段强调语言泛化。WALL-WM 不是只会背常见指令模板，而是把语言和具体动作阶段对齐，因此面对改写、组合式表达时更稳。
+
+7.2
+
+真实机器人评测（Real-Robot Evaluation）
+
+实验设置。真实机器人评测是在内部开发的部署平台套件（deployment platform suite）中的高性能桌面双臂机器人（tabletop bimanual robot arms）上进行的（图 7）。该平台使用同步多视图观测和语言指令，评测场景与第 4 节所描述的桌面部署几何设置对齐。基准被组织为四个互补的套件，分别覆盖直接操作、指令层推理、精细接触控制，以及杂乱场景中的泛化能力。所有模型均使用 Task Progress 进行比较，这是一种 0–100 的稠密评分，会根据表 6 中列出的、任务特定的评分细则，对指定任务的部分完成情况给予积分。我们将 Task Progress 作为主要指标，而不是二值任务成功率，因为纯成功率标准在真实机器人评测中往往过于粗糙。由于任务完成具有因果性并带有阈值，二值成功会掩盖 grounding、接触处理以及中间物理推理方面的显著差异，从而偏离预训练模型真实体现出的能力。Task Progress 提供了一个更连续的衡量方式，用于反映机器人向指定目标推进的程度，使接近完成、部分状态变化和有意义的中间进展都能体现在得分中；各项细则分数会被归一化到主结果使用的 0–100 标度。因此，我们在所有真实机器人套件中统一报告 Task Progress，以更好地刻画预训练模型的实际性能。这些实验的任务级 Task Progress 详细分数记录在表 5 中。基线包括 𝜋0.5(36)、DreamZero(83) 和 LingBot-VA(44)，前提是相应分数可获得。为了保证公平比较，所有部署策略都在相同的物理任务定义、语言指令、多视图观测流、场景随机化协议以及 Task Progress 评分细则下进行评估。基线策略仅通过其面向目标具身平台的标准动作接口进行适配，在 rollout 过程中没有任何方法获得特权状态信息或任务特定的评分反馈。当某个基线在该协议下无法部署到某个套件时，我们会将该条目标记为不可用，而不是混入不同评测设置下的结果。主 WALL-WM 策略在 event mode 下进行评估，此时策略从预训练的以事件为中心的 world-action 主干开始，并使用所提出的文本推理模块提供 event-conditioned control。作为消融，我们还报告了 WALL-WM-U-Scratch，这是一个从头训练的统一基线，直接在固定长度的  
+简要解释：这一大段是在交代真实机器人实验怎么做、为什么不用简单的成功率、以及如何保证和各基线公平比较。重点是 Task Progress 更细致，能反映部分完成和中间推理能力。
+
+26</pre>
+        </article>
+      </div>
+    </section>
+
+    <section class="spread" id="page-27">
+      <header><span>Page 27</span><a href="#top">Top</a></header>
+      <div class="cols">
+        <figure class="original">
+          <img src="faithful_page_images/WALL-WM/page-027.png" alt="WALL-WM page 27" loading="lazy" />
+        </figure>
+        <article class="translation">
+          <div class="label">中文翻译 + 简单解释</div>
+          <pre>第27页
+
+论文标题：WALL-WM：在事件连接点处雕刻世界动作建模
+
+摆放杯子成倒三角形
+
+把勺子放入碗中
+
+把积木放到颜色位置
+
+从瓶子里倒水
+
+把眼镜放到木质搁架上
+
+把环套到杆上
+
+把物品放入篮子
+
+图16 真实机器人多样操作基准（Real-robot Diverse Manipulation benchmark）。任务进展分数（Task Progress）是在直接桌面操作任务上的表现，包含抓取、放置、倾倒、空间迁移，以及颜色条件放置。
+
+简要解释：这组图注对应的是真实机器人上的一组基础操作任务，重点考察模型对桌面物体的抓取、摆放、倾倒和定向迁移能力，而不是抽象推理能力。
+
+在相同的真实机器人任务监督下的指令到动作（instruction-to-action）设置。这个基线不应与第 5.5.2 节引入的统一推理模式（unified inference mode）混淆；后者运行在经过事件预训练的骨干网络（event-pretrained backbone）上。相反，WALL-WM-U-Scratch 去除了以事件为中心的预训练和事件条件推理路径，用于测试这些成分到底提供了多少可迁移的真实机器人控制先验。
+
+简要解释：这里是在说明对照实验的设定。WALL-WM-U-Scratch 是一个“从头训练”的对照版本，用来隔离事件预训练和事件推理模块对真实机器人控制性能的贡献。
+
+7.2.1 多样化操作（Diverse Manipulation）
+
+多样化操作旨在评估在相对明确的任务目标下，广泛的直接物理操作技能。任务集合包括摆放杯子成倒三角形、把勺子放入碗中、把眼镜放到木质搁架上，以及把环套到杆上。它还包括把积木放到颜色位置、从瓶子里倒水，以及把物品放入篮子。综合来看，这些任务检验了空间排列、抓取-放置协调、物体迁移、工具-物体交互、颜色条件放置、倾倒，以及视觉引导下的转移能力。它们的主要目的并不是测试抽象推理；相反，它们强调的是策略是否能够定位桌面上的小物体、维持稳定的接触转换，并基于多视角观测完成预期的物理状态变化。
+
+简要解释：这一段说明了“多样化操作”基准的设计目标。它关注的是实际操作技能本身，尤其是多步骤物理状态变化能否顺利完成。
+
+结果。图16 报告显示，事件模式（event-mode）的 WALL-WM 在 Diverse Manipulation 套件上的平均 Task Progress 最强，达到 75.86，高于 WALL-WM-U-Scratch 的 63.00、𝜋0.5 的 55.64、DreamZero 的 39.97，以及 LingBot-VA 的 29.71。优势最明显的任务是那些需要完整物体状态迁移而不只是一次短距离接近的任务，例如将杯子摆成倒三角形、把勺子放入碗中、把环套到杆上、把积木移动到目标颜色位置，以及从瓶子里倾倒水。WALL-WM-U-Scratch 在若干直接操作任务上也具有竞争力，这表明仅靠任务监督，架构本身也能学习到通用的运动模式。然而，事件模式比 WALL-WM-U-Scratch 的平均分提高了 12.86 分，并且在整个任务集合上更加稳定，这说明以事件为中心的预训练可能为抓取、转移、对齐和释放阶段提供可复用的物理先验。比较结果还揭示了显著的任务级差异：𝜋0.5 在搁架放置上略占优势，而 DreamZero 在篮子拾取上取得了最高分。因此，事件模式 WALL-WM 的主要优势并不在于赢下每一个单项任务，而在于它能在一组多样化桌面操作技能上取得最强的整体 Task Progress。
+
+简要解释：这一段是核心结果。结论是事件模式的 WALL-WM 不一定每个任务都第一，但整体平均表现最好，而且更稳定，说明事件预训练确实带来了可迁移的物理控制先验。</pre>
+        </article>
+      </div>
+    </section>
+
+    <section class="spread" id="page-28">
+      <header><span>Page 28</span><a href="#top">Top</a></header>
+      <div class="cols">
+        <figure class="original">
+          <img src="faithful_page_images/WALL-WM/page-028.png" alt="WALL-WM page 28" loading="lazy" />
+        </figure>
+        <article class="translation">
+          <div class="label">中文翻译 + 简单解释</div>
+          <pre>Sort Headphone（整理耳机）
+
+Classify Items as Shape（按形状对物品分类）
+
+Press Button In Order（按顺序按按钮）
+
+Pair Up Items（配对物品）
+
+Pick Fruits into Basket（把水果放入篮子）
+
+图 17 Real-robot Reasoning Manipulation benchmark（真实机器人 Reasoning Manipulation 基准）。针对需要语义分类、排序、匹配和指令条件选择（instruction-conditioned selection）的任务，给出了 Task Progress 分数。
+
+简要解释：这张图列出了真实机器人推理型操作基准中的若干任务，并说明评价重点不是单纯移动物体，而是理解语义类别、顺序关系、配对关系以及指令约束下的目标选择。
+
+## 7.2.2
+
+### Reasoning Manipulation（推理型操作）
+
+Reasoning Manipulation（推理型操作）考察的是超越单个物体运动的指令落地（instruction grounding）。该任务集合包括 Sort Headphone（整理耳机）、Classify Items as Shape（按形状对物品分类）和 Press Button in Order（按顺序按按钮）。它还包括 Pair Up Items（配对物品）和 Pick Fruits into Basket（把水果放入篮子）。这些任务要求类别落地（category grounding）、关系匹配（relational matching）、按序执行（ordered execution）以及指令条件下的物体选择（instruction-conditioned object selection）。与 Diverse Manipulation（多样化操作）不同，同一个场景可以对应多种看似合理的动作，因此策略必须先从语言指令中推断出意图对象、类别、关系或序列，然后再执行相应的操作。
+
+简要解释：这一段强调，推理型操作的难点在于“先理解再执行”。模型不仅要识别物体，还要根据语言判断到底选哪个对象、按什么关系组合、按什么顺序操作。
+
+Results. Fig. 17 indicates that event-mode WALL-WM obtains the strongest average result on reasoning-heavy tasks, reaching 71.60 compared with 59.50 for WALL-WM-U-Scratch, 56.40 for 𝜋0.5 , 32.70 for DreamZero, and 31.60 for LingBot-VA. The stable gain over WALL-WM-U-Scratch suggests that the event-mode improvement is not only due to the architecture, but is also associated with the pretrained manipulation backbone and the introduced language-guided reasoning mechanism. In our real-robot experiments, this mechanism is implemented with a fine-tuned Qwen3.5-VL-9B model that maps broad task requirements and current multiview observations into concrete next-event descriptions, consistent with the event-mode inference recipe in Sec. 5.5.1. These next-event descriptions provide explicit event-centric control targets for the pretrained world-action backbone, which may help when the instruction changes the required event structure, such as ordered button pressing and fruit selection. WALL-WM-U-Scratch remains competitive on recognition-oriented cases such as sorting and classification, and 𝜋0.5 performs best on relational pairing. Thus, the main advantage of event-mode WALL-WM is its stronger overall balance across category grounding, ordered execution, and instruction-conditioned selection, supported by language-guided conversion from high-level instructions to executable event descriptions.
+
+简要解释：这一段给出结果与原因分析。event-mode WALL-WM 在推理型任务上平均最好，说明“事件级”表示加上语言引导的推理机制，能把高层指令更稳地转换成可执行的控制目标；但在某些偏识别或关系配对任务上，其他方法仍各有优势。
+
+## 7.2.3
+
+### Dexterous Manipulation（灵巧操作）
+
+Dexterous Manipulation（灵巧操作）强调的是接触敏感（contact-sensitive）的行为，这类行为很难仅靠粗粒度语义指令来捕捉。图中展示了两个细粒度任务：Put Stationery in Case（把文具放入盒中）和 Insert Wireline（插入线缆）。报告的平均 Task Progress 分数对应的是这些插入类任务和受约束放置类任务。此类任务要求狭窄容差（narrow-tolerance）的插入、精确的末端执行器对准（end-effector alignment）、谨慎的接触时机控制（contact timing），并且在 fan-unboxing 示例中，还需要带有包装约束的更长物体处理序列。即使高层的物体选择是正确的，微小的位姿误差也可能阻止任务推进，因此该任务组更像是对局部动作精度的压力测试，而不仅仅是对语义理解的测试。
+
+简要解释：这一段说明灵巧操作的关键不在“选对物体”这么简单，而在于手眼对准、接触时机和精细位姿控制。任务对误差非常敏感，因此更能检验模型的低层动作执行能力。
+
+Results. Fig. 18 shows that event-mode WALL-WM obtains the highest averaged Task Progress on the Dexterous
+
+简要解释：这一句在当前页文本中截断了，原意是在引出图 18 的结果，说明 event-mode WALL-WM 在灵巧操作任务上的平均 Task Progress 最高。</pre>
+        </article>
+      </div>
+    </section>
+
+    <section class="spread" id="page-29">
+      <header><span>Page 29</span><a href="#top">Top</a></header>
+      <div class="cols">
+        <figure class="original">
+          <img src="faithful_page_images/WALL-WM/page-029.png" alt="WALL-WM page 29" loading="lazy" />
+        </figure>
+        <article class="translation">
+          <div class="label">中文翻译 + 简单解释</div>
+          <pre>第 29 页
+
+将风扇拆开，把它从包装中取出，并打开电源。
+
+把文具放进盒子里。
+
+插入线缆。
+
+图 18 真实机器人（real-robot）Dexterous Manipulation 基准。在需要精确插入和细致物体处理的接触敏感任务上，平均任务进度（Average Task Progress）。
+
+简要解释：这一部分展示的是真实机器人灵巧操作基准的示例任务与评测图注，核心关注点是精确插入、细致抓取和接触控制能力。
+
+Manipulation suite 的得分达到 32.00，紧随其后的是 WALL-WM-U-Scratch，得分为 31.25。两种模式都优于 𝜋0.5、LingBot-VA 和 DreamZero 的平均得分，这表明预训练的 video-action backbone 可能为富接触动作（contact-rich motion）提供了有用的局部动力学先验（local dynamics prior）。然而，event mode 与 WALL-WM-U-Scratch 之间的差距很小，说明这些任务并不是主要受高层 event 分解限制，而是更多受低层位姿精度（pose accuracy）、接触时机（contact timing）和窄容差对齐（narrow-tolerance alignment）约束。在任务级别上，两种 WALL-WM 模式在 Insert Wireline 上都取得了最佳分数，而 DreamZero 在 Put Stationery in Case 上表现更好。总体而言，相对较低的绝对分数表明，真实机器人灵巧操作仍然极具挑战，尤其是在精确插入和受限放置这类任务中，哪怕很小的接触误差也可能阻止任务推进。
+
+简要解释：这一段是在分析真实机器人灵巧操作基准的结果。结论是，WALL-WM 的预训练动作骨干网络带来了一定优势，但在精度、时机和对齐要求很高的任务里，低层控制仍是主要瓶颈。
+
+7.2.4
+
+泛化
+
+泛化（Generalization）的设计目标，是在复杂桌面场景中评估 instruction-conditioned transfer，而不是在彼此隔离的、任务专用的重置环境中评估。评估时，场景中会保留多个物体，并以随机顺序发出不同指令，因此策略需要在共享场景状态（shared scene state）下，将当前命令落地到具体对象。任务包括 Place Plates into Storage Slots、Cover Pot with Lid、Push Cleaning Cloth to Table Edge 和 Insert Screwdriver into Cup。该设置旨在考察场景级落地（scene-level grounding）、指令切换（instruction switching）、对干扰物的鲁棒性（robustness to distractors）以及组合泛化（compositional transfer）。机器人必须避免对固定任务顺序过拟合，而应在视觉遮挡和共享物体上下文中，根据当前指令选择相应动作。
+
+简要解释：这里说明了泛化评测的目的和设置。重点不是单一任务复现，而是在多个物体共存、指令不断切换的复杂场景里，考察模型是否能正确理解当前指令并执行对应动作。
+
+结果。图 19 表明，event-mode WALL-WM 在 Generalization suite 上取得了最高的平均 Task Progress，达到 53.75，而 DreamZero 为 28.50，𝜋0.5 为 24.00，WALL-WM-U-Scratch 为 18.50。提升最明显的任务是 Place Plates into Storage Slots、Push Cleaning Cloth to Table Edge 和 Insert Screwdriver into Cup，在这些任务中，策略必须在多个物体中落地当前指令，并选择相应的 manipulation event。这个趋势与 event-mode 推理（event-mode inference）一致：语言引导的推理模块将当前命令转换为 next-event 描述，而预训练的 world-action backbone 则执行可复用的状态转移，例如 approach、align、insert、push、cover 和 release。同时，结果并非在所有任务上都一致；WALL-WM-U-Scratch 在 Cover Pot with Lid 上表现更好，这说明某些视觉上直接（visually direct）的动作，即使没有显式 event decomposition，也仍然可以通过任务级监督学到。总体而言，该套件表明，event-conditioned execution 可以提升在指令切换和共享场景上下文中的鲁棒性，但在杂乱的真实机器人环境中，泛化仍然具有挑战。
+
+简要解释：这一段给出了泛化基准的核心结论。event-mode WALL-WM 在大多数任务中表现最好，说明“先把指令翻译成下一事件，再执行动作”的方式能增强鲁棒性和跨指令泛化，但在真实杂乱场景里，泛化问题仍未彻底解决。</pre>
+        </article>
+      </div>
+    </section>
+
+    <section class="spread" id="page-30">
+      <header><span>Page 30</span><a href="#top">Top</a></header>
+      <div class="cols">
+        <figure class="original">
+          <img src="faithful_page_images/WALL-WM/page-030.png" alt="WALL-WM page 30" loading="lazy" />
+        </figure>
+        <article class="translation">
+          <div class="label">中文翻译 + 简单解释</div>
+          <pre>**论文标题**  
+WALL-WM：在事件接缝处雕刻世界动作建模（Carving World Action Modeling at the Event Joints）
+
+**图19中的任务指令**  
+依次将盘子放入收纳槽中  
+用锅盖盖住锅  
+把清洁布推到桌子边缘  
+把螺丝刀插入杯子中  
+
+简要解释：这四条指令展示了真实机器人基准中的不同桌面操作任务，强调模型需要在同一复杂场景下理解不同语言指令，并按指令执行对应动作。
+
+**图19 图注**  
+图19 真实机器人泛化基准（Real-robot Generalization benchmark）。在一个复杂的桌面场景中，任务进度（Task Progress）得分；不同指令以随机顺序发出，用于测试场景落地（scene grounding）和组合迁移（compositional transfer）。
+
+简要解释：这张图说明评测重点不只是单个动作是否完成，还包括模型能否把语言指令正确绑定到场景中的目标物体，并把已学到的能力迁移到新的任务组合上。
+
+**表4**  
+表4 对事件条件执行（event-conditioned execution）和 VI-SA 的消融实验。Base 表示一个预训练的固定长度统一基线（pretrained fixed-length unified baseline），且不包含 View-Interaction Self-Attention（VI-SA）；Event 表示预训练的事件模式 WALL-WM。所有条目报告的是 Task Progress。
+
+**推理操控任务（Reasoning Manipulation Task）**
+
+| 任务 | Base | Event |
+|---|---:|---:|
+| Sort Headphone（整理耳机） | 55 | 84 |
+| Classify Items as Shape（按形状分类物品） | 40 | 78 |
+| Press Button in Order（按顺序按按钮） | 0 | 64 |
+| Pair Up Items（配对物品） | 8 | 36 |
+| Pick Fruits into Basket（把水果放入篮子） | 60 | 96 |
+| Average（平均） | 32.6 | 71.6 |
+
+**泛化任务（Generalization Task）**
+
+| 任务 | Base | Event |
+|---|---:|---:|
+| Place Plates into Storage Slots（把盘子放入收纳槽） | 30 | 64 |
+| Cover Pot with Lid（给锅盖上锅盖） | 18 | 26 |
+| Push Cleaning Cloth to Table Edge（把清洁布推到桌边） | 26 | 78 |
+| Insert Screwdriver into Cup（把螺丝刀插入杯中） | 14 | 47 |
+| Average（平均） | 22.0 | 53.75 |
+
+简要解释：该表比较了去掉 VI-SA、使用固定长度统一解码的预训练基线，与事件模式 WALL-WM 的差异。结果显示，事件模式在推理操控和泛化两类任务上都明显更强，尤其在需要时序执行和跨视角场景理解的任务上提升更大。
+
+**7.2.5 事件与视图建模的消融分析**
+
+为了考察事件条件执行和跨视图建模的贡献，我们在推理与泛化两个测试套件上额外评估了一个预训练基线。不同于上文报告的 WALL-WM-U-Scratch 基线，这个基线从预训练骨干开始，但去除了 View-Interaction Self-Attention（VI-SA），并使用指令条件的固定长度统一解码。因此，这一比较在保留预训练的同时，移除了最直接支持多视图场景落地和可变长度事件执行的两个设计选择。由于该基线与事件模式的差异同时体现在 VI-SA 和执行格式上，这个消融实验应被理解为二者的综合效果，而不是把全部收益归因于某一个单独组件。
+
+简要解释：这一段是在说明消融实验的控制变量。作者想确认提升不是单纯来自“预训练”，而是来自 VI-SA 和事件式执行这两个设计的共同作用。
+
+结果。表4表明，预训练的事件模式 WALL-WM 在两个评测套件上都优于不带 VI-SA 的预训练统一基线。在 Reasoning Manipulation 上，平均 Task Progress 从 32.6 提升到 71.6。该基线保留了预训练带来的一定识别能力，这体现在对整理和选水果任务上仍有较高分数，但当指令要求明确的时间顺序或关系性执行时，它的可靠性较差。例如，Press Button in Order 从 0 提升到 64，而 Pair Up Items 从 8 提升到 36，尽管后者从绝对值上看仍然具有挑战性。在 Generalization 上，平均分从 22.0 提升到 53.75。提升最明显的任务包括 Push Cleaning Cloth to Table Edge 和 Insert Screwdriver into Cup，在这些任务中，机器人必须识别与指令相关的物体，并在共享场景中执行对应的语义转换。总体而言，这些结果表明，仅有预训练表示不足以应对这些设置，并且与跨视图交互和事件条件执行对稳健推理与泛化的组合收益是一致的。
+
+简要解释：这一段给出核心结论。预训练本身能带来一定识别能力，但不足以支撑复杂时序与关系推理；加入事件式执行和跨视图交互后，模型在需要“理解指令并落实到动作”的任务上显著更强。
+
+总结。跨越四个真实机器人套件，事件模式 WALL-WM 获得了最强的整体 Task Progress。
+
+简要解释：这是全文对该页实验结果的总括，强调事件模式在真实机器人场景下的总体性能最优。</pre>
+        </article>
+      </div>
+    </section>
+
+    <section class="spread" id="page-31">
+      <header><span>Page 31</span><a href="#top">Top</a></header>
+      <div class="cols">
+        <figure class="original">
+          <img src="faithful_page_images/WALL-WM/page-031.png" alt="WALL-WM page 31" loading="lazy" />
+        </figure>
+        <article class="translation">
+          <div class="label">中文翻译 + 简单解释</div>
+          <pre>这些多样化操作（Diverse Manipulation）的结果表明，以事件为中心（event-centric）的预训练可以为常见桌面技能提供有用的物理控制先验；而推理操作（Reasoning Manipulation）的结果则表明，将这一先验与文本推理模块结合，可能会提升对基于类别、顺序和关系的任务的指令对齐能力。灵巧操作（Dexterous Manipulation）套件凸显了精细接触控制仍然存在的困难，同时也提示视频-动作预训练（video-action pretraining）有助于局部、对接触敏感的运动。最后，泛化（Generalization）套件表明，WALL-WM 可以在杂乱场景和随机化指令下重用预训练得到的事件知识，而 WALL-WM-U-Scratch 则不那么可靠。event-and-view 消融实验与这样一种观点一致：预训练在与跨视角交互（cross-view interaction）和可变长度事件执行（variable-length event execution）配合使用时最有效，而不是仅仅作为一个固定长度、受指令条件约束的策略来使用。事件模式（event mode）与 WALL-WM-U-Scratch 之间始终存在的差距支持如下假设：预训练得到的、以事件为中心的 world-action modeling 提供了可迁移的物理与语义先验，而这些先验仅依赖任务级真实机器人监督是很难重新获得的。
+
+简要解释：这一段总结了不同操作套件的实验结论，核心意思是事件中心预训练不仅能提升基础操作能力，还能增强复杂场景下的泛化；同时说明了它比从零训练更容易学到可迁移的物理和语义知识。
+
+**8 讨论**
+
+关于规模、时延与泛化目标。我们当前的 WALL-WM 系列模型规模覆盖了从 10B 参数以下到数百亿参数的范围。跨越这一范围，我们观察到一个稳定趋势：更大的模型能同时提升动作精度和分布外泛化能力，尤其是在需要精细接触时序、长时程状态跟踪以及组合式指令对齐的任务上。这一趋势引出了 embodied foundation models 的一个更广泛问题。该领域过去常常把实时延迟（real-time latency）视为第一约束，因为机器人部署最终需要闭环执行。然而，如果过早强加时延约束，模型可能会在学到足够通用的 world-action prior 之前，就被限制住可达到的性能上限。因此，我们认为，对通用 WAMs 而言，规模驱动的泛化是主要前沿，而时延降低则是一个相对更明确的工程问题。一旦有了强模型，就可以通过蒸馏（distillation）、量化（quantization）、投机式或流式执行（speculative or streaming execution）以及系统级重叠（systems-level overlap）逐步降低时延；但若模型规模不足，想要再把丢失的泛化上限找回来，就要困难得多。
+
+简要解释：这一段强调，先把模型做大、把泛化能力做好，比过早追求低时延更重要；时延可以后续通过工程优化解决，但泛化能力一旦不足很难补回来。
+
+不把成功率作为唯一评估目标。真实机器人的成功率仍然是衡量 embodied competence 最直接的指标，但它也是一个粗糙且噪声较大的度量。一次失败可能由感知、语言对齐、接触动力学、硬件差异、重置质量或环境随机条件等因素引起，而且这些原因在不同任务或不同评测轮次中的分布并不均匀。因此，仅靠成功率对于大规模预训练的分辨率有限：它代价高、速度慢，而且往往难以识别模型究竟哪一部分得到了改进。为此，我们正在探索更适合预训练规模迭代的高效评测协议，包括更细粒度的逐事件（per-event）评分、更密集的进度度量、评测过程中的人工纠正与重标注，以及能够基于生成视频、动作轨迹和中间状态来预测机器人表现的通用评测模型。这样的评测器并不需要完全取代真实硬件。它只需要与下游机器人性能保持可靠的正相关关系，这样就可以在把最有希望的候选方案交到真实机器人上验证之前，先低成本筛选模型与数据决策。
+
+简要解释：这一段指出，机器人成功率太粗糙，不适合作为唯一指标；更好的做法是使用更细的评测方式，先快速筛掉差方案，再用真实机器人做最终验证。
+
+以事件为中心的指令泛化，作为通往 agents 的接口。我们将逐事件的文本泛化（per-event textual generalization）视为连接 embodied control 与更广义 agentic intelligence 的桥梁。当前的 embodied foundation models 往往把可训练参数花在理解和推理高层指令上，但前沿多模态模型和 agents 的快速进展 (57, 17, 1) 迫使我们思考一个边界问题：一个高频操作模型，是否应该把参数竞争在更高层级、而通用 agent 已经能够完成的任务推理上？在许多 embodied benchmark 的设计中，这个边界仍然没有被明确说明。我们的偏好是：先把高层任务的信息分解为逐事件的文本描述，再从逐事件语言进一步映射到视觉与动作。按照这种分解方式，围绕语义事件的全域动作-文本指令泛化（full-domain action-text instruction generalization）应成为 embodied model 的最高优先级目标，而过度关注上游 agent 的推理成本或时延，反而可能成为 embodied intelligence 出现的瓶颈。
+
+简要解释：这一段主张把高层任务拆成事件级文本来处理，让专门的机器人模型专注于动作与视觉对齐，而把复杂推理更多交给上游通用 agent，从系统结构上更高效。</pre>
+        </article>
+      </div>
+    </section>
+
+    <section class="spread" id="page-32">
+      <header><span>Page 32</span><a href="#top">Top</a></header>
+      <div class="cols">
+        <figure class="original">
+          <img src="faithful_page_images/WALL-WM/page-032.png" alt="WALL-WM page 32" loading="lazy" />
+        </figure>
+        <article class="translation">
+          <div class="label">中文翻译 + 简单解释</div>
+          <pre>**贡献者**
+
+WALL-WM 是 X Square Robot 团队的一项协作成果。完整贡献者名单如下；∗ 表示核心贡献者，† 表示项目负责人，‡ 表示通讯作者（corresponding author）。
+
+Shalfun Li∗†、Victor Yao∗、Charles Yang∗、Truth Qu∗、Regis Cheng∗、Ryan Yu∗、Howard Lu∗、Newton Von∗、Vincent Chen∗、Yohann Tang、Maeve Zhang、Ellie Ma、Gody Li、Sage Yang、Lorien Shu、J.W. Gao、Ethan Chen、Colin Ye、Rain Sun、Elise Mon、PS Zhang、Neo Li、Lily Li、James Wang、Ping Yang、Chris Pan、Lucy Liang、Hang Su、Roy Gan、Hao Wang‡、Qian Wang。
+
+简要解释：这一页主要是在说明论文 WALL-WM 的作者贡献分工。符号标注帮助读者快速识别谁是核心参与者、谁负责项目推进，以及谁承担通讯联系责任。  
+
+32</pre>
+        </article>
+      </div>
+    </section>
+
+    <section class="spread" id="page-33">
+      <header><span>Page 33</span><a href="#top">Top</a></header>
+      <div class="cols">
+        <figure class="original">
+          <img src="faithful_page_images/WALL-WM/page-033.png" alt="WALL-WM page 33" loading="lazy" />
+        </figure>
+        <article class="translation">
+          <div class="label">中文翻译 + 简单解释</div>
+          <pre>第 33 页
+
+9
+
+附录
+
+9.1 建模选择：Pixel-Space、Native T2V，以及一种容量平衡的双塔（Capacity-Balanced Dual-Tower）
+这三个设计选择合在一起，构成了 WALL-WM 所处的设计空间。近期的 VLA 文献往往把它们收缩成一个“pixel vs. latent”的问题，但更合理的读法是：这其实是三个彼此独立、逻辑不同的权衡，而 WALL-WM 在每一条轴上都选择了要求更高的一侧。下面依次讨论这三点。
+
+简要解释：这一段先说明作者不是把问题简化成“像素还是潜变量”这么单一，而是强调有三类独立设计取舍，WALL-WM 逐项选择了更强约束、更高要求的方案。
+
+（a）两条 I2V 路径（不同的上游先验）
+Pixel-space I2V  
+x1
+
+（b）解耦 → 共享 → 潜变量动作（latent action）
+x2:𝑇
+
+V
+
+A
+
+V
+
+A
+
+V
+
+A
+
+V
+
+A
+
+𝑝 (x2:𝑇 | x1 )
+
+←↪ native-T2V 预训练 —— 语义聚类中心先验
+
+Latent-space I2V  
+z1
+
+z𝑡
+
+z2:𝑇
+𝑝 (z2:𝑇 | z1 )
+
+无共享
+
+←↪ native-I2V 预训练 —— 时间外推，没有文本锚点
+
+压缩  
+vision-action
+
+latent action  
+更高  
+压缩  
+比率
+
+图 20 将 WALL-WM 放入设计空间的两个建模选择轴。(a) 预训练路径轴。Pixel-space（上，橙色）与 latent-space（下，绿色）两类骨干网络都执行同样的下游 I2V 任务，但它们继承的上游先验在性质上不同：pixel 侧带有 native-T2V 的聚类中心先验，latent 侧带有更稠密的 native-I2V 时间外推先验。WALL-WM 保留 pixel + native-T2V 的组合（第 9.1 节）。(b) 双塔光谱。这是一幅抽象示意，而不是一次具体的架构扫描：latent video-action 表示隐式地分布在 DiT 参数之中，而在某些容量共享机制下，耦合的 video-action DiT 的中间特征在操作层面上等价于“latent action”这一较窄概念。
+
+简要解释：图 20 说明了两个关键轴。第一轴是预训练来源，第二轴是视频与动作表示是否以及如何共享容量；作者用它来解释 WALL-WM 为什么选择 pixel + native-T2V。
+
+(i) 预训练的 pixel-space 先验 vs. 预训练的 latent-space 先验。第一条轴主要是经验性的：到目前为止，pixel-space 视频基础模型已经在远比任何现成 latent-space 对应模型更广、更厚的数据语料上完成预训练，因此它们的权重——尽管往往存在冗余——仍编码了一个强大的视觉世界先验。撇开这种历史上的不对称不谈，latent 侧仍有一个值得明确指出的内在优势：通过诱导一个更平滑、更有结构的表示流形，latent 训练减少了对随机的基于 score 的生成的依赖，并留下一个更平坦、更易处理的优化景观。然而，对于一个下游负担是 dynamics 和 control 的 video + action world model 来说，pixel-space 预训练先验的广度本身更占优势：因此，从 pixel-space backbone 初始化是一种务实选择，而不是反对 latent 表示的立场。
+
+简要解释：这里在比较两类预训练起点。作者认为 latent 表示在优化上更规整，但对视频+动作世界模型而言，pixel-space 预训练覆盖更广、先验更强，因此更实用。
+
+(ii) Native T2V vs. native I2V，即使二者都是从头训练。第二条轴很容易被忽略，但一旦注意到就很关键：当今大多数 pixel-space 视频基础模型——包括那些形式上是在 I2V 目标下训练的模型——本身也是建立在上游 native-T2V 预训练映射之上的，而另一条独立的工作路线（例如 V-JEPA-2 (2)、LeWorldModel (54)）则直接从 native-I2V 映射开始。两条路径都没有绝对赢家；真正相关的权衡如下。native-I2V 目标比 text-to-vision 更紧密地跟踪视觉信号的时间演化——给定前一帧，视觉续写在每个像素上都受到稠密监督——这确实是一种优势。另一方面，native-T2V 目标带来的是另一种类型的先验。文本就像高维视觉未来可行流形上的一个低维聚类中心标签：因此，T2V 目标在隐含上要求网络先决定它即将渲染的轨迹属于哪个语义类别，然后再去绘制它，这是一种在互联网规模上免费提供的、具有语义锚定的视觉自监督。I2V 则移除了这个锚点。由于前面没有必须先承诺的目标，I2V 损失最容易达到的极小值，是在前一帧条件下进行高带宽的像素外推——其精神更接近于学习到的 optical flow，而不是 world model——而任何原本会教会高层物理规律的梯度，都只能很稀薄地通过这条路径传递。相应地，即使规模扩大得很充裕，更高层结构（intent、object identity、sub-task boundaries）也只能被较弱地捕获。WALL-WM 仍然站在 T2V 这一侧，因此这个聚类中心先验只需支付一次，并被所有下游组件继承（图 20a）。
+
+简要解释：这一段是在解释为什么选择 native-T2V 而不是 native-I2V。核心理由是：T2V 提供语义锚点和更强的高层先验，而 I2V 更像像素级外推，较难学到意图、物体身份和子任务边界等高层结构。</pre>
+        </article>
+      </div>
+    </section>
+
+    <section class="spread" id="page-34">
+      <header><span>Page 34</span><a href="#top">Top</a></header>
+      <div class="cols">
+        <figure class="original">
+          <img src="faithful_page_images/WALL-WM/page-034.png" alt="WALL-WM page 34" loading="lazy" />
+        </figure>
+        <article class="translation">
+          <div class="label">中文翻译 + 简单解释</div>
+          <pre>《WALL-WM：在事件关节处雕刻世界动作建模》
+
+(iii) 潜在动作（Latent-action）与双塔视频 + 动作（dual-tower video + action）。这两种范式乍看之下似乎相互对立：一种把动力学压缩进一个显式的、通常是离散的动作代码中，而另一种则把两个 DiT 规模的塔并排放置。然而，仔细看会发现它们在趋同。潜在动作方法会显式地给下一观测值加上一个瓶颈，把它压缩成一种与视觉对齐的、隐式的动态动作代码，而下游策略必须对其进行解码；而双塔 video + action 设计，一旦跨塔共享容量（层级耦合 CA、AdaLN 调制、共享的帧索引 PE）与塔私有容量（每塔的 FFN 宽度、仅动作的状态 cross-attention）之间的比例落在正确的工作点上，其执行的压缩本质上是相同的。共享子空间就是一种 latent action，只不过它是涌现出来并通过端到端学习得到的，而不是通过一个必须提前猜测其宽度和 codebook 的架构瓶颈强加出来的。因此，双塔表述更适合被理解为 latent action 的一种更宽松形式，而不是它的竞争对手：收紧共享子块会恢复任何显式瓶颈范式，而放宽它则在真实动力学超出任何手工选定的潜在维度时，为额外宽度留下空间。形式化地，设 \(h^{shared}_t \in \mathbb{R}^d\) 表示 V 信息传入 A 塔所经过的跨塔瓶颈激活，设 \(z_t\) 表示 LAPA 风格 encoder/codebook/decoder 的显式 latent-action code；当 \(d\) 与 codebook 宽度一致时，这二者承载的是同一个信息瓶颈，除了 \(z_t\) 的离散性之外可以互换（Figure 20b）。这三项选择共同把 WALL-WM 放在了像素空间初始化、原生 T2V 目标，以及一个刻意设定共享/私有容量大小的双塔结构上。
+
+简要解释：这一段在说明，所谓“双塔视频 + 动作”与“latent-action”并不是根本对立的两条路线；当共享容量设计得合适时，双塔结构实际上实现了与潜在动作类似的信息压缩，只是这种压缩是端到端学出来的，而不是预先规定瓶颈宽度和离散码本。
+
+9.2  Wan VAE 中的时间鲁棒重建
+
+一个实际问题是，Wan VAE 的时间下采样是否依赖强的短程时间相关性。我们用刻意对抗性的输入来压力测试这一假设：在时间上相隔很远采样的帧，甚至把异质的静态图像沿时间轴堆叠起来，假装它们组成了一段视频。VAE 仍然能够成功重建这些序列，这表明它的压缩并没有严重偏向于利用局部时间冗余。这个特性对 WALL-WM 有利：即使是跳帧的具身视频，也不必看起来像平滑的 web-video 片段，VAE 仍能保留逐帧的视觉内容。
+
+简要解释：这一段想证明 Wan VAE 的压缩不只是“吃”相邻帧的重复信息，即便输入的视频时间上不连续、甚至像拼接出来的伪视频，它也能较好恢复，因此更适合处理跳帧的具身数据。
+
+9.3  继承而来的 Wan 特征的视觉-语义与空间能力
+
+本小节解释为什么继承而来的 Wan 特征位于条件栈（conditioning stack）的底部，作为一个不可移动的底座，而不是又一个可以替换的 encoder。尽管 Wan 是用视频生成目标训练的（而不是判别式目标），但它的 hidden-state 几何结构同时编码了 (i) 物体/实例级的视觉-语义结构，以及 (ii) 3D、与相机一致的空间结构。在空间这一轴上，它实际上比经典的对比式图像预训练特征更强。
+
+跨视角 PCA：一个直接的视觉诊断。我们在部署相机架构中的同步 ego / left-wrist / right-wrist 三元组上验证这一点。我们从三个视角中提取同一个去噪步上的中间 Wan DiT 特征，用在整个三元组上联合拟合的共享 PCA 基底进行投影（Figure 21，中间行），再把得到的 PCA 着色叠加回原始帧上（底行）。结果出现了三种模式。第一，语义等价的表面——被操作的物体、操作者的手，以及空碗——会塌缩到少量 PCA 分量上，并且在不同视角之间呈现一致的颜色，尽管这三个摄像头的原始像素重叠很少。第二，这种着色跟踪的是底层物理表面，而不是依赖于特定视角的图像梯度：同一个物体在 left-wrist 与 right-wrist 的相机位姿变化下，基本保留其 PCA 特征。第三，对于任意一对视角，逐 token 的跨视角 cosine 一致性都保持在约 \(\sim 0.97\)（见 Figure 21 中的 meta-data strip）。在相同协议下，从同一三元组中提取的 ViT-SigLIP 和自监督图像特征会稳定地产生更低的一致性；这种差距主要集中在对几何敏感的 token（物体边缘、接触区域）上，而不是背景上。
+
+简要解释：这一段说明 Wan 的特征不仅懂“是什么”，还懂“在哪里、怎么摆放”，而且这种跨视角几何一致性很强。作者用跨视角 PCA 和 cosine 一致性证明，Wan 特征比一些常见图像特征更适合做具身任务的条件底座。
+
+9.4  KV-Cache Streaming 能否解决 V-A 时间对齐的限制？
+
+视觉-动作世界模型中一个反复出现的困难是时间对齐。语言通常只给出一个语义意图，而它的时间支撑并不明确；但视频和动作会在许多帧中展开（Figure 2，Section 3.1）。近期工作，包括 DreamZero (83) 和 LingBot-VA (44)，采用与 KV-cache 兼容的 rollout，按 chunk 流式传递视觉/动作上下文。这有助于保留历史状态，并且可以在长时域预测中部分减轻 V–A 对齐漂移。
+
+简要解释：这一段在讨论一种可能的工程补救方案：把上下文用 KV-cache 的方式分块流式传递，能延续历史状态，从而缓解长序列预测里视觉和动作不同步的问题，但它只能部分缓解，不一定从根本上解决。</pre>
+        </article>
+      </div>
+    </section>
+
+    <section class="spread" id="page-35">
+      <header><span>Page 35</span><a href="#top">Top</a></header>
+      <div class="cols">
+        <figure class="original">
+          <img src="faithful_page_images/WALL-WM/page-035.png" alt="WALL-WM page 35" loading="lazy" />
+        </figure>
+        <article class="translation">
+          <div class="label">中文翻译 + 简单解释</div>
+          <pre>图中标签：自视输入（Ego Input）
+
+左侧输入（Left Input）
+
+右侧输入（Right Input）
+
+自视 PCA（Ego PCA）
+
+左侧 PCA（Left PCA）
+
+右侧 PCA（Right PCA）
+
+自视叠加（Ego Overlay）
+
+左侧叠加（Left Overlay）
+
+右侧叠加（Right Overlay）
+
+简要解释：这些标签对应图 21 中三视角输入、PCA 投影结果以及将 PCA 着色叠加回原始图像后的可视化层次，用来对比不同视角之间特征是否保持一致。
+
+图 21 Wan 生成特征的三视角 PCA 一致性。对于一个同步的自视 / 左手腕 / 右手腕三元组（顶部：原始输入），我们提取中间的 Wan2.1 DiT 特征，并用一个在三个视角上联合拟合的 PCA 基底进行投影（中间）；底部一行将得到的 PCA 着色叠加到输入帧上。语义上等价的表面（被操作的物体、操作者的手、空碗）尽管在原始像素上几乎没有重叠，但在不同摄像头之间会获得一致的 PCA 签名，而按 token 计算的跨视角余弦一致性仍保持在约 0.97。结合 (78, 34) 一起阅读，这为将继承而来的 Wan 特征视为一种视觉-语义与空间的基底，而不是通用图像先验，提供了具体的视觉依据。
+
+简要解释：这段话说明，Wan2.1 的中间特征在不同摄像头视角下能稳定对应同一语义对象，因此它更像是可用于理解空间与语义关系的特征底座，而不只是普通的图像初始化先验。
+
+然而，这种修复仍然只是部分性的。这些系统在训练和推理时仍然采用固定视野长度的未来预测：模型会在当前锚点之后生成预定数量的帧，而不是在达到指令的语义终点时停止。
+
+简要解释：这里强调当前方法的局限性，即它仍按固定时长往后预测视频帧，没有真正根据任务语义来决定什么时候结束生成。
+
+9.5 预训练数据与部署执行的定性概览
+
+本节为预训练数据、真实机器人评估场景以及部署时预测提供定性的视觉示例。图 22 展示了具有代表性的预训练任务和分段级标题；图 23 展示了真实机器人评估中使用的场景多样性；图 24 比较了生成的未来视频与对应的真实执行结果。
+
+简要解释：这一节是在说明后续几幅图分别展示了什么：训练数据长什么样、真实机器人评估覆盖哪些场景，以及模型预测与真实执行是否一致。</pre>
+        </article>
+      </div>
+    </section>
+
+    <section class="spread" id="page-36">
+      <header><span>Page 36</span><a href="#top">Top</a></header>
+      <div class="cols">
+        <figure class="original">
+          <img src="faithful_page_images/WALL-WM/page-036.png" alt="WALL-WM page 36" loading="lazy" />
+        </figure>
+        <article class="translation">
+          <div class="label">中文翻译 + 简单解释</div>
+          <pre>表 5：详细的真实机器人任务进度（Task Progress）分数。所有真实机器人评测套件都报告了任务级任务进度（Task Progress）。
+
+WALL-WM-U-Scratch 和 WALL-WM-E 分别表示从 scratch 的统一模式（unified mode from scratch）和事件模式（event mode）。破折号表示相应基线未被评估。
+
+简要解释：该表汇总了四类真实机器人任务上的评测结果，用于比较不同方法在任务完成进度上的表现。
+
+**多样化操作（Diverse Manipulation）**
+
+| 方法 | Arrange Cup Inverted Triangle | Put Spoon to Bowl | Put Glasses on Woodshelf | Put Ring onto Rod | Put Blocks to Color | Pour Water from Bottle | Pick Items into Basket | Average |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| π0.5 | 47 | 32 | 67 | 74 | 83 | 19 | 67.5 | 55.64 |
+| LingBot-VA | 20 | 24 | 18 | 24 | 34 | 12 | 76 | 29.71 |
+| DreamZero | 25 | 54 | 37 | 27 | 27 | 12 | 97.8 | 39.97 |
+| WALL-WM-U-Scratch | 48 | 82 | 63 | 77 | 90 | 21 | 60 | 63.00 |
+| WALL-WM-E | 85 | 86 | 64 | 82 | 92 | 34 | 88 | 75.86 |
+
+简要解释：这一组比较多样化操作任务上的表现，WALL-WM-E 在多数任务和平均分上都最好。
+
+**推理操作（Reasoning Manipulation）**
+
+| 方法 | Sort Headphone | Classify Items as Shape | Press Button in Order | Pair Up Items | Pick Fruits into Basket | Average |
+|---|---:|---:|---:|---:|---:|---:|
+| π0.5 | 41 | 55 | 31 | 77 | 78 | 56.40 |
+| LingBot-VA | 56 | 30 | 8 | 4 | 60 | 31.60 |
+| DreamZero | 66 | 36 | 3 | 13.5 | 45 | 32.70 |
+| WALL-WM-U-Scratch | 84 | 82 | 18 | 43.5 | 70 | 59.50 |
+| WALL-WM-E | 84 | 78 | 64 | 36 | 96 | 71.60 |
+
+简要解释：这一组任务更强调顺序、分类和组合判断，WALL-WM 系列整体明显优于基线方法。
+
+**灵巧操作（Dexterous Manipulation）**
+
+| 方法 | Insert Wireline | Put Stationery in Case | Average |
+|---|---:|---:|---:|
+| π0.5 | 18 | 12 | 15.00 |
+| LingBot-VA | 28 | 20 | 24.00 |
+| DreamZero | 24 | 26 | 25.00 |
+| WALL-WM-U-Scratch | 42 | 20.5 | 31.25 |
+| WALL-WM-E | 42 | 22 | 32.00 |
+
+简要解释：这类任务更考验精细操作能力，WALL-WM 在平均分上仍然领先。
+
+**泛化（Generalization）**
+
+| 方法 | Place Plates into Storage Slots | Cover Pot with Lid | Push Cleaning Cloth to Table Edge | Insert Screwdriver into Cup | Average |
+|---|---:|---:|---:|---:|---:|
+| π0.5 | 26 | 14 | 32 | 24 | 24.00 |
+| LingBot-VA | – | – | – | – | – |
+| DreamZero | 48 | 24 | 18 | 24 | 28.50 |
+| WALL-WM-U-Scratch | 4 | 32 | 12 | 26 | 18.50 |
+| WALL-WM-E | 64 | 26 | 78 | 47 | 53.75 |
+
+简要解释：这一组考察跨任务泛化能力；其中 LingBot-VA 未评估，WALL-WM-E 的总体表现最好。</pre>
+        </article>
+      </div>
+    </section>
+
+    <section class="spread" id="page-37">
+      <header><span>Page 37</span><a href="#top">Top</a></header>
+      <div class="cols">
+        <figure class="original">
+          <img src="faithful_page_images/WALL-WM/page-037.png" alt="WALL-WM page 37" loading="lazy" />
+        </figure>
+        <article class="translation">
+          <div class="label">中文翻译 + 简单解释</div>
+          <pre>**第 37 页内容翻译**
+
+**Easy**
+1. **Pick Up Cup（拿起杯子）**
+- 图像-指令 1：右臂把橙色杯子放到浅绿色盘子上。
+- 图像-指令 2：右臂移动到盘子旁边并推绿色……
+- 图像-指令 3：左臂移动到蓝色杯子旁边并抓住蓝色杯子。
+- 图像-指令 4：右臂把橙色杯子放到浅绿色盘子上。
+简要解释：这一组展示的是简单的抓取、移动与放置任务，主要考察机械臂对单个杯子的定位和操作。
+
+2. **Push Cup（推杯子）**
+- 图像-指令 1：右臂移动到桌子旁边，推动黑色杯子，然后……
+- 图像-指令 2：右臂把杯子放到银色碟子上。
+- 图像-指令 3：右臂向右移动。
+- 图像-指令 4：右臂移动到棕色杯子旁边并把它拿起来。
+简要解释：这一任务强调对杯子的推、放和拾取等基础操作，以及对桌面空间位置的理解。
+
+3. **Pick Apple（拿苹果）**
+- 图像-指令 1：将右臂移动到桌子旁边，抓住粉色苹果……
+- 图像-指令 2：右臂把苹果放进沥水篮中。
+- 图像-指令 3：右臂移动到桌子右侧。
+- 图像-指令 4：右臂移动到桌边并拿起苹果。
+简要解释：这一组围绕苹果的抓取与投放展开，重点是目标物体识别和精准抓取。
+
+4. **Insert Flowers (Embod-Free)（插入花朵（无实体））**
+- 图像-指令 1：将浅绿色花束插入细长花瓶，并……
+- 图像-指令 2：将粉玫瑰、红玫瑰和绿色配花插入……
+- 图像-指令 3：将绿色花朵、粉玫瑰和红玫瑰插入……
+- 图像-指令 4：将浅绿色花束插入高花瓶，并……
+简要解释：该任务要求把多种花材插入容器，考察的是组合式放置和对象匹配能力。
+
+5. **Move Items (Embod-Free)（移动物品（无实体））**
+- 图像-指令 1：把桌上的蓝色抹布和各种护肤品瓶子推到……
+- 图像-指令 2：移动散落的护肤品、洗面奶和蓝色……
+- 图像-指令 3：把桌上的蓝色抹布、各种护肤品瓶子和软管移动到……
+- 图像-指令 4：把桌子中间的所有小物品移到左边……
+简要解释：这一任务主要是整理桌面杂物，考察多物体重定位和场景整理能力。
+
+6. **Arrange Cups &amp; Plates（整理杯子和盘子）（5 segs）**
+- 图像-指令 1：左臂把白色圆盘放到桌子右边……
+- 图像-指令 2：右臂把粉色盘子放到桌面上……
+- 图像-指令 3：左臂把粉色陶瓷杯放到白色圆盘上。
+- 图像-指令 4：右臂把橙色杯子放到米色方盘上。
+简要解释：这一组是典型的餐具整理任务，强调不同容器之间的相对摆放关系。
+
+**Hard**
+7. **Chair Assemble（椅子组装）（6 segs）**
+- 图像-指令 1：右臂移动到黄色立方体，拿起它并放置……
+- 图像-指令 2：机器人的右臂移动到桌子的右下方以拿起……
+- 图像-指令 3：机器人的右臂移动到桌子中间，并放置……
+- 图像-指令 4：右臂移动到白色长方体的旁边，……
+简要解释：这是一个需要多步装配的长程任务，考察机械臂连续操作与部件对齐能力。
+
+8. **Open Takeout Box（打开外卖盒）（5 segs）**
+- 图像-指令 1：双臂移动到外卖盒旁边。
+- 图像-指令 2：右臂移动到美团外卖盒旁边，撕下……
+- 图像-指令 3：右臂打开美团外卖盒的盖子。
+- 图像-指令 4：左臂固定外卖盒，右臂……
+简要解释：该任务涉及开盒、固定和撕拉等动作，体现双臂协同操作能力。
+
+9. **Glasses Adjust（调整眼镜）（11 segs）**
+- 图像-指令 1：左臂拿起灰色卷布，移动到前方的……
+- 图像-指令 2：左臂和右臂移动到皮革片旁边。左臂握住……
+- 图像-指令 3：右臂移动到左臂旁边并展开……
+- 图像-指令 4：左臂和右臂把眼镜放到眼镜……
+简要解释：这一任务包含较长的操作链，核心是对眼镜及其配件进行精细调整与摆放。
+
+10. **Fold Towel（折叠毛巾）（Embod-Free）**
+- 图像-指令 1：把桌上的黑色 T 恤整齐折好。
+- 图像-指令 2：把桌上的橙色 T 恤整齐折好。
+- 图像-指令 3：把桌上的蓝色毛巾整齐折好。
+- 图像-指令 4：把桌上的黄色毛巾整齐折好。
+简要解释：这里的“折叠”任务看似简单，但需要对柔性物体的边界和折叠方式有稳定控制。
+
+11. **Put Items in Drawer（把物品放进抽屉）（Embod-Free）**
+- 图像-指令 1：把桌上的魔方、零食袋和黑色带子放进……
+- 图像-指令 2：把蓝色抹布折好，并和……
+- 图像-指令 3：把桌面上的所有物品放进打开的抽屉里。
+- 图像-指令 4：把桌子上的所有物品整齐整理并放进打开的抽屉里。
+简要解释：这一任务强调收纳与归位，目标是把桌面杂物统一整理到抽屉中。
+
+12. **Sort Sachets（整理小袋）（64 segs）**
+- 图像-指令 1：左臂移动到左侧米色收纳篮并拿起白色……
+- 图像-指令 2：左臂移动到木盒旁拿起黄色小袋。
+- 图像-指令 3：右臂把小白色物体放进粉色收纳……
+- 图像-指令 4：右侧机械臂调整粉色盒子里的白色物体。
+简要解释：这是一个长时序整理任务，重点在于对多个小袋和小物体进行分类和摆放。
+
+13. **Deal Mahjong Tiles（处理麻将牌）（78 segs）**
+- 图像-指令 1：右臂移动到桌子旁抓取麻将牌。
+- 图像-指令 2：右臂移动到桌上麻将牌旁边……
+- 图像-指令 3：左侧机械臂移动到绿白色麻将牌旁……
+- 图像-指令 4：右臂移动到麻将牌旁并翻转……
+简要解释：该任务体现了对小尺寸、易滑动物体的精细操控能力，同时包含翻牌等动作。
+
+14. **Fold Clothes（折叠衣物）（61 segs）**
+- 图像-指令 1：右臂把橙色衣服从篮子里拿出来并放置……
+- 图像-指令 2：左臂移动到桌上衣物旁边。
+- 图像-指令 3：右臂移动到桌上的棕色布料旁边。
+- 图像-指令 4：双臂抓住白色 T 恤的两个角，把它展开并铺……
+简要解释：这一任务是服装整理中的经典柔性操作，要求对衣物展开、对齐和折叠有良好控制。
+
+15. **Trash Dispose（丢弃垃圾）（Embod-Free）**
+- 图像-指令 1：把所有废弃包装袋、纸巾、空塑料……
+- 图像-指令 2：把桌子上的所有垃圾丢进附近的垃圾桶。
+- 图像-指令 3：把桌上的所有垃圾扔进垃圾桶。
+- 图像-指令 4：把零食包装袋、纸巾和纸杯放到桌上……
+简要解释：该任务的核心是清理桌面废弃物，考察对象识别、汇聚与投放到容器中的能力。
+
+16. **Put Snacks（放置零食）（Embod-Free）**
+- 图像-指令 1：把桌上的所有零食放到中间的盘子里。
+- 图像-指令 2：把桌上的所有零食放到中间的盘子里。
+- 图像-指令 3：把桌上的所有零食放到中间的白盘里。
+- 图像-指令 4：把桌面上的所有零食放到中间的盘子里。
+简要解释：这一任务要求将零食集中放入指定盘子，主要考察多物体收拢与目标容器对齐。
+
+**图 22 预训练任务总览。**
+具有四种场景或事件变化的代表性预训练任务。各行按难度分组，蓝色标注的任务名称表示无实体（embodiment-free）示例。指令取自人工分段级描述。
+
+简要解释：这张图总结了模型预训练所覆盖的任务类型、难度分层以及指令来源，说明训练数据不仅包含具身操作，也包含不依赖具体身体形态的任务。</pre>
+        </article>
+      </div>
+    </section>
+
+    <section class="spread" id="page-38">
+      <header><span>Page 38</span><a href="#top">Top</a></header>
+      <div class="cols">
+        <figure class="original">
+          <img src="faithful_page_images/WALL-WM/page-038.png" alt="WALL-WM page 38" loading="lazy" />
+        </figure>
+        <article class="translation">
+          <div class="label">中文翻译 + 简单解释</div>
+          <pre>图23 真实机器人评测设置。代表性的真实机器人评测场景。每一行展示一个任务、四种场景变体以及对应的英文子指令。  
+简要解释：该图展示了真实机器人评测中使用的任务集合，以及通过不同物体、容器和场景变化来检验机器人泛化能力的方式。
+
+1. 将勺子放入碗中  
+- 图像  
+- 指令：机器人拿起不锈钢勺子，并将其放入碗中。  
+- 图像  
+- 指令：机器人拿起不锈钢勺子，并将其放入碗中。  
+- 图像  
+- 指令：机器人拿起儿童塑料勺，并将其放入碗中。  
+简要解释：这一任务考察机器人对不同材质或不同类型勺子的识别与抓取，并完成“放入碗中”的基本操作。
+
+2. 将眼镜放到架子上  
+- 图像  
+- 指令：机器人用双夹爪抓住成人眼镜框，并将其放到木制架子上。  
+- 图像  
+- 指令：机器人用双夹爪抓住护目镜，并将其放到木制架子上。  
+- 图像  
+- 指令：机器人用双夹爪抓住儿童眼镜框，并将其放到木制架子上。  
+简要解释：这一任务主要测试双夹爪对薄片状、易滑落物体的稳定抓取与精准放置能力。
+
+3. 将物品放入抽屉  
+- 图像  
+- 指令：机器人用右夹爪拉开上层抽屉，并把铅笔放进去。  
+- 图像  
+- 指令：机器人用右夹爪拉开中层抽屉，并把玩具车放进去。  
+- 图像  
+- 指令：机器人用右夹爪拉开下层抽屉，并把蓝牙耳塞放进去。  
+- 图像  
+- 指令：机器人用右夹爪拉开上层抽屉，并把橡皮擦放进去。  
+简要解释：这一任务强调机器人在开抽屉、识别目标物并将其放入指定抽屉位置时的操作稳定性。
+
+4. 将水果放入篮子  
+- 图像  
+- 指令：机器人从桌子上拿起梨，并将其放入篮子。  
+- 图像  
+- 指令：机器人从桌子上拿起葡萄，并将其放入篮子。  
+- 图像  
+- 指令：机器人从桌子上拿起香蕉，并将其放入篮子。  
+- 图像  
+- 指令：机器人从桌子上拿起苹果，并将其放入篮子。  
+简要解释：这一任务测试机器人对不同水果的抓取能力，以及将物体准确投放到篮子中的能力。
+
+5. 分类耳机  
+- 图像  
+- 指令：机器人在杂乱堆中找到无线蓝牙耳塞，并将其放入电子产品分类箱。  
+- 图像  
+- 指令：机器人在杂乱堆中找到有线入耳式耳机，并将其放入电子产品分类箱。  
+- 图像  
+- 指令：机器人在杂乱堆中找到头戴式耳机，并将其放入电子产品分类箱。  
+- 图像  
+- 指令：机器人在杂乱堆中找到有线入耳式耳机，并将其放入电子产品分类箱。  
+简要解释：这一任务考察机器人在杂乱环境中识别细粒度类别差异，并完成对应分类放置。
+
+6. 将环套到杆上  
+- 图像  
+- 指令：机器人拿起方形环，并将其滑到竖直杆上。  
+- 图像  
+- 指令：机器人拿起圆形环，并将其滑到竖直杆上。  
+- 图像  
+- 指令：机器人拿起方形环，并将其滑到竖直杆上。  
+- 图像  
+- 指令：机器人拿起圆形环，并将其滑到竖直杆上。  
+简要解释：这一任务测试机器人对几何形状不同但操作方式相同的环形物体进行套放操作的能力。
+
+7. 向杯中倒水  
+- 图像  
+- 指令：机器人倾斜水壶，并将水倒入蓝色纸杯中。  
+- 图像  
+- 指令：机器人倾斜水壶，并将水倒入蓝色马克杯中。  
+- 图像  
+- 指令：机器人倾斜水壶，并将水倒入红色玻璃杯中。  
+- 图像  
+- 指令：机器人倾斜水壶，并将水倒入红色纸杯中。  
+简要解释：这一任务考察机器人在倾倒液体时，对不同材质、颜色和形状容器的对准与控制精度。
+
+8. 摆放杯子（三角形）  
+- 图像  
+- 指令：机器人把第一个倒扣的白色纸杯放在桌子中央。  
+- 图像  
+- 指令：机器人把第二个倒扣的红色马克杯放在第一个杯子旁边。  
+- 图像  
+- 指令：机器人把第三个倒扣的白色马克杯叠放在下面两个杯子上方。  
+- 图像  
+- 指令：机器人把第一个倒扣的红色纸杯放在桌子中央。  
+简要解释：这一任务要求机器人根据相对位置和堆叠关系摆放杯子，体现空间关系理解与精确定位能力。
+
+9. 将衣物放入洗衣篮  
+- 图像  
+- 指令：移动底座机器人开到洗衣篮旁，把从沙发上抓取的衬衫放进去。  
+- 图像  
+- 指令：移动底座机器人回到洗衣篮旁，把从沙发上拿起的裤子放进去。  
+- 图像  
+- 指令：双臂协作，把从沙发上收集到的一双袜子放入洗衣篮。  
+- 图像  
+- 指令：移动底座机器人开到洗衣篮旁，把从沙发上抓取的衬衫放进去。  
+简要解释：这一任务结合了移动、双臂协作和家庭整理操作，用于评估机器人在真实家居环境中的综合执行能力。
+
+第38页</pre>
+        </article>
+      </div>
+    </section>
+
+    <section class="spread" id="page-39">
+      <header><span>Page 39</span><a href="#top">Top</a></header>
+      <div class="cols">
+        <figure class="original">
+          <img src="faithful_page_images/WALL-WM/page-039.png" alt="WALL-WM page 39" loading="lazy" />
+        </figure>
+        <article class="translation">
+          <div class="label">中文翻译 + 简单解释</div>
+          <pre>WALL-WM：在事件连接处雕刻世界动作建模
+
+把水果放入篮子  
+简要解释：这是一个将水果装入篮子的操作任务标题。
+
+放入抽屉中的物品  
+简要解释：这是一个将物品放入抽屉的操作任务标题。
+
+G  
+简要解释：G 表示生成帧。
+
+G  
+简要解释：G 表示生成帧。
+
+E  
+简要解释：E 表示执行帧。
+
+E  
+简要解释：E 表示执行帧。
+
+G  
+简要解释：G 表示生成帧。
+
+G  
+简要解释：G 表示生成帧。
+
+E  
+简要解释：E 表示执行帧。
+
+E  
+简要解释：E 表示执行帧。
+
+把戒指放到杆上  
+简要解释：这是一个将戒指套到杆上的操作任务标题。
+
+把勺子放入碗中  
+简要解释：这是一个将勺子放入碗中的操作任务标题。
+
+G  
+简要解释：G 表示生成帧。
+
+G  
+简要解释：G 表示生成帧。
+
+E  
+简要解释：E 表示执行帧。
+
+E  
+简要解释：E 表示执行帧。
+
+G  
+简要解释：G 表示生成帧。
+
+G  
+简要解释：G 表示生成帧。
+
+E  
+简要解释：E 表示执行帧。
+
+E  
+简要解释：E 表示执行帧。
+
+把眼镜放到架子上  
+简要解释：这是一个将眼镜放到搁架上的操作任务标题。
+
+整理耳机  
+简要解释：这是一个对耳机进行整理或归类的操作任务标题。
+
+G  
+简要解释：G 表示生成帧。
+
+G  
+简要解释：G 表示生成帧。
+
+E  
+简要解释：E 表示执行帧。
+
+E  
+简要解释：E 表示执行帧。
+
+G  
+简要解释：G 表示生成帧。
+
+G  
+简要解释：G 表示生成帧。
+
+E  
+简要解释：E 表示执行帧。
+
+E  
+简要解释：E 表示执行帧。
+
+图 24 生成视频 vs. 真实执行。生成的未来视频与真实机器人执行之间的定性比较。G 表示生成帧，E 表示执行帧。  
+简要解释：这张图用于对比模型生成的未来画面与机器人真实执行过程中的画面，G 和 E 分别标记两类帧。</pre>
+        </article>
+      </div>
+    </section>
+
+    <section class="spread" id="page-40">
+      <header><span>Page 40</span><a href="#top">Top</a></header>
+      <div class="cols">
+        <figure class="original">
+          <img src="faithful_page_images/WALL-WM/page-040.png" alt="WALL-WM page 40" loading="lazy" />
+        </figure>
+        <article class="translation">
+          <div class="label">中文翻译 + 简单解释</div>
+          <pre>任务
+
+描述
+
+评分规则
+
+**Diverse Manipulation（多样化操作）**
+- **Arrange Cup Inverted Triangle（将杯子摆成倒置三角形）**：将 3 个杯子倒扣摆成三角形：底部 2 个、顶部 1 个。  
+  **简要解释：** 这个任务考察的是按空间结构进行摆放，重点是形成指定几何布局。
+- **Put Spoon to Bowl（把勺子放入碗中）**：把勺子放到碗里。  
+  **简要解释：** 这是基础的取放任务，强调目标物体的精确放置。
+- **Put Glasses on Woodshelf（把眼镜放到 Woodshelf 上）**：拿起眼镜，调整姿态，放到架子上。  
+  **简要解释：** 任务要求在放置前进行姿态调整，体现了对物体朝向的控制。
+- **Put Ring onto Rod（把环套到杆上）**：把一个环形物体放到竖直杆上。  
+  **简要解释：** 这是典型的“套入”操作，需要对准目标轴线。
+- **Put Blocks to Color（把积木放到对应颜色区域）**：把 RGB 积木放到匹配的颜色斑块上。  
+  **简要解释：** 这里不仅要抓取和放置，还要进行颜色匹配判断。
+- **Pour Water from Bottle（从瓶子倒水）**：把水从瓶子倒进杯子里。  
+  **简要解释：** 该任务结合了抓取、倾倒和稳定控制，属于连续动作操作。
+- **Pick Items into Basket（把物品放入篮子）**：拿起 4 个物体并放入篮子。  
+  **简要解释：** 这是多物体搬运任务，考察重复抓取与放置的稳定性。
+
+- **评分规则：** 每个杯子：抓取 (1) + 定位 (1–3)；顶部 (3)，撤回 (1)  
+  **简要解释：** 这里的分数按步骤给出，定位越准确、动作越完整，得分越高。
+- **评分规则：** 碗 (2)，移动 (2)，勺子 (2)，放入碗中 (3)，撤回 (1)  
+  **简要解释：** 该规则将任务拆成“接近-拿取-放置-结束”几个可观察步骤。
+- **评分规则：** 拿起 (2)，居中 (2)，调整 (2)，放到架子上 (3)，撤回 (1)  
+  **简要解释：** 评分强调从抓取到精确对位再到最终放置的全过程。
+- **评分规则：** 抓住环 (3)，移动到杆 (3)，套入 (3)，撤回 (1)  
+  **简要解释：** 该任务的关键在于对齐杆和环并完成套入动作。
+- **评分规则：** 每个正确项 3 分，3 个积木，撤回 (1)  
+  **简要解释：** 这是按正确匹配数量给分的任务，强调分类准确性。
+- **评分规则：** 移动杯子 (2)，移动瓶子 (2)，倾倒 (3)，放下 (2)，撤回 (1)  
+  **简要解释：** 倾倒动作是核心，其他步骤用于保证动作链完整。
+- **评分规则：** 每个物体：抓取 (1) + 放置 (1.25)；4 个物体，撤回 (1)  
+  **简要解释：** 这是多次重复抓放的累计评分，适合评估吞吐能力。
+
+**Diverse Manipulation（多样化操作）**
+- 将碗移到中央，把勺子放入碗中。  
+  **简要解释：** 该变体要求先调整容器位置，再完成放置，增加了空间规划成分。
+
+**Reasoning Manipulation（推理型操作）**
+- **Sort Headphone（整理耳机）**：在杂乱环境中找到耳机并把它们放进篮子里。  
+  **简要解释：** 任务包含目标识别、定位与抓取，属于带推理的检索操作。
+- **Classify Items as Shape（按形状分类物体）**：按形状将 3 个物体分类到目标位置。  
+  **简要解释：** 这里需要先判断类别，再执行放置，体现抽象属性分类能力。
+- **Press Button in Order（按顺序按按钮）**：按指示顺序按下 3 个按钮。  
+  **简要解释：** 任务考察序列执行与顺序记忆能力。
+- **Pair Up Items（配对物体）**：匹配物体对，并把它们放到目标位置。  
+  **简要解释：** 这要求识别配对关系并执行成对搬运。
+- **Pick Fruits into Basket（把水果放入篮子）**：把指定水果放入篮子。  
+  **简要解释：** 该任务结合了目标筛选和批量拾取。
+
+- **评分规则：** 识别 (2)，拾起 (3)，放置 (4)，撤回 (1)  
+  **简要解释：** 该规则把“看见并辨认目标”也纳入评分，而不只是机械抓放。
+- **评分规则：** 每个正确项 3 分，3 个物体，撤回 (1)  
+  **简要解释：** 重点是分类是否正确，数量固定为 3 个对象。
+- **评分规则：** 每个正确按压 3 分，3 个按钮，撤回 (1)  
+  **简要解释：** 顺序对错会直接影响得分，因此这是序列控制任务。
+- **评分规则：** 每对：抓取 (2) + 放置 (2.5)；2 对，撤回 (1)  
+  **简要解释：** 配对任务对“成对完成”有明确奖励，放置精度也会计分。
+- **评分规则：** 每个正确水果 3 分，3 个水果，撤回 (1)  
+  **简要解释：** 该任务以目标选择正确为核心，适合评估视觉语义理解。
+
+**Bimanual（双手协同）**
+- 左手抓取线缆，传给右手，插入。  
+  **简要解释：** 这个任务强调双手协作中的交接和连续操作。
+- 双手操作：打开拉链，插入物品，关闭。  
+  **简要解释：** 该任务需要两只机械臂协同完成开合与装入动作。
+
+- **评分规则：** 左手抓取 (3)，右手接住 (3)，插入 (3)，撤回 (1)  
+  **简要解释：** 评分体现了双手之间的传递是否顺畅，以及最终插入是否成功。
+- **评分规则：** 打开 (3.5)，每个物品 1 分 (3)，拉上拉链 (1.5)，撤回 (1)  
+  **简要解释：** 这里同时评价开合动作和装入多个物品的完成度。
+
+**Dexterous Manipulation（灵巧操作）**
+- **Insert Wireline（插入线缆）**
+- **Put Stationery in Case（把文具放入盒中）**
+
+**Generalization（泛化）**
+- **Place Plates into Storage Slots（把盘子放入储物槽）**：拿起盘子并把它们放入指定储物槽。  
+  **简要解释：** 该任务考察在新布局中完成标准取放的能力。
+- **Cover Pot with Lid（用盖子盖住锅）**：拿起锅盖并盖到锅上。  
+  **简要解释：** 这是对“对准后覆盖”动作的测试。
+- **Push Cleaning Cloth to Table Edge（把清洁布推到桌边）**：拿起抹布，把油污擦掉或推到桌边。  
+  **简要解释：** 任务包含清理/推动动作，强调与表面接触的轨迹控制。
+- **Insert Screwdriver into Cup（把螺丝刀插入杯中）**：拿起螺丝刀并把它插入杯子里。  
+  **简要解释：** 这是一个细长物体插入容器的对准任务。
+
+- **评分规则：** 拿起 (2)，与槽对齐 (3)，放入槽中 (4)，撤回 (1)  
+  **简要解释：** 该规则对“对齐”给了较高分值，因为这是该任务的关键难点。
+- **评分规则：** 接近 (2)，拿起盖子 (3)，覆盖 (4)，返回 (1)  
+  **简要解释：** 评分关注是否成功完成“接近-拾取-覆盖-返回”的完整动作链。
+- **评分规则：** 接近 (2)，拿起 (2)，擦拭全部 (5)，返回 (1)  
+  **简要解释：** 这里对清理效果给予最高权重，说明任务结果比单步动作更重要。
+- **评分规则：** 识别 (2)，拿起 (3)，插入杯中 (4)，撤回 (1)  
+  **简要解释：** 该任务同样强调精确插入，且包含目标识别步骤。
+
+**表 6 真实机器人任务进展（Task Progress）评分细则。** 每个任务都采用 10 分制的 Task Progress 评分，并对可观察到的中间步骤给予部分得分。最终报告的分数会归一化为主评测中使用的 0–100 Task Progress 值。  
+**简要解释：** 这说明表中的分值不是直接上报结果，而是先按 10 分制细分，再映射到 0–100 的统一评测尺度。  
+
+40 页</pre>
+        </article>
+      </div>
+    </section>
+
+    <section class="spread" id="page-41">
+      <header><span>Page 41</span><a href="#top">Top</a></header>
+      <div class="cols">
+        <figure class="original">
+          <img src="faithful_page_images/WALL-WM/page-041.png" alt="WALL-WM page 41" loading="lazy" />
+        </figure>
+        <article class="translation">
+          <div class="label">中文翻译 + 简单解释</div>
+          <pre>**参考文献**
+
+[1] Anthropic. Claude 3.7 Sonnet. https://www.anthropic.com/news/claude-3-7-sonnet, 2025。  
+简要解释：这是一条产品/模型发布引用，用于指向 Claude 3.7 Sonnet 的官方介绍页面。
+
+[2] Mido Assran, Adrien Bardes, David Fan, Quentin Garrido, Russell Howes, Matthew Muckley, Ammar Rizvi, Claire Roberts, Koustuv Sinha, Artem Zholus, 等。V-JEPA 2：自监督视频模型支持理解、预测与规划。arXiv 预印本 arXiv:2506.09985, 2025。  
+简要解释：这篇工作强调自监督视频表征可以同时帮助理解场景、预测未来并服务规划。
+
+[3] Shuanghao Bai, Jing Lyu, Wanqi Zhou, Zhe Li, Dakai Wang, Lei Xing, Xiaoguang Zhao, Pengwei Wang, Zhongyuan Wang, Cheng Chi, 等。Latent Reasoning VLA：面向 vision-language-action 模型的潜在思考与预测。arXiv 预印本 arXiv:2602.01166, 2026。  
+简要解释：这篇论文关注在 VLA（vision-language-action）模型中引入潜在推理与预测机制。
+
+[4] Adrien Bardes, Quentin Garrido, Jean Ponce, Xinlei Chen, Michael Rabbat, Yann LeCun, Mido Assran, and Nicolas Ballas. V-JEPA：用于视觉表征学习的潜在视频预测，2024。https://openreview.net/forum?id=WFYbBOEOtv。  
+简要解释：这是 V-JEPA 的早期版本，核心是通过潜在空间中的视频预测来学习视觉表征。
+
+[5] Homanga Bharadhwaj, Debidatta Dwibedi, Abhinav Gupta, Shubham Tulsiani, Carl Doersch, Ted Xiao, Dhruv Shah, Fei Xia, Dorsa Sadigh, and Sean Kirmani. Gen2Act：在新场景中进行人类视频生成可实现可泛化的机器人操作。arXiv 预印本 arXiv:2409.16283, 2024。  
+简要解释：该工作把人类视频生成与机器人操作联系起来，目标是提升机器人在新场景中的泛化能力。
+
+[6] Homanga Bharadhwaj, Roozbeh Mottaghi, Abhinav Gupta, and Shubham Tulsiani. Track2Act：从互联网视频预测点轨迹可实现可泛化的机器人操作。发表于欧洲计算机视觉会议（European Conference on Computer Vision），第 306–324 页。Springer, 2024。  
+简要解释：这篇论文利用视频中的点轨迹预测来辅助机器人学习操作策略。
+
+[7] Hongzhe Bi, Hengkai Tan, Shenghao Xie, Zeyuan Wang, Shuhe Huang, Haitian Liu, Ruowen Zhao, Yao Feng, Chendong Xiang, Yinze Rong, 等。Motus：统一的潜在动作世界模型。arXiv 预印本 arXiv:2512.13030, 2025。  
+简要解释：该工作试图把动作建模与世界建模统一到一个潜在框架中。
+
+[8] Johan Bjorck, Fernando Castañeda, Nikita Cherniadev, Xingye Da, Runyu Ding, Linxi Fan, Yu Fang, Dieter Fox, Fengyuan Hu, Spencer Huang, 等。Gr00t n1：面向通用人形机器人的开源基础模型。arXiv 预印本 arXiv:2503.14734, 2025。  
+简要解释：这是一个面向人形机器人通用能力的基础模型工作。
+
+[9] Kevin Black, Noah Brown, Danny Driess, Adnan Esmail, Michael Equi, Chelsea Finn, Niccolo Fusai, Lachy Groom, Karol Hausman, Brian Ichter, 等。𝜋0：用于通用机器人控制的视觉-语言-动作流模型。arXiv 预印本 arXiv:2410.24164, 2024。  
+简要解释：该工作把视觉、语言和动作统一到流式生成模型框架中，用于机器人控制。
+
+[10] Qingwen Bu, Jisong Cai, Li Chen, Xiuqi Cui, Yan Ding, Siyuan Feng, Shenyuan Gao, Xindong He, Xuan Hu, Xu Huang, 等。Agibot World Colosseo：面向可扩展且智能具身系统的大规模操作平台。arXiv 预印本 arXiv:2503.06669, 2025。  
+简要解释：这篇工作介绍了一个大规模机器人操作平台，服务于具身智能系统研究。
+
+[11] Qingwen Bu, Yanting Yang, Jisong Cai, Shenyuan Gao, Guanghui Ren, Maoqing Yao, Ping Luo, and Hongyang Li. UnivLA：学习在任何地方行动，借助以任务为中心的潜在动作。arXiv 预印本 arXiv:2505.06111, 2025。  
+简要解释：该工作通过任务中心的潜在动作，推动模型在更广泛场景下执行行动。
+
+[12] Jun Cen, Siteng Huang, Yuqian Yuan, Kehan Li, Hangjie Yuan, Chaohui Yu, Yuming Jiang, Jiayan Guo, Xin Li, Hao Luo, 等。RynnVLA-002：统一的视觉-语言-动作与世界模型。arXiv 预印本 arXiv:2511.17502, 2025。  
+简要解释：这篇论文尝试把 VLA 与世界模型整合到一个统一系统中。
+
+[13] Jun Cen, Chaohui Yu, Hangjie Yuan, Yuming Jiang, Siteng Huang, Jiayan Guo, Xin Li, Yibing Song, Hao Luo, Fan Wang, 等。WorldVLA：迈向自回归动作世界模型。arXiv 预印本 arXiv:2506.21539, 2025。  
+简要解释：该工作强调用自回归方式把动作预测与世界建模结合起来。
+
+[14] Chilam Cheang, Sijin Chen, Zhongren Cui, Yingdong Hu, Liqun Huang, Tao Kong, Hang Li, Yifeng Li, Yuxiao Liu, Xiao Ma, 等。Gr-3 技术报告。arXiv 预印本 arXiv:2507.15493, 2025。  
+简要解释：这是关于 Gr-3 的技术报告，通常用于公开模型/系统细节。
+
+[15] Yi Chen, Yuying Ge, Weiliang Tang, Yizhuo Li, Yixiao Ge, Mingyu Ding, Ying Shan, and Xihui Liu. Moto：作为桥接语言的潜在运动 token，用于从视频中学习机器人操作。发表于 IEEE/CVF 国际计算机视觉会议论文集，第 19752–19763 页，2025。  
+简要解释：这篇工作提出用潜在 motion token 作为“桥接语言”，把视频知识迁移到机器人操作学习中。
+
+[16] Cheng Chi, Zhenjia Xu, Brian Ichter, and Avinash Shah. Diffusion Policy：通过动作扩散进行视觉运动策略学习。发表于机器人学：科学与系统（Robotics: Science and Systems, RSS），2023。  
+简要解释：该论文把扩散模型引入机器人策略学习，用动作生成来建模控制。
+
+[17] Gheorghe Comanici, Eric Bieber, Mike Schaekermann, Ice Pasupat, Noveen Sachdeva, Inderjit Dhillon, Marcel Blistein, Ori Ram, Dan Zhang, Evan Rosen, 等。Gemini 2.5：以高级推理、多模态、长上下文和下一代智能体能力推动前沿。arXiv 预印本 arXiv:2507.06261, 2025。  
+简要解释：这是 Gemini 2.5 的能力概述，重点在推理、多模态与长上下文。
+
+[18] Dima Damen, Hazel Doughty, Giovanni Maria Farinella, Antonino Furnari, 等。重标定第一人称视觉：EPIC-KITCHENS-100 的采集、流程与挑战。International Journal of Computer Vision, 130:33–55, 2022。  
+简要解释：这篇工作围绕第一人称视频数据集 EPIC-KITCHENS-100 的构建与研究挑战展开。
+
+[19] Danny Driess, Jost Springenberg, Brian Ichter, Lili Yu, Adrian Li-Bell, Karl Pertsch, Allen Ren, Homer Walke, Quan Vuong, Lucy Xiaoyang Shi, 等。Knowledge insulating vision-language-action models：训练快、运行快、泛化更好。Advances in Neural Information Processing Systems, 38:102867–102888, 2026。  
+简要解释：该工作关注通过“知识隔离”提升 VLA 模型的训练效率、推理速度和泛化能力。
+
+[20] Yilun Du, Sherry Yang, Bo Dai, Hanjun Dai, Ofir Nachum, Josh Tenenbaum, Dale Schuurmans, and Pieter Abbeel. 通过文本引导的视频生成学习通用策略。Advances in Neural Information Processing Systems, 36:9156–9172, 2023。  
+简要解释：这篇论文把文本条件视频生成用于学习可迁移的通用策略。
+
+[21] Yilun Du, Sherry Yang, Pete Florence, Fei Xia, Ayzaan Wahid, brian ichter, Pierre Sermanet, Tianhe Yu, Pieter Abbeel, Joshua B. Tenenbaum, Leslie Pack Kaelbling, Andy Zeng, and Jonathan Tompson. 视频语言规划。发表于第十二届国际学习表征会议（The Twelfth International Conference on Learning Representations）, 2024。https://openreview.net/forum?id=9pKtcJcMP3。  
+简要解释：该工作将视频理解与语言规划结合，探索从视频中直接形成规划能力。
+
+[22] Yao Feng, Hengkai Tan, Xinyi Mao, Chendong Xiang, Guodong Liu, Shuhe Huang, Hang Su, and Jun Zhu. Vidar：面向通用操作的具身视频扩散模型。arXiv 预印本 arXiv:2507.12898, 2025。  
+简要解释：这篇论文提出用视频扩散模型来建模具身操作任务，强调通用性。</pre>
+        </article>
+      </div>
+    </section>
+
+    <section class="spread" id="page-42">
+      <header><span>Page 42</span><a href="#top">Top</a></header>
+      <div class="cols">
+        <figure class="original">
+          <img src="faithful_page_images/WALL-WM/page-042.png" alt="WALL-WM page 42" loading="lazy" />
+        </figure>
+        <article class="translation">
+          <div class="label">中文翻译 + 简单解释</div>
+          <pre>[23] Shenyuan Gao, Siyuan Zhou, Yilun Du, Jun Zhang, 和 Chuang Gan。Adaworld: 使用潜在动作（latent actions）学习可适应的世界模型。arXiv 预印本 arXiv:2503.18938，2025。  
+简要解释：这篇工作关注如何让世界模型在不同任务和环境中具备更强的适应性，并通过潜在动作来表示可迁移的控制信号。
+
+[24] Sachin Goyal, Ziwei Ji, Ankit Singh Rawat, Aditya Krishna Menon, Sanjiv Kumar, 和 Sharan Narang。Think before you speak: 使用停顿 token（pause tokens）训练语言模型。发表于 International Conference on Learning Representations，2024。  
+简要解释：这篇论文强调在语言模型生成前加入“停顿”机制，以改善模型的推理和输出质量。
+
+[25] Kristen Grauman, Andrew Westbury, Eugene Byrne, Zachary Chavis, Antonino Furnari, Rohit Girdhar, Jackson Hamburger, Hao Jiang, Miao Liu, Xingyu Liu, 等。Ego4d: Around the world in 3,000 hours of egocentric video。发表于 Proceedings of the IEEE/CVF conference on computer vision and pattern recognition，第 18995–19012 页，2022。  
+简要解释：这是一个大规模第一视角视频数据集，旨在支持以自我视角为中心的视频理解与学习研究。
+
+[26] Yanjiang Guo, Yucheng Hu, Jianke Zhang, Yen-Jen Wang, Xiaoyu Chen, Chaochao Lu, 和 Jianyu Chen。Prediction with action: 通过联合去噪过程（joint denoising process）进行视觉策略学习。发表于 Advances in Neural Information Processing Systems，第 37 卷：112386–112410，2024。  
+简要解释：这篇工作将动作预测与视觉建模结合起来，用联合去噪的方式学习机器人策略。
+
+[27] Danijar Hafner, Timothy Lillicrap, Jimmy Ba, 和 Mohammad Norouzi。Dream to control: 通过潜在想象（latent imagination）学习行为。arXiv 预印本 arXiv:1912.01603，2019。  
+简要解释：这是世界模型方向的代表性工作之一，核心思想是在潜在空间里“想象”未来，从而学习控制策略。
+
+[28] Danijar Hafner, Timothy Lillicrap, Ian Fischer, Ruben Villegas, David Ha, Honglak Lee, 和 James Davidson。Learning latent dynamics for planning from pixels。发表于 International conference on machine learning，第 2555–2565 页。PMLR，2019。  
+简要解释：这篇论文研究如何直接从像素中学习潜在动力学，用于规划和决策。
+
+[29] Danijar Hafner, Jurgis Pasukonis, Jimmy Ba, 和 Timothy Lillicrap。Mastering diverse domains through world models。arXiv 预印本 arXiv:2301.04104，2023。  
+简要解释：这项工作展示了世界模型在多种不同任务与领域中的泛化能力。
+
+[30] Shibo Hao, Sainbayar Gu, Haotian Ma, Joshua Jiahua Hong, Zhen Wang, Daisy Zhe Wang, 和 Zhiting Hu。Training large language models to reason in a continuous latent space。arXiv 预印本 arXiv:2412.06769，2024。  
+简要解释：这篇论文探索让大语言模型在连续潜在空间中进行推理，以提升其思维表达方式。
+
+[31] Jonathan Ho, Ajay Jain, 和 Pieter Abbeel。Denoising diffusion probabilistic models。发表于 NeurIPS，2020。  
+简要解释：这是扩散模型领域的奠基性论文之一，提出了去噪扩散概率模型（DDPM）。
+
+[32] Yucheng Hu 等。Video prediction policy: A generalist robot policy with predictive visual representations。发表于 Proceedings of the 42nd International Conference on Machine Learning，2025。  
+简要解释：该工作尝试利用视频预测式视觉表征来构建通用机器人策略。
+
+[33] Yuhang Huang, Jiazhao Zhang, Shilong Zou, Xinwang Liu, Ruizhen Hu, 和 Kai Xu。Ladi-wm: A latent diffusion-based world model for predictive manipulation。arXiv 预印本 arXiv:2505.11528，2025。  
+简要解释：这篇论文把潜在扩散（latent diffusion）引入世界模型，用于预测性操作任务。
+
+[34] Zixuan Huang, Xiang Li, Zhaoyang Lv, 和 James M Rehg。How much 3d do video foundation models encode? arXiv 预印本 arXiv:2512.19949，2025。  
+简要解释：该研究关注视频基础模型究竟编码了多少三维信息。
+
+[35] Zixuan Huang, Xiang Li, Zhaoyang Lv, 和 James M Rehg。How much 3d do video foundation models encode? arXiv 预印本 arXiv:2512.19949，2025。  
+简要解释：这一条与上一条内容相同，属于重复引用。
+
+[36] Physical Intelligence, Kevin Black, Noah Brown, James Darpinian, Karan Dhabalia, Danny Driess, Adnan Esmail, Michael Equi, Chelsea Finn, Niccolo Fusai, 等。𝑝𝑖0.5: 一个具有开放世界泛化能力（open-world generalization）的视觉-语言-动作模型（vision-language-action model）。arXiv 预印本 arXiv:2504.16054，2025。  
+简要解释：这篇工作介绍了 𝑝𝑖0.5，一个面向机器人与开放世界场景的视觉-语言-动作模型。
+
+[37] Joel Jang, Seonghyeon Ye, Zongyu Lin, Jiannan Xiang, Johan Bjorck, Yu Fang, Fengyuan Hu, Spencer Huang, Kaushil Kundalia, Yen-Chen Lin, 等。Dreamgen: 通过视频世界模型（video world models）解锁机器人学习中的泛化能力。arXiv 预印本 arXiv:2505.12705，2025。  
+简要解释：这篇论文强调利用视频世界模型提升机器人学习的泛化能力。
+
+[38] Haoqiang Kang, Yizhe Zhang, Nikki Lijing Kuang, Nicklas Majamaki, Navdeep Jaitly, Yi-An Ma, 和 Lianhui Qin。Ladir: Latent diffusion enhances llms for text reasoning。arXiv 预印本 arXiv:2510.04573，2025。  
+简要解释：该工作把 latent diffusion 引入大语言模型，以增强文本推理能力。
+
+[39] Haoqiang Kang, Yizhe Zhang, Nikki Lijing Kuang, Yi-An Ma, 和 Lianhui Qin。Beyond mode elicitation: Diversity-preserving reinforcement learning via latent diffusion reasoner。arXiv 预印本 arXiv:2602.01705，2026。  
+简要解释：这篇论文关注在强化学习中如何保留多样性，并借助 latent diffusion reasoner 实现更稳定的探索与学习。
+
+[40] Alexander Khazatsky, Karl Pertsch, Suraj Nair, Ashwin Balakrishna, Sudeep Dasari, Siddharth Karamcheti, Soroush Nasiriany, Mohan Kumar Srirama, Lawrence Yunliang Chen, Kirsty Ellis, 等。Droid: 一个大规模真实世界（in-the-wild）机器人操作数据集。arXiv 预印本 arXiv:2403.12945，2024。  
+简要解释：这是一个面向真实世界机器人操作的大规模数据集，强调在自然环境中的多样性。
+
+[41] Moo Jin Kim, Karl Pertsch, Siddharth Karamcheti, Ted Xiao, Ashwin Balakrishna, Suraj Nair, Rafael Rafailov, Ethan Foster, Grace Lam, Pannag Sanketi, 等。Openvla: 一个开源视觉-语言-动作模型（vision-language-action model）。arXiv 预印本 arXiv:2406.09246，2024。  
+简要解释：这篇工作发布了开源的 VLA 模型 OpenVLA，便于社区研究和复现。
+
+[42] Moo Jin Kim, Yihuai Gao, Tsung-Yi Lin, Yen-Chen Lin, Yunhao Ge, Grace Lam, Percy Liang, Shuran Song, Ming-Yu Liu, Chelsea Finn, 等。Cosmos policy: 对视频模型进行微调，以用于视觉-运动控制（visuomotor control）和规划。arXiv 预印本 arXiv:2601.16163，2026。  
+简要解释：这篇工作说明可以把通用视频模型进一步微调为面向机器人视觉运动控制与规划的策略模型。
+
+[43] Po-Chen Ko, Jiayuan Mao, Yilun Du, Shao-Hua Sun, 和 Joshua B. Tenenbaum。Learning to act from actionless videos through dense correspondences。发表于 Proceedings of the International Conference on Learning Representations (ICLR)，2024。  
+简要解释：该论文研究如何仅从没有动作标注的视频中学习行动能力，核心依赖密集对应关系。
+
+[44] Lin Li, Qihang Zhang, Yiming Luo, Shuai Yang, Ruilin Wang, Fei Han, Mingrui Yu, Zelin Gao, Nan Xue, Xing Zhu, 等。Causal world modeling for robot control。arXiv 预印本 arXiv:2601.21998，2026。  
+简要解释：这篇论文把因果建模引入世界模型，用于提升机器人控制的可解释性和泛化能力。
+
+[45] Qixiu Li, Yaobo Liang, Zeyu Wang, Lin Luo, Xi Chen, Mozheng Liao, Fangyun Wei, Yu Deng, Sicheng Xu, Yizhong Zhang, 等。Cogact: 一个基础视觉-语言-动作模型（foundational vision-language-action model），用于协调机器人操作中的认知与动作（synergizing cognition and action in robotic manipulation）。arXiv 预印本 arXiv:2411.19650，2024。  
+简要解释：这篇工作提出 Cogact，强调把认知能力和动作控制统一到一个基础 VLA 模型中。
+
+[46] Junbang Liang, Pavel Tokmakov, Ruoshi Liu, Sruthi Sudhakar, Paarth Shah, Rares Ambrus, 和 Carl Vondrick。Video generators are robot policies。arXiv 预印本 arXiv:2508.00795，2025。  
+简要解释：这篇论文主张视频生成器本身可以充当机器人策略，强调生成式视频建模与机器人控制之间的联系。</pre>
+        </article>
+      </div>
+    </section>
+
+    <section class="spread" id="page-43">
+      <header><span>Page 43</span><a href="#top">Top</a></header>
+      <div class="cols">
+        <figure class="original">
+          <img src="faithful_page_images/WALL-WM/page-043.png" alt="WALL-WM page 43" loading="lazy" />
+        </figure>
+        <article class="translation">
+          <div class="label">中文翻译 + 简单解释</div>
+          <pre>[47] Yue Liao, Pengfei Zhou, Siyuan Huang, Donglin Yang, Shengcong Chen, Yuxin Jiang, Yue Hu, Jingbin Cai, Si Liu, Jianlan Luo, et al. 《Genie envisioner：面向机器人操作的统一世界基础平台》。arXiv 预印本 arXiv:2508.05635，2025。  
+简要解释：这篇工作从标题上看，重点是为机器人操作构建一个统一的世界基础平台，属于世界模型与机器人操控结合方向。
+
+[48] Yaron Lipman, Ricky Chen, Heli Ben-Hamu, Max Nickel, and Manzil Zaheer Le. 《用于生成式建模的 Flow matching（流匹配）》。arXiv 预印本 arXiv:2210.02747，2022。  
+简要解释：该文提出 Flow matching 作为生成建模方法，通常用于学习从噪声到数据分布的连续变换。
+
+[49] Zhuoyang Liu, Jiaming Liu, Hao Chen, Jiale Yu, Ziyu Guo, Chengkai Hou, Chenyang Gu, Xiangju Mi, Renrui Zhang, Kun Wu, Zhengping Che, Jian Tang, Pheng-Ann Heng, and Shanghang Zhang. 《Last0：用于机器人视觉-语言-行动模型的潜在时空 chain-of-thought（链式思维）》。arXiv 预印本 arXiv:2601.05248，2026。  
+简要解释：标题表明这项工作把潜在时空表示与 chain-of-thought 结合，用于增强机器人 VLA（vision-language-action）推理与决策。
+
+[50] Jinghui Lu, Jiayi Guan, Zhijian Huang, Jinlong Li, Guang Li, Lingdong Kong, Yingyan Li, Han Wang, Shaoqing Xu, Yuechen Luo, et al. 《OneVL：结合视觉-语言解释的单步潜在推理与规划》。arXiv 预印本 arXiv:2604.18486，2026。  
+简要解释：这篇工作强调用单步潜在推理完成规划，并借助视觉-语言解释提升可解释性与规划能力。
+
+[51] Calvin Luo, Zilai Zeng, Yilun Du, and Chen Sun. 《通过适应互联网视频知识来解决新任务》。arXiv 预印本 arXiv:2504.15369，2025。  
+简要解释：从标题看，这项研究利用互联网视频中的知识迁移到新任务上，体现出视频先验的泛化价值。
+
+[52] Yuechen Luo, Fang Li, Shaoqing Xu, Yang Ji, Zehan Zhang, Bing Wang, Yuannan Shen, Jianwei Cui, Long Chen, Guang Chen, Hangjun Ye, Zhi-Xin Yang, and Fuxi Wen. 《Last-vla：在潜在时空空间中进行思考，用于自动驾驶中的视觉-语言-行动》。arXiv 预印本 arXiv:2603.01928，2026。  
+简要解释：该工作面向自动驾驶场景，把推理过程放在潜在时空空间中，以支持视觉-语言-行动统一建模。
+
+[53] Jiangran Lyu, Kai Liu, Xuheng Zhang, Haoran Liao, Yusen Feng, Wenxuan Zhu, Tingrui Shen, Jiayi Chen, Jiazhao Zhang, Yifei Dong, et al. 《Lda-1b：通过通用具身数据摄取扩展 latent dynamics action model（潜在动力学动作模型）》。arXiv 预印本 arXiv:2602.12215，2026。  
+简要解释：这篇工作强调通过大规模通用具身数据来扩展 latent dynamics action model，指向更强的具身智能扩展性。
+
+[54] Lucas Maes, Quentin Le Lidec, Damien Scieur, Yann LeCun, and Randall Balestriero. 《Leworldmodel：从像素出发的稳定端到端联合嵌入预测架构》。arXiv 预印本 arXiv:2603.19312，2026。  
+简要解释：标题说明这是一个从原始像素学习联合嵌入预测的 world model 方法，并强调端到端稳定性。
+
+[55] Kepan Nan, Rui Xie, Penghao Zhou, Tiehan Fan, Zhenheng Yang, Zhijie Chen, Xiang Li, Jian Yang, and Ying Tai. 《Openvid-1m：用于文本到视频生成的大规模高质量数据集》。发表于 International Conference on Learning Representations，2025。  
+简要解释：这是一个面向 text-to-video 生成的数据集工作，重点在于规模和质量，通常用于提升视频生成模型训练效果。
+
+[56] Nikolay Nikolov, Giuliano Albanese, Sombit Dey, Aleksandar Yanev, Luc Van Gool, Jan-Nico Zaech, and Danda Pani Paudel. 《Spear-1：通过 3D 理解超越机器人示教进行扩展》。arXiv 预印本 arXiv:2511.17411，2025。  
+简要解释：这篇工作强调借助 3D 理解突破仅依赖机器人示教的数据限制，提升扩展能力。
+
+[57] OpenAI. 《Introducing gpt-5》. https://openai.com/index/introducing-gpt-5-for-developers/，2025。  
+简要解释：这是 OpenAI 关于 GPT-5 的官方介绍页面，属于模型发布与能力说明类资料。
+
+[58] Maxime Oquab, Timothée Darcet, Théo Moutakanni, Huy Vo, Marc Szafraniec, Vasil Khalidov, Pierre Fernandez, Daniel Haziza, Francisco Massa, Alaaeldin El-Nouby, et al. 《Dinov2：无需监督学习鲁棒视觉特征》。arXiv 预印本 arXiv:2304.07193，2023。  
+简要解释：该工作是 DINOv2，核心是通过自监督/无监督方式学习稳健的视觉表征，常用于视觉 backbone。
+
+[59] Jonas Pai, Liam Achenbach, Victoriano Montesinos, Benedek Forrai, Oier Mees, and Elvis Nava. 《mimic-video：超越 VLA 的通用机器人控制视频-动作模型》。arXiv 预印本 arXiv:2512.15692，2025。  
+简要解释：标题表明这项工作用视频-动作模型进行机器人控制，并尝试超越传统 VLA 范式。
+
+[60] Karl Pertsch, Kyle Stachowicz, Brian Ichter, Danny Driess, Suraj Nair, Quan Vuong, Oier Mees, Chelsea Finn, and Sergey Levine. 《FAST：面向视觉-语言-行动模型的高效动作标记化》。arXiv 预印本 arXiv:2501.09747，2025。  
+简要解释：这篇工作聚焦动作离散化或 tokenization 的效率问题，目标是让 VLA 模型更高效地表示和生成动作。
+
+[61] Delin Qu, Haoming Song, Qizhi Chen, Yuanqi Yao, Xinyi Ye, Yan Ding, Zhigang Wang, JiaYuan Gu, Bin Zhao, Dong Wang, et al. 《SpatialVLA：探索视觉-语言-行动模型的空间表征》。arXiv 预印本 arXiv:2501.15830，2025。  
+简要解释：该工作关注空间表征在 VLA 模型中的作用，说明空间信息对机器人理解与控制很关键。
+
+[62] Colin Raffel, Noam Shazeer, Adam Roberts, Katherine Lee, Sharan Narang, Michael Matena, Yanqi Zhou, Wei Li, and Peter J Liu. 《借助统一的 text-to-text transformer 探索迁移学习的极限》。Journal of Machine Learning Research，21(140):1–67，2020。  
+简要解释：这是经典的 T5 论文，提出统一的文本到文本框架，将多种 NLP 任务都转化为序列到序列建模。
+
+[63] Jeremy Reizenstein, Roman Shapovalov, Philipp Henzler, Luca Sbordone, Patrick Labatut, and David Novotny. 《Common objects in 3d：真实生活 3D 类别重建的大规模学习与评估》。发表于 Proceedings of the IEEE/CVF International Conference on Computer Vision，10901–10911 页，2021。  
+简要解释：这篇工作围绕真实世界 3D 物体类别重建的数据学习与评估展开，是 3D 视觉方向的重要基准类研究。
+
+[64] Tim Salimans and Jonathan Ho. 《用于 diffusion models（扩散模型）快速采样的 progressive distillation（渐进蒸馏）》。发表于 International Conference on Learning Representations，2022。  
+简要解释：该文提出通过渐进蒸馏加速扩散模型采样，解决生成过程慢的问题。
+
+[65] Chenguo Shang et al. 《WorldArena：将具身视频生成模型作为世界模拟器进行基准评测》。arXiv 预印本 arXiv:2602.08971，2026。  
+简要解释：这是一项基准评测工作，把具身视频生成模型当作世界模拟器来衡量其能力与局限。
+
+[66] Mike Zheng Shou, Stan Weixian Lei, Weiyao Wang, Deepti Ghadiyaram, and Matt Feiszli. 《Generic event boundary detection：事件分割基准》。发表于 Proceedings of the IEEE/CVF International Conference on Computer Vision，8075–8084 页，2021。  
+简要解释：该工作提供了事件边界检测基准，用于评估模型对视频或时序事件切分的能力。
+
+[67] Jianlin Su, Murtadha Ahmed, Yu Lu, Shengfeng Pan, Wen Bo, and Yunfeng Liu. 《Roformer：带旋转位置嵌入的增强型 transformer》。Neurocomputing，568:127063，2024。  
+简要解释：这篇工作提出 RoFormer，通过旋转位置嵌入改进 transformer 的位置建模能力。
+
+[68] GigaBrain Team, Angen Ye, Boyuan Wang, Chaojun Ni, Guan Huang, Guosheng Zhao, Haoyun Li, Jie Li, Jiagang Zhu, Lv Feng, et al. 《Gigabrain-0：由世界模型驱动的视觉-语言-行动模型》。arXiv 预印本 arXiv:2510.19430，2025。  
+简要解释：标题表明该模型把 world model 作为核心能力来源，用于构建更强的 VLA 系统。
+
+[69] MotuBrain Team, Chendong Xiang, Fan Bao, Haitian Liu, Hengkai Tan, Hongzhe Bi, James Li, Jiabao Liu, Jingrui Pang, Kiro Jing, et al. 《Motubrain：用于机器人控制的高级世界行动模型》。arXiv 预印本 arXiv:2604.27792，2026。  
+简要解释：这篇工作定位为 world action model，强调直接服务于机器人控制，可能面向更高层次的动作决策与执行。</pre>
+        </article>
+      </div>
+    </section>
+
+    <section class="spread" id="page-44">
+      <header><span>Page 44</span><a href="#top">Top</a></header>
+      <div class="cols">
+        <figure class="original">
+          <img src="faithful_page_images/WALL-WM/page-044.png" alt="WALL-WM page 44" loading="lazy" />
+        </figure>
+        <article class="translation">
+          <div class="label">中文翻译 + 简单解释</div>
+          <pre>参考文献
+
+【70】Octo Model Team, Dibya Ghosh, Homer Walke, Karl Pertsch, Kevin Black, Oier Mees, Sudeep Dasari, Joey Hejna, Tobias Kreiman, Charles Xu, et al.《Octo：一个开源的通用机器人策略（open-source generalist robot policy）》, arXiv 预印本 arXiv:2405.12213, 2024。  
+简要解释：这篇工作介绍了 Octo，一个面向通用机器人控制的开源策略模型，可作为后续机器人策略学习的基础参考。
+
+【71】Qwen Team.《Qwen3.5：通过原生多模态智能体加速生产力（Accelerating productivity with native multimodal agents）》, 2026 年 2 月。https://qwen.ai/blog?id=qwen3.5。  
+简要解释：这是 Qwen3.5 的官方介绍，重点强调原生多模态智能体能力对效率与生产力的提升。
+
+【72】Team Wan, Ang Wang, Baole Ai, Bin Wen, Chaojie Mao, Chen-Wei Xie, Di Chen, Feiwu Yu, Haiming Zhao, Jianxiao Yang, et al.《Wan：开放且先进的大规模视频生成模型（Open and advanced large-scale video generative models）》, arXiv 预印本 arXiv:2503.20314, 2025。  
+简要解释：这篇工作聚焦大规模视频生成，强调模型的开放性和高性能生成能力。
+
+【73】Junming Wang, Teng Pu, Wingmun Fung, Jindong Wang, Shanchang Wang, Yuan Deng, Shuyuan Wang, Ziwei Liu, Kunhao Pan, Ping Yang, et al.《Xrzero-g0：通过接口、质量与比例推动灵巧机器人操控前沿（Pushing the frontier of dexterous robotic manipulation with interfaces, quality and ratios）》, arXiv 预印本 arXiv:2604.13001, 2026。  
+简要解释：该工作面向灵巧机器人操控，讨论接口设计、数据质量和配比对性能的影响。
+
+【74】Junjie Wen, Yichen Zhu, Jinming Li, Zhibin Tang, Chaomin Shen, and Feifei Feng.《Dexvla：带插件式扩散专家的视觉-语言模型，用于通用机器人控制（Vision-language model with plug-in diffusion expert for general robot control）》, arXiv 预印本 arXiv:2502.05855, 2025。  
+简要解释：这篇论文将视觉-语言模型与扩散专家结合，用于更通用的机器人控制任务。
+
+【75】Junjie Wen, Yichen Zhu, Jinming Li, Minjie Zhu, Zhibin Tang, Kun Wu, Zhiyuan Xu, Ning Liu, Ran Cheng, Chaomin Shen, et al.《Tinyvla：面向机器人操控的快速、数据高效视觉-语言-动作模型（Towards fast, data-efficient vision-language-action models for robotic manipulation）》, IEEE Robotics and Automation Letters, 2025。  
+简要解释：该工作强调在较少数据与较高速度下实现可用的视觉-语言-动作模型。
+
+【76】John Won, Kyungmin Lee, Huiwon Jang, Dongyoung Kim, and Jinwoo Shin.《面向世界模型增强的视觉-语言-动作模型的双流扩散（Dual-stream diffusion for world-model augmented vision-language-action model）》, arXiv 预印本 arXiv:2510.27607, 2025。  
+简要解释：这篇论文将 world model 融入 VLA 框架，并用双流扩散机制增强生成或决策能力。
+
+【77】Wei Wu, Fan Lu, Yunnan Wang, Shuai Yang, Shi Liu, Fangjing Wang, Qian Zhu, He Sun, Yong Wang, Shuailei Ma, et al.《一个务实的 VLA 基座模型（A pragmatic VLA foundation model）》, arXiv 预印本 arXiv:2601.18692, 2026。  
+简要解释：这是一篇关于实用型 VLA 基座模型的工作，强调基础能力与落地性。
+
+【78】Xianjin Wu, Dingkang Liang, Tianrui Feng, Kui Xia, Yumeng Zhang, Xiaofan Li, Xiao Tan, and Xiang Bai.《生成模型懂空间：释放场景理解中的隐式 3D 先验（Generation models know space: Unleashing implicit 3D priors for scene understanding）》, arXiv 预印本 arXiv:2603.19235, 2026。  
+简要解释：该工作讨论生成模型中隐含的 3D 空间先验如何帮助场景理解。
+
+【79】Hongwei Xue, Tiankai Hang, Yanhong Zeng, Yuchong Sun, Bei Liu, Huan Yang, Jianlong Fu, and Baining Guo.《通过大规模视频转写提升高分辨率视频-语言表征（Advancing high-resolution video-language representation with large-scale video transcriptions）》, 载于 IEEE/CVF 计算机视觉与模式识别会议（Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition），第 5036–5045 页，2022。  
+简要解释：这篇论文利用大规模视频转写数据来增强高分辨率视频与语言的联合表征能力。
+
+【80】An Yang, Baosong Yang, Beichen Zhang, et al.《Qwen2.5 技术报告（Qwen2.5 technical report）》, arXiv 预印本 arXiv:2412.15115, 2024。https://arxiv.org/abs/2412.15115。  
+简要解释：这是 Qwen2.5 的技术报告，提供模型设计、能力与训练信息的总览。
+
+【81】Zhuoyi Yang, Jiayan Teng, Wendi Zheng, Ming Ding, Shiyu Huang, Jiazheng Xu, Yuanming Yang, Wenyi Hong, Xiaohan Zhang, Guanyu Feng, et al.《Cogvideox：带专家 Transformer 的文本到视频扩散模型（Text-to-video diffusion models with an expert transformer）》, 国际表征学习会议（International Conference on Learning Representations），第 2025 卷，第 83048–83077 页，2025。  
+简要解释：该工作面向文本生成视频，引入 expert transformer 来提升视频扩散建模能力。
+
+【82】Seonghyeon Ye, Joel Jang, Byeongguk Jeon, Se June Joo, Jianwei Yang, Baolin Peng, Ajay Mandlekar, Reuben Tan, Yu-Wei Chao, Bill Yuchen Lin, et al.《从视频中进行潜在动作预训练（Latent action pretraining from videos）》, 国际表征学习会议（International Conference on Learning Representations），第 2025 卷，第 28213–28239 页，2025。  
+简要解释：这篇论文研究如何从视频中预训练隐式动作表示，为后续机器人策略学习提供动作先验。
+
+【83】Seonghyeon Ye, Yunhao Ge, Kaiyuan Zheng, Shenyuan Gao, Sihyun Yu, George Kurian, Suneel Indupuru, You Liang Tan, Chuning Zhu, Jiannan Xiang, et al.《世界动作模型是零样本策略（World action models are zero-shot policies）》, arXiv 预印本 arXiv:2602.15922, 2026。  
+简要解释：这篇工作提出 world action model 可以直接充当零样本策略，强调跨任务泛化能力。
+
+【84】Tianwei Yin, Michaël Gharbi, Taesung Park, Richard Zhang, Eli Shechtman, Fredo Durand, and William T Freeman.《用于快速图像合成的改进分布匹配蒸馏（Improved distribution matching distillation for fast image synthesis）》, NeurIPS，2024。  
+简要解释：该论文研究如何通过更好的蒸馏方法加速高质量图像生成。
+
+【85】Tianwei Yin, Michaël Gharbi, Richard Zhang, Eli Shechtman, Frédo Durand, William T Freeman, and Taesung Park.《基于分布匹配蒸馏的一步扩散（One-step diffusion with distribution matching distillation）》, CVPR，2024。  
+简要解释：这篇论文探索将扩散模型压缩为一步生成，同时尽量保留生成质量。
+
+【86】Tianyuan Yuan, Zibin Dong, Yicheng Liu, and Hang Zhao.《Fast-wam：世界动作模型是否需要测试时未来想象（Do world action models need test-time future imagination?）》, arXiv 预印本 arXiv:2603.16666, 2026。  
+简要解释：该工作围绕 world action model 在推理阶段是否需要对未来进行想象展开讨论。
+
+【87】Michał Zawalski, William Chen, Karl Pertsch, Oier Mees, Chelsea Finn, and Sergey Levine.《通过具身思维链推理进行机器人控制（Robotic control via embodied chain-of-thought reasoning）》, 机器人学习会议（Conference on Robot Learning, CoRL），2024。  
+简要解释：这篇论文把 chain-of-thought 推理引入机器人控制，强调具身推理对决策的帮助。
+
+【88】Wenyao Zhang, Hongsi Liu, Zekun Qi, Yunnan Wang, Xinqiang Yu, Jiazhao Zhang, Runpei Dong, Jiawei He, He Wang, Zhizheng Zhang, et al.《Dreamvla：一个被全面世界知识“梦到”的视觉-语言-动作模型（a vision-language-action model dreamed with comprehensive world knowledge）》, Advances in Neural Information Processing Systems, 38:24195–24228, 2026。  
+简要解释：该工作试图将更广泛的世界知识注入 VLA 模型，以提升泛化与任务理解能力。
+
+【89】Qingqing Zhao, Yao Lu, Moo Jin Kim, Zipeng Fu, Zhuoyang Zhang, Yecheng Wu, Zhaoshuo Li, Qianli Ma, Song Han, Chelsea Finn, et al.《Cot-vla：用于视觉-语言-动作模型的视觉链式思维推理（Visual chain-of-thought reasoning for vision-language-action models）》, 计算机视觉与模式识别会议论文集（Proceedings of the Computer Vision and Pattern Recognition Conference），第 1702–1713 页，2025。  
+简要解释：这篇论文将视觉 CoT 引入 VLA，目的是让模型在执行动作前具备更强的中间推理能力。
+
+【90】Tony Z. Zhao, Vikash Kumar, Sergey Levine, and Chelsea Finn.《利用低成本硬件学习细粒度双臂操作（Learning fine-grained bimanual manipulation with low-cost hardware）》, 2023。https://arxiv.org/abs/2304.13705。  
+简要解释：该工作关注如何在低成本硬件条件下学习精细的双臂机器人操作技能。
+
+【91】Zangwei Zheng, Xiangyu Peng, Yuxuan Lou, Chenhui Shen, Tom Young, Xinying Guo, Binluo Wang, Hang Xu, Hongxin Liu, Mingyan Jiang, et al.《Open-sora 2.0：以 20 万美元训练商业级视频生成模型（Training a commercial-level video generation model in $200k）》, arXiv 预印本 arXiv:2503.09642, 2025。  
+简要解释：这篇论文强调以较低训练成本构建高质量、可商用的视频生成模型。
+
+【92】Zhide Zhong, Junfeng Li, Junjie He, Haodong Yan, Xin Gong, Guanyi Zhao, Yingjie Cai, Jiantao Gao, Xu Yan, Bingbing Liu, Yingcong Chen, Liuqing Yang, and Haoang Li.《Dualcot-vla：通过并行推理实现的视觉-语言链式思维，用于视觉-语言-动作模型（Visual-linguistic chain of thought via parallel reasoning for vision-language-action models）》, arXiv 预印本 arXiv:2603.22280, 2026。  
+简要解释：该工作提出并行推理式的视觉-语言 CoT 框架，增强 VLA 的推理和执行能力。
+
+【93】Pengfei Zhou, Liliang Chen, Shengcong Chen, Di Chen, Wenzhi Zhao, Rongjun Jin, Guanghui Ren, and Jianlan Luo.《Act2goal：从世界模型到通用目标条件策略（From world model to general goal-conditioned policy）》, arXiv 预印本 arXiv:2512.23541, 2025。  
+简要解释：这篇论文讨论如何把 world model 进一步转化为面向目标条件的通用策略。</pre>
+        </article>
+      </div>
+    </section>
+
+    <section class="spread" id="page-45">
+      <header><span>Page 45</span><a href="#top">Top</a></header>
+      <div class="cols">
+        <figure class="original">
+          <img src="faithful_page_images/WALL-WM/page-045.png" alt="WALL-WM page 45" loading="lazy" />
+        </figure>
+        <article class="translation">
+          <div class="label">中文翻译 + 简单解释</div>
+          <pre>[94] Siyuan Zhou, Yilun Du, Jiaben Chen, Yandong Li, Dit-Yan Yeung, 和 Chuang Gan。Robodreamer：用于机器人想象（robot imagination）的组合式世界模型（compositional world models）学习。发表于第 41 届国际机器学习会议（41st International Conference on Machine Learning, ICML）的论文集《Proceedings of Machine Learning Research (PMLR)》第 235 卷，第 61885–61896 页，2024 年。  
+简要解释：这条参考文献指向一篇关于机器人世界模型的工作，重点是让模型学会组合不同的环境与动作因素，从而支持更强的“想象”与预测能力。
+
+[95] Chuning Zhu, Raymond Yu, Siyuan Feng, Benjamin Burchfiel, Paarth Shah, 和 Abhishek Gupta。Unified world models：在大规模机器人数据集上进行预训练时，将视频与动作扩散（video and action diffusion）耦合起来。arXiv 预印本 arXiv:2504.02792，2025 年。  
+简要解释：这篇工作强调把视频生成和动作生成统一到同一个世界模型框架中，用于大规模机器人数据预训练，以提升模型对视觉与动作的联合建模能力。
+
+[96] Haoyi Zhu, Yifan Wang, Jianjun Zhou, Wenzheng Chang, Yang Zhou, Zizun Li, Junyi Chen, Chunhua Shen, Jiangmiao Pang, 和 Tong He。Aether：几何感知（geometric-aware）的统一世界建模（unified world modeling）。发表于 IEEE/CVF 国际计算机视觉会议（IEEE/CVF International Conference on Computer Vision）论文集，第 8535–8546 页，2025 年。  
+简要解释：这篇论文把几何信息纳入统一世界模型，使模型不仅理解外观和动作，还能更好地利用空间结构与几何关系来进行预测。
+
+[97] Brianna Zitkovich, Tianhe Yu, Sichun Xu, Peng Xu, Ted Xiao, Fei Xia, Jialin Wu, Paul Wohlhart, Stefan Welker, Ayzaan Wahid, 等。Rt-2：视觉-语言-动作模型（vision-language-action models）将网页知识（web knowledge）迁移到机器人控制（robotic control）。发表于机器人学习会议（Conference on Robot Learning），第 2165–2183 页。PMLR，2023 年。  
+简要解释：这篇工作讨论了把来自网页的知识通过视觉-语言-动作模型迁移到机器人控制任务中，体现了大模型知识向机器人技能转移的思路。</pre>
+        </article>
+      </div>
+    </section>
+
+</main>
+</body>
+</html>

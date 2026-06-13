@@ -1,0 +1,2630 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Discrete-WAM: Unified Discrete Vision-Action Token Editing for World-Policy Learning | Faithful Bilingual Reader</title>
+<style>
+:root { --accent: #7c3aed; --line: #d9dee8; --ink: #172033; --muted: #667085; }
+* { box-sizing: border-box; }
+body { margin: 0; background: #f4f6fa; color: var(--ink); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", Arial, sans-serif; }
+.top { position: sticky; top: 0; z-index: 10; background: rgba(255,255,255,.96); border-bottom: 1px solid var(--line); backdrop-filter: blur(12px); }
+.title { padding: 14px 18px 10px; border-top: 6px solid var(--accent); }
+h1 { margin: 0 0 6px; font-size: 21px; line-height: 1.3; letter-spacing: 0; }
+.meta { color: var(--muted); font-size: 13px; }
+.nav { display: flex; gap: 6px; overflow-x: auto; padding: 8px 18px 12px; }
+.nav a { flex: 0 0 auto; min-width: 32px; text-align: center; color: #344054; text-decoration: none; border: 1px solid var(--line); border-radius: 6px; padding: 3px 7px; background: #fff; font-size: 12px; }
+main { max-width: 1680px; margin: 0 auto; padding: 16px 14px 80px; }
+.notice { background: #fff7ed; border: 1px solid #fdba74; color: #7c2d12; padding: 12px 14px; border-radius: 8px; line-height: 1.65; margin-bottom: 16px; }
+.spread { background: #fff; border: 1px solid var(--line); border-radius: 8px; margin: 0 0 20px; overflow: hidden; }
+.spread header { display: flex; justify-content: space-between; align-items: center; background: #1f2937; color: #fff; padding: 8px 12px; }
+.spread header a { color: #dbeafe; text-decoration: none; font-size: 13px; }
+.cols { display: grid; grid-template-columns: minmax(420px, 1.05fr) minmax(380px, .95fr); gap: 0; align-items: start; }
+.original { margin: 0; padding: 12px; background: #e5e7eb; border-right: 1px solid var(--line); }
+.original img { display: block; width: 100%; height: auto; background: white; box-shadow: 0 2px 10px rgba(15,23,42,.16); }
+.translation { min-height: 100%; }
+.label { background: var(--accent); color: #fff; font-weight: 700; font-size: 13px; padding: 7px 10px; }
+pre { margin: 0; padding: 14px 16px 24px; white-space: pre-wrap; overflow-wrap: anywhere; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", Arial, sans-serif; font-size: 15px; line-height: 1.78; }
+@media (max-width: 980px) { .cols { grid-template-columns: 1fr; } .original { border-right: 0; border-bottom: 1px solid var(--line); } }
+@media print { .top { position: static; } .nav { display: none; } .spread { break-after: page; } body { background: white; } }
+</style>
+</head>
+<body id="top">
+<div class="top">
+  <div class="title">
+    <h1>Discrete-WAM: Unified Discrete Vision-Action Token Editing for World-Policy Learning</h1>
+    <div class="meta">左栏为 PDF 原页图片，英文原文视觉保持不改；右栏为对应中文翻译与解释。Source: 小米-Discrete-WAM.pdf · Pages: 45</div>
+  </div>
+  <nav class="nav"><a href="#page-1">1</a><a href="#page-2">2</a><a href="#page-3">3</a><a href="#page-4">4</a><a href="#page-5">5</a><a href="#page-6">6</a><a href="#page-7">7</a><a href="#page-8">8</a><a href="#page-9">9</a><a href="#page-10">10</a><a href="#page-11">11</a><a href="#page-12">12</a><a href="#page-13">13</a><a href="#page-14">14</a><a href="#page-15">15</a><a href="#page-16">16</a><a href="#page-17">17</a><a href="#page-18">18</a><a href="#page-19">19</a><a href="#page-20">20</a><a href="#page-21">21</a><a href="#page-22">22</a><a href="#page-23">23</a><a href="#page-24">24</a><a href="#page-25">25</a><a href="#page-26">26</a><a href="#page-27">27</a><a href="#page-28">28</a><a href="#page-29">29</a><a href="#page-30">30</a><a href="#page-31">31</a><a href="#page-32">32</a><a href="#page-33">33</a><a href="#page-34">34</a><a href="#page-35">35</a><a href="#page-36">36</a><a href="#page-37">37</a><a href="#page-38">38</a><a href="#page-39">39</a><a href="#page-40">40</a><a href="#page-41">41</a><a href="#page-42">42</a><a href="#page-43">43</a><a href="#page-44">44</a><a href="#page-45">45</a></nav>
+</div>
+<main>
+  <div class="notice">新版修正：左栏不再使用抽取文本，因此不会出现硬换行破坏原文的问题。右栏会读取 <code>faithful_translations/Xiaomi-Discrete-WAM/page-XXX.txt</code>；尚未翻译的页面会临时显示待填充提示和抽取文本，便于逐页补齐。</div>
+  
+    <section class="spread" id="page-1">
+      <header><span>Page 1</span><a href="#top">Top</a></header>
+      <div class="cols">
+        <figure class="original">
+          <img src="faithful_page_images/Xiaomi-Discrete-WAM/page-001.png" alt="Xiaomi-Discrete-WAM page 1" loading="lazy" />
+        </figure>
+        <article class="translation">
+          <div class="label">中文翻译 + 简单解释</div>
+          <pre>Xiaomi EV
+
+Discrete-WAM：用于 World-Policy Learning 的统一离散视觉-动作 Token 编辑（Unified Discrete Vision-Action Token Editing for World-Policy Learning）
+
+arXiv:2606.05645v1 [cs.RO] 2026年6月4日
+
+Xiaomi EV
+
+完整作者列表见“Contributions and Acknowledgments”部分。
+
+摘要
+
+自动驾驶要求对自车动作如何塑造周围世界的演化进行推理。然而，大多数端到端方法依赖直接的状态到动作映射，只捕捉相关性，而没有显式建模动作条件下的动力学。相反，连续潜变量世界模型（continuous-latent world models）往往缺乏用于跨反事实未来进行因果推理的组合式结构。我们提出 Discrete-WAM，一种统一的潜在视觉-动作世界策略（latent vision-action world policy），将未来视觉状态和自车动作表示为对齐的离散 token，从而能够在不同未来之间进行组合式因果推理。基于这种统一的离散对齐，Discrete-WAM 构建了一个共享的离散扩散框架（shared discrete diffusion framework）与统一的生成任务（unified generative tasks），联合形式化 world modeling、world-action policy 以及 hierarchical decision-enabled policy，支持跨多种驾驶场景的组合式泛化。大规模自动驾驶基准实验表明，Discrete-WAM 在支持可控生成与反事实推理的同时，能够取得有竞争力的性能，为更可靠的决策制定提供了一条有原则的方法路径。
+
+简要解释：这一段说明了论文要解决的核心问题是“自动驾驶中的因果推理和未来预测”，并提出用离散 token 把视觉状态和动作统一起来，既做世界建模，也做策略学习，从而更适合反事实推理和可控生成。
+
+分层规划（Hierarchical Planning）
+
+世界-策略建模（World-policy Modeling）
+
+输入（Inputs）
+
+迭代细化（Iterative Refinement）
+
+迭代细化（Iterative Refinement）
+
+Discrete-WAM
+
+？
+
+低置信度（Low Confidence）
+
+✓
+
+高置信度（High Confidence）
+
+待编辑轨迹（Trajectory to Edit）
+
+？
+
+？
+
+？
+
+？
+
+？
+
+？
+
+✓
+
+？
+
+？
+
+✓
+
+待编辑图像块（Image Patch to Edit）
+
+✓
+
+✓
+
+部分编辑后的图像（Partially Edited Image）
+
+最终预测的未来图像（Final Predicted Future Image）
+
+部分编辑后的轨迹（Partially Edited Trajectory）
+
+✓
+✓
+
+✓
+
+最终未来轨迹（Final Future Trajectory）
+
+图 1 Discrete-WAM 概览。Discrete-WAM 在一个统一的离散空间中联合编辑视觉、决策和动作 token，通过统一预训练（unified pretraining）和奖励引导后训练（reward-guided post-training），提供可编辑的未来观测和规划轨迹生成。
+
+简要解释：这张图强调 Discrete-WAM 不是只预测图像或只输出动作，而是在同一个离散表示空间里同时处理图像、轨迹和规划信号，并通过反复细化得到最终结果。</pre>
+        </article>
+      </div>
+    </section>
+
+    <section class="spread" id="page-2">
+      <header><span>Page 2</span><a href="#top">Top</a></header>
+      <div class="cols">
+        <figure class="original">
+          <img src="faithful_page_images/Xiaomi-Discrete-WAM/page-002.png" alt="Xiaomi-Discrete-WAM page 2" loading="lazy" />
+        </figure>
+        <article class="translation">
+          <div class="label">中文翻译 + 简单解释</div>
+          <pre>离散-WAM：统一的离散视觉-动作 Token 编辑，用于世界-策略学习
+
+1 引言
+
+自动驾驶从根本上要求对自车动作如何塑造未来世界演化进行推理，而不仅仅是对瞬时观测做出反应 [12, 38, 40]。现有的端到端（E2E）自动驾驶系统 [13, 28, 47, 49, 53] 通常通过行为克隆 [11] 将驾驶形式化为从视觉到动作的直接映射，只是捕捉统计相关性，而没有显式建模动作条件动态。尽管引入预测能够实现显式的未来推理 [25]，但对预定义的中间表示和标注 [15, 31, 80] 的依赖限制了泛化能力。近期的视觉-语言-动作（VLA）[43, 45, 85, 103] 模型通过语言监督融入了更广泛的语义先验，但其推理能力仍然高度依赖标注的语义抽象，这充当了建模细粒度时空动态的低带宽接口 [34]。这些局限表明，自动驾驶系统在表示形式与生成建模上存在更根本的瓶颈。  
+简要解释：这一段指出，当前自动驾驶系统的核心问题不只是“看见后反应”，而是缺少能把动作、未来和语义统一起来的表示与生成机制。
+
+一般而言，端到端自动驾驶系统运行在连续潜空间中 [26, 51, 97]，其中表示高度纠缠，虽然具有很强的连续性和插值能力，但缺乏显式的组合式语义 [56]。因此，观测、动作和未来状态在潜空间中仍然只是弱对齐的，这限制了可靠的动作条件推理，以及针对不同可能未来的反事实比较。相比之下，离散表示天然提供可组合的语义单元，可作为视觉、动作和未来演化之间共享的锚点 [42, 60, 94]。通过学习统一的离散词汇表，观测、自车动作和未来状态可以在同一个对齐的语义空间中表示，从而实现显式的视觉-动作对齐，以及对动作条件未来演化的结构化建模。  
+简要解释：这一段强调，离散表示比连续潜变量更适合把“看见什么、做了什么、会发生什么”对应起来。
+
+因此，核心挑战不仅仅是生成未来，而是学习观测、动作及其所诱发未来演化之间的结构化对应关系 [32, 78]。除了表示之外，自动驾驶从根本上还需要对动作条件未来进行生成建模 [88]。连续扩散模型提供了全局一致的生成能力，但它们仍然工作在无结构的连续潜空间上，缺乏显式的语义落地 [2, 49, 98]。自回归（AR）形式引入了离散的组合式生成，但其推理过程仍然是以前缀为条件的，受限于一种归纳偏置，因而限制了全局一致性或目标驱动的推理 [3, 10, 103]。  
+简要解释：这一段说明，单纯会“生成”还不够，关键是要生成得有结构，并且能和动作选择及目标一致。
+
+与此同时，现有世界模型、世界-动作建模以及视频预测方法通常被优化为附属目标，或作为外挂模块接到规划器上 [43, 44, 75]。尽管这些方法在预测与策略学习之间共享表示，但未来建模和决策制定仍被当作分离的任务，而不是一个统一的生成过程 [29, 30, 46]。因此，现有方法难以在观测、动作和由此诱发的未来状态之间建立一致的因果对应关系，从而限制了对长时程交互式未来的全局一致推理。  
+简要解释：这一段指出，预测和决策如果分开做，就很难形成一致的因果理解，更难处理长时序交互。
+
+在本文中，我们认为，要从反应式模仿走向结构化的世界-策略推理，三个关键属性是必要的：(i) 对齐的离散表示，(ii) 用于未来观测和动作的统一生成建模，以及 (iii) 将高层决策与低层动作实现分离的层级式策略建模。基于这一观点，我们提出 Discrete-WAM，这是一个统一框架，将自动驾驶表述为在共享离散 token 空间上的序列建模，其中视觉观测、自车动作、未来状态和决策变量都被表示为离散 token，并通过离散扩散架构联合建模。Discrete-WAM 不把动作仅仅当作未来预测的条件信号，而是将观测、动作、决策和未来演化建模为统一生成过程中的耦合变量，从而实现世界状态与驾驶决策之间的双向推理。  
+简要解释：这一段给出了本文的方法思想：把感知、动作、决策和未来统一到同一个离散生成框架里。
+
+Discrete-WAM 的一个核心组件是结构化策略建模。不同于直接从场景上下文生成稠密的未来动作，Discrete-WAM 将策略生成分解为一个层级式决策-规划过程：模型首先预测一个稀疏的高层决策骨架，用来捕捉粗粒度的机动意图和多模态驾驶选择，然后在该决策条件下执行基于离散扩散的动作 token 编辑。这一设计把多模态决策选择交给高层骨架，把平滑轨迹实现交给低层动作规划器，使策略解码器能够生成时间上一致的动作，而不会塌缩到单一的驾驶模式。  
+简要解释：这一段说明策略不是一步直接吐出，而是先定“做什么”，再细化“怎么做”，从而保留多种驾驶可能性。
+
+在这种层级式策略结构之上，Discrete-WAM 使非因果且全局一致的  
+简要解释：这一段在原文中于此处截断，所表达的方向是继续说明该层级结构如何支持更一致的全局推理与策略生成。
+
+2</pre>
+        </article>
+      </div>
+    </section>
+
+    <section class="spread" id="page-3">
+      <header><span>Page 3</span><a href="#top">Top</a></header>
+      <div class="cols">
+        <figure class="original">
+          <img src="faithful_page_images/Xiaomi-Discrete-WAM/page-003.png" alt="Xiaomi-Discrete-WAM page 3" loading="lazy" />
+        </figure>
+        <article class="translation">
+          <div class="label">中文翻译 + 简单解释</div>
+          <pre>论文标题：Discrete-WAM：用于世界-策略学习的统一离散视觉-动作 token 编辑
+
+图中标签：
+- 上下文 token
+- 统一多任务预训练
+- 决策 token
+- GRPO 后训练
+- 世界建模
+- 世界-策略建模
+- 策略建模
+- Token Edit 模型
+- 动作 token
+- 视觉 token
+- a
+- b
+- c
+- 奖励
+- Token Edit 模型
+- 待编辑 token
+- 前向
+- +
+- -
+- +
+- a
+- b
+- c
+- 更新
+- token 替换
+- Token Edit 推理
+- 帧间并行世界编辑
+- 跨帧世界 AR
+- 步骤 1
+- T-1
+- T
+- 步骤 2
+- T
+- 全局并行动作编辑
+- 跨模态 AR
+- 步骤 3
+- T+1
+- 决策
+- 动作
+- 视觉
+- T
+- T+1
+- 步骤 2
+- T
+- T+1
+- 步骤 3
+- T
+- T+1
+- ···
+- Token Edit 模型
+- ···
+- ···
+- ···
+- 置信度
+- 低
+- 高
+
+图 2 说明：Discrete-WAM 的模型架构。Discrete-WAM 是一个面向自动驾驶的统一视觉-动作世界-策略模型。该架构将相机观测转换为离散视觉 token，用离散动作 token 表示未来自车运动，并将自车状态、导航和高层决策信息作为条件 token 注入。基于共享的 Transformer 主干，Discrete-WAM 支持三种互补的训练模式：用于动作条件视觉预测的世界建模、用于联合动作和未来视觉预测的世界-策略建模，以及用于决策条件动作生成的策略建模。这个统一的 token 接口使视觉观测、驾驶决策和未来动作都能够在同一个离散序列空间中建模和编辑。
+
+简要解释：这张图强调，模型把感知、动作和决策统一成同一套离散 token 表示，因此既能做预测，也能做规划，还能直接对未来进行编辑。
+
+通过对动作条件下的未来进行迭代式规划生成与未来状态编辑来进行推理。离散语义 token 与迭代式扩散细化的结合，进一步使模型能够在多个备选未来之间进行组合式、目标一致的推理，而不是只收敛到一条前向滚动轨迹。关键在于，Discrete-WAM 并不是把世界动力学、世界-策略转移和决策条件策略生成作为彼此松散耦合监督的独立目标来分别优化，而是在统一的扩散过程中同时建模它们。这样的统一表述使状态-动作-决策-未来能够直接在共享的离散潜空间中保持一致对齐。  
+简要解释：这一段说明，模型不是只预测单一未来，而是通过统一的离散扩散过程同时考虑多种未来、动作和决策，从而让结果更一致，也更便于规划与编辑。
+
+我们的贡献有三点：  
+• 我们提出了一种统一的视觉-动作世界策略，将观测和自车动作表示在共享的离散潜空间中，从而实现对齐的语义建模，并对动作条件未来进行结构化推理。  
+简要解释：这一点的核心是把“看见什么”和“下一步怎么动”放在同一个表示空间里，便于模型理解它们之间的对应关系。
+
+• 我们提出了一种离散扩散框架，在世界建模和动作建模上进行统一预训练，在单一生成过程中联合捕获动作条件下的未来动力学。  
+简要解释：这一点说明模型训练不是分开做感知和动作，而是通过同一个生成式框架一起学，从而更好地掌握未来演化规律。
+
+• 我们证明所提出的框架在实现强规划性能的同时，还支持额外能力，包括可控未来生成、反事实推理以及安全感知评估。  
+简要解释：这一点表明该框架不仅能提升规划效果，还能进一步支持“如果……会怎样”的分析，以及更安全的预测与评估。
+
+2 架构
+
+2.1 Discrete-WAM 的基础架构
+
+Discrete-WAM 架构由四个主要组件组成：(1) 一个视觉 VQ Tokenizer，它将视觉观测编码为离散语义 token，并通过一个 projector 将视觉特征对齐到 Transformer 的隐藏维度；(2) 一个上下文编码器，它将自车状态和导航指令注入到潜在表示中。  
+简要解释：这一段在概述模型的输入组织方式：先把图像离散化，再把车辆状态和导航信息作为条件加入，让后续 Transformer 能统一处理多种信息。
+
+页码：3</pre>
+        </article>
+      </div>
+    </section>
+
+    <section class="spread" id="page-4">
+      <header><span>Page 4</span><a href="#top">Top</a></header>
+      <div class="cols">
+        <figure class="original">
+          <img src="faithful_page_images/Xiaomi-Discrete-WAM/page-004.png" alt="Xiaomi-Discrete-WAM page 4" loading="lazy" />
+        </figure>
+        <article class="translation">
+          <div class="label">中文翻译 + 简单解释</div>
+          <pre>序列；(3) 一个仅解码器（decoder-only）的 Transformer 主干，在统一 token 空间中联合建模观测、动作和未来演化；以及 (4) 用于世界建模、策略生成和 world-action 序列生成的多任务预测头。  
+简要解释：这里概述了模型的整体组成，核心思想是把视觉、动作和未来演化都转成统一的 token 表达，再交由同一个 Transformer 和多个任务头联合学习。
+
+**2.2 视觉标记化（Vision Tokenization）**
+
+视觉标记器将连续的相机观测转换为紧凑的离散视觉 token，在原始图像与 Transformer 主干之间提供 token 级接口。该离散表示使视觉观测能够以与动作 token 相同的序列格式被处理，同时保留下游世界建模和策略建模所需的场景语义。为了获得紧凑的视觉表示，我们遵循先前工作 [93]，并预训练一个基于 VQ-VAE 的标记器 [72]，将前视相机图像编码为离散视觉 token。  
+简要解释：这一节说明如何把图像压缩成离散 token，既保留语义信息，又能与动作 token 统一建模。
+
+**2.3 动作标记化（Action Tokenization）**
+
+对于动作表示，我们将连续的未来运动转换为与离散 token 兼容的表示，并基于加速度词表（acceleration vocabulary）进行建模。给定一个跨越 H 个时间步的未来轨迹，我们首先用三次样条（cubic spline）拟合离散轨迹，以得到平滑的连续曲线。随后，我们使用二阶有限差分计算每个未来步的以自车为中心（ego-centric）的二维加速度，记为 (ax , ay )，其中 ax 和 ay 分别对应纵向加速度和横向加速度。样条拟合步骤改善了所导出加速度序列的连续性，并确保对恢复出的加速度进行积分后能够与原始离散轨迹高度一致。  
+简要解释：这一段是在说，先把未来轨迹平滑化，再转成纵向/横向加速度，方便后续离散化并尽量不损失轨迹信息。
+
+我们通过分别将 ax 和 ay 的有效范围划分为 Nx 和 Ny 个区间，构造一个均匀分布的二维加速度词表。这些区间的笛卡尔积形成一个网格结构的动作词表，其大小为 Nx × Ny。我们不把每个连续加速度向量简单地分配到最近的单个区间，这样会引入确定性的硬量化误差；相反，我们使用其邻近词表项上的软目标（soft target）来表示它。具体来说，对于每个加速度分量，我们找到夹住该连续值的两个相邻区间中心，并根据该值在两者之间的相对位置分配插值权重。在二维加速度词表中，这会在 (ax , ay ) 周围的四个邻近原型上产生一个软标签（soft label）。在这种网格插值下，连续加速度在每个加速度网格单元内都具有精确的插值表示。  
+简要解释：这里把连续加速度变成网格上的“软分布”而不是硬分类，从而减少硬量化带来的误差。
+
+在训练期间，动作头（action head）使用交叉熵（cross-entropy）对这种软目标分布进行优化，而不是对 one-hot 标签进行优化。在推理时，预测得到的动作分布可以通过对加速度词表做加权求和映射回连续加速度。在软目标分布被精确恢复的情况下，连续加速度可以被重建为相邻词表原型的加权和。因此，所提出的软标签表示消除了确定性的硬分配量化误差，而剩余的重建误差则归因于分布预测不匹配。相应的推导和误差界在附录中给出。  
+简要解释：训练时学的是软分布，推理时再加权还原成连续值；这样主要减少的是离散化本身造成的误差。
+
+因此，一个未来动作序列被表示为离散加速度词表上的 At+1:t+H，而连续控制值则通过软标签插值得以保留。这种动作标记化使视觉 token 与动作 token 能够在同一个 Transformer token 空间中被联合建模，同时避免了连续动作硬量化所引入的确定性误差。  
+简要解释：最终目标是把未来动作也变成 token 序列，与视觉 token 一起输入同一模型，同时尽量不损失连续控制精度。
+
+**2.4 统一世界策略（Unified World Policy）**
+
+Discrete-WAM 将自动驾驶表述为一个在离散视觉 token、决策 token 和动作 token 上进行的统一世界-策略建模问题。在时间步 t，我们将场景上下文记为 Ct，它包含历史视觉观测、自车状态信息以及导航指令。未来视觉观测表示为离散视觉 token 序列 Vt+1:t+H，未来动作策略表示为离散动作 token 序列 At+1:t+H，其中每个动作 token 都对应于第 2.3 节中定义的一个量化加速度原型。我们进一步将高层决策条件记为 Dt，它捕捉稀疏的低频驾驶结构，例如机动意图、目标车道、粗粒度航点、速度趋势或交互优先级。  
+简要解释：这一节把自动驾驶统一成“世界状态 + 高层决策 + 未来动作/视觉预测”的联合建模问题，便于一个模型同时学规划和预测。</pre>
+        </article>
+      </div>
+    </section>
+
+    <section class="spread" id="page-5">
+      <header><span>Page 5</span><a href="#top">Top</a></header>
+      <div class="cols">
+        <figure class="original">
+          <img src="faithful_page_images/Xiaomi-Discrete-WAM/page-005.png" alt="Xiaomi-Discrete-WAM page 5" loading="lazy" />
+        </figure>
+        <article class="translation">
+          <div class="label">中文翻译 + 简单解释</div>
+          <pre>在此记号下，Discrete-WAM 通过一个共享的 token 编辑（token-editing）接口整合了三种训练模式。  
+这些模式的区别在于：哪些 token 流被用作条件输入，以及哪些 token 流被视为预测目标。  
+第一种模式是世界建模（world modeling），其目标是视觉预测（vision prediction）。给定场景上下文 \(C_t\) 和未来动作 token \(A_{t+1:t+H}\)，模型预测未来视觉 token \(V_{t+1:t+H}\)。该任务训练模型理解在指定动作序列作用下场景如何演化，并为下游策略学习提供动作条件的世界动力学（action-conditioned world dynamics）。  
+简要解释：这一模式让模型学会“给定动作，预测世界会怎样变化”，本质上是在学习环境动态。
+
+第二种模式是世界-策略建模（world-policy modeling），它同时训练视觉预测和动作预测。在这一模式中，模型在同一个 token 序列内同时推理未来动作及其引发的视觉后果。动作 token 表示未来策略（future policy），而视觉 token 表示相应的未来世界状态。这样的形式化鼓励模型将策略生成与世界演化耦合起来，而不是把它们作为彼此独立的目标来学习。  
+简要解释：这一模式把“要怎么做”和“做了之后世界会变成什么样”放在一起学，强调策略与环境变化的联合建模。
+
+第三种模式是策略建模（policy modeling），其目标是先进行决策预测，再进行动作预测。模型首先从场景上下文 \(C_t\) 中预测高层决策条件 \(D_t\)。在该决策条件下，动作 token 规划器随后预测未来动作序列 \(A_{t+1:t+H}\)。这种层次化分解将策略学习拆成两个层级：高层决策任务捕捉多模态驾驶选择，而低层动作预测任务则专注于在所选决策条件下生成平滑且时间上连贯的轨迹。  
+简要解释：这一模式先决定“走哪种路线/做哪类动作”，再生成具体轨迹，适合处理驾驶中存在的多种可行选择。
+
+总之，这三种模式共同提供了一个统一架构，用于动作条件世界预测、联合世界-策略学习，以及决策条件动作生成。其数学任务形式化在第 3 节中描述。  
+简要解释：作者想说明，三种任务其实可以共用同一套 token 处理框架，只是输入与监督目标不同。
+
+**3 方法**  
+简要解释：这一部分开始介绍论文的具体方法设计。
+
+**3.1 统一预训练**  
+简要解释：这一小节讲的是如何用统一的预训练流程把不同任务一起训练起来。
+
+遵循第 2.4 节中的统一世界-策略（unified world-policy）形式化，预训练将条件 token 编辑目标实例化为多个任务族。每个任务都使用相同的离散视觉与动作 token 接口，但不同之处在于：哪些 token 流被当作条件输入，以及哪些被破坏（corrupted）的 token 被监督为编辑目标。这种设计使世界建模、策略预测以及联合世界-策略建模能够共享同一个训练框架，同时保留各自任务特定的条件结构。  
+简要解释：核心思想是“同一套接口，多种任务”，从而把不同学习目标统一到一个训练体系里。
+
+我们使用三类任务族来实现统一预训练：世界建模、策略建模，以及联合世界-策略建模。  
+简要解释：作者明确预训练只覆盖这三类任务，它们共同构成训练主体。
+
+**训练任务。**  
+我们将视觉观测和未来动作都分词（tokenize）为离散 token 序列，以便它们能够在统一的 Transformer 架构中被联合建模。  
+简要解释：先把连续信号变成离散 token，模型才能用同一种序列建模方式同时处理图像和动作。
+
+**Tokenization。**  
+对于图像分词，我们采用预训练的 tokenizer。按照先前工作 [93]（其 tokenizer 与 [67] 对齐），量化器（quantizer）包含大小为 \(K_V\) 的 codebook。每个输入图像被划分为互不重叠的 \(H_V \times W_V\) patch，并编码为一串离散视觉 token。该过程对 \(H\) 个输入帧中的每一帧独立执行，生成视觉 token 序列 \(V_{t+1:t+H}\)。  
+简要解释：图像被切成小块后映射成离散符号序列，便于后续 Transformer 统一处理视频帧信息。
+
+对于动作分词，我们使用上文所述的基于加速度的量化（acceleration-based quantization）将连续未来轨迹离散化。具体来说，平滑后的轨迹会被转换为自车中心（ego-centric）的纵向和横向加速度，然后量化到一个网格结构的加速度词表中。这样得到离散动作 token 序列 \(A_{t+1:t+H}\)，其中每个 token 对应一个二维加速度原型（2D acceleration prototype）。  
+简要解释：动作不是直接用连续坐标表示，而是先转成加速度模式，再离散成有限个“动作原型”。
+
+为了将动作 token 纳入下游离散扩散（discrete diffusion）建模，我们通过一个动作 embedding 表将每个动作 token 与一个可学习嵌入关联起来。在扩散训练期间，被破坏或部分遮蔽的动作 token 会被嵌入，并与视觉 token 一起输入 Transformer；与此同时，模型在离散扩散目标下被训练去预测动作 token。通过联合优化，动作 embedding 学到了离散运动原型的紧凑表示，并在共享隐藏空间中与视觉 token 表示隐式对齐。因此，视觉和动作 token 可以被  
+简要解释：这一段在说明动作 token 不只是离散标签，还会学习成可训练向量，并与视觉表示对齐，从而支持统一建模。</pre>
+        </article>
+      </div>
+    </section>
+
+    <section class="spread" id="page-6">
+      <header><span>Page 6</span><a href="#top">Top</a></header>
+      <div class="cols">
+        <figure class="original">
+          <img src="faithful_page_images/Xiaomi-Discrete-WAM/page-006.png" alt="Xiaomi-Discrete-WAM page 6" loading="lazy" />
+        </figure>
+        <article class="translation">
+          <div class="label">中文翻译 + 简单解释</div>
+          <pre>论文标题：Discrete-WAM：用于世界-策略学习（World-Policy Learning）的统一离散视觉-动作令牌编辑
+
+由统一 Transformer 联合处理，从而通过离散扩散实现视觉条件化的未来动作生成。详细的 token 设计见附录 7.2.1。  
+简要解释：这一句说明模型把视觉与动作 token 放在同一个统一架构里处理，使未来动作可以在视觉条件下生成。
+
+**世界建模。**
+
+世界建模任务学习动作条件下的未来视觉预测。给定场景上下文 \(C_t\) 和未来动作序列 \(A_{t+1:t+H}\)，模型预测未来视觉 token 序列 \(V_{t+1:t+H}\)。这可以写为  
+\[
+p_\theta \left( V_{t+1:t+H} \mid C_t, A_{t+1:t+H} \right).
+\tag{1}
+\]
+
+在训练期间，未来动作 token 通过 teacher forcing 作为条件输入提供，监督作用于未来视觉 token。这个任务训练模型去捕获不同动作序列如何诱发不同的未来世界演化。  
+简要解释：世界建模关注“给定当前场景和未来动作，未来画面会怎样变化”，本质上是在学动作驱动的环境演化。
+
+**策略建模。**
+
+策略建模任务学习分层的、以决策为条件的动作生成。按照第 2.4 节中的记号，模型首先从场景上下文 \(C_t\) 预测一个高层决策骨架 \(D_t\)，然后在上下文和决策 token 的共同条件下预测未来动作序列 \(A_{t+1:t+H}\)：  
+\[
+p_{\psi,\theta}(A_{t+1:t+H}, D_t \mid C_t)
+=
+p_\psi(D_t \mid C_t)\, p_\theta(A_{t+1:t+H} \mid C_t, D_t).
+\tag{2}
+\]
+
+这种层次化分解把策略学习分成两个层级：高层决策任务捕获多模态驾驶选择，而低层动作预测任务在所选决策条件下生成平滑且时间一致的轨迹。这里，\(D_t\) 被视为一个稀疏的潜在骨架，它编码低频规划结构，例如粗粒度的机动意图、参考运动趋势或其他决策层约束。  
+简要解释：策略建模不是直接一次性生成整段动作，而是先生成“要做什么”的粗决策，再生成“怎么做”的细动作，这样更稳定，也更符合驾驶规划逻辑。
+
+**理论分析。**
+
+引入 \(D_t\) 的动机在于：当只有场景上下文被给定时，未来动作 token 并不是条件独立的。令 \(U \subseteq \{1,\ldots,H\}\) 表示未来步中的一个子集，令 \(A_U=\{A_{t+h}: h\in U\}\) 表示对应的动作 token 组。我们用 \(TC(\cdot \mid \cdot)\) 表示条件总相关性（conditional total correlation），它度量在给定条件下，一组 token 之间残余的统计依赖性。按照附录 7.3.2 的推导，在上游决策骨架条件化之后，残余依赖性满足  
+\[
+\mathbb{E}_{D_t}\, TC(A_U \mid C_t, D_t)
+=
+TC(A_U \mid C_t) - R_D(U \mid C_t),
+\tag{3}
+\]
+其中 \(R_D(U \mid C_t)\) 是由决策骨架带来的冗余增益（redundancy gain）。这个等式表明，只有当 \(R_D(U \mid C_t)&gt;0\) 时，决策条件化才会减少残余动作 token 依赖。
+
+简要解释：这里的核心意思是，加入高层决策骨架 \(D_t\) 后，动作 token 之间原本“纠缠在一起”的统计依赖可以被部分解释掉，从而让低层动作建模更容易。
+
+附录 7.3.3 进一步给出了冗余增益为正的充分条件。在残差混合（residual mixing）假设下，经过决策骨架条件化后，未来动作 token 之间的依赖会随着时间距离衰减：  
+\[
+I(A_{t+i}; A_{t+j} \mid C_t, D_t)
+\le
+\beta \exp\!\left(-\frac{d(i,j)}{\ell_D}\right),
+\tag{4}
+\]
+其中 \(\beta\) 衡量剩余的局部耦合强度，\(\ell_D\) 表示在决策骨架条件化之后的残余相关长度。这个假设意味着，一旦低频的驾驶意图已被 \(D_t\) 解释，剩下的细粒度动作 token 主要编码局部残差修正。如果原始动作 token 组满足依赖下界 \(TC(A_U \mid C_t)\ge \kappa(U)\)，那么  
+\[
+\kappa(U) &gt;
+\mathbb{E}_{D_t}\!\left[
+\sum_{\{i,j\}\subset U}
+\beta \exp\!\left(-\frac{d(i,j)}{\ell_D}\right)
+\right]
+\Longrightarrow
+R_D(U \mid C_t) &gt; 0.
+\tag{5}
+\]
+
+因此，一个有效的决策骨架会在它解释的组级低频依赖强于剩余的、经骨架条件化后的局部依赖时，减少残余总相关性。  
+简要解释：这段在说明什么时候“先预测决策骨架”是有价值的。若骨架能解释掉足够多的长期、低频结构，那么剩下的动作细节就会更独立、更容易建模。
+
+当同时考虑决策预测误差和 token 级模型误差时，同样的分析还能得到一个 schedule-level 的 KL 上界。令 \(\pi\) 表示 token-editing schedule，\(A_r\) 表示第 \(r\) 轮的 active edit set，\(S_r\) 表示第 \(r\) 轮编辑前的状态。附录 7.3.4 表明  
+\[
+D_{KL}\!\left(q(A \mid C_t)\,\Vert\,p_{\psi,\theta,\pi}(A \mid C_t)\right)
+\le
+\delta_D + \delta_{init} + B_{model}(\pi) + U_{dep}(\pi),
+\tag{6}
+\]
+
+简要解释：这说明整体生成误差可以分解为决策误差、初始化误差、模型误差和依赖相关的误差几部分，因此 token 编辑日程 \(\pi\) 会直接影响最终 KL 误差上界。
+
+页码：6</pre>
+        </article>
+      </div>
+    </section>
+
+    <section class="spread" id="page-7">
+      <header><span>Page 7</span><a href="#top">Top</a></header>
+      <div class="cols">
+        <figure class="original">
+          <img src="faithful_page_images/Xiaomi-Discrete-WAM/page-007.png" alt="Xiaomi-Discrete-WAM page 7" loading="lazy" />
+        </figure>
+        <article class="translation">
+          <div class="label">中文翻译 + 简单解释</div>
+          <pre>图中标签：世界建模；场景上下文；策略建模；世界-策略建模；视觉 / 预测 token；决策 / 预测 token；动作 / 预测 token。
+
+图 3 Discrete-WAM 预训练的注意力掩码策略。Discrete-WAM 采用三种不同类型的注意力掩码，在统一预训练过程中分别控制相应的任务族。
+
+其中，\(\delta_D\) 是决策预测误差，\(\delta_{\text{init}}\) 衡量初始编辑提议的不匹配程度，\(B_{\text{model}}(\pi)\) 累积跨编辑轮次的 token 级模型误差，而 \(U_{\text{dep}}(\pi)\) 对每个活跃编辑集合中的残余依赖性给出上界。这个上界表明：当决策骨架是可预测的，并且能够把残余动作-token 依赖压低到足以抵消自身预测成本时，分层决策建模是有益的。  
+简要解释：这一段在说明一个理论结论，即如果先预测“决策骨架”能显著简化后续动作 token 的依赖关系，那么采用分层决策建模是划算的。
+
+世界-策略建模。
+
+令 \(Y_{t+1:t+H}\) 表示由动作 token 和视觉 token 交错组成的未来 token 序列：
+\[
+Y_{t+1:t+H} = [A_{t+1}, V_{t+1}, \ldots, A_{t+H}, V_{t+H}]. \tag{7}
+\]
+
+则世界-策略目标可以描述为对该交错序列进行前缀条件 token 预测：
+\[
+p_\theta(Y_{t+1:t+H} \mid C_t)
+=
+\prod_{h=1}^{H}
+p_\theta(A_{t+h} \mid C_t, Y_{t+1:t+h-1})
+p_\theta(V_{t+h} \mid C_t, Y_{t+1:t+h-1}, A_{t+h}). \tag{8}
+\]
+
+训练时，对应的注意力掩码在 token 编辑（token-editing）形式下实现上述依赖模式：带噪的动作和视觉 token 会利用允许的历史动作-视觉上下文进行编辑，而干净目标 token 会与其噪声对应项保持隔离。  
+简要解释：这一段定义了“世界-策略建模”的联合预测方式，核心是把未来动作和未来视觉交错起来，一边预测动作，一边在动作条件下预测世界状态。
+
+与此同时，世界-策略模型始终对未来视觉 token 施加 token 编辑监督，促使模型在动作条件上下文中，从受污染的视觉 token 中恢复未来世界状态。此外，动作流也可以用相同的 token 编辑策略进行训练，即把被污染的未来动作 token 编辑到真实动作序列上。这种联合监督使模型不仅能够从当前上下文生成合理的策略，还能学习生成的动作如何塑造后续的视觉演化。因此，世界-策略建模为动作生成、世界预测以及动作条件反事实推理提供了一个统一目标。  
+简要解释：这一段强调联合监督的价值：模型既学“怎么行动”，也学“行动后世界会怎么变”，从而具备更强的规划和反事实推理能力。
+
+我们使用任务特定的注意力掩码，以匹配每个训练目标所需的信息流。一般原则是：历史上下文 token 作为 teacher-forced 的条件信息是可见的，而当前或未来的受污染 token 则通过 token 编辑来预测，同时不能泄露其对应的干净目标。  
+简要解释：这一段是在说明掩码设计原则，目的就是严格控制哪些信息可以被看到，避免把答案提前泄露给模型。</pre>
+        </article>
+      </div>
+    </section>
+
+    <section class="spread" id="page-8">
+      <header><span>Page 8</span><a href="#top">Top</a></header>
+      <div class="cols">
+        <figure class="original">
+          <img src="faithful_page_images/Xiaomi-Discrete-WAM/page-008.png" alt="Xiaomi-Discrete-WAM page 8" loading="lazy" />
+        </figure>
+        <article class="translation">
+          <div class="label">中文翻译 + 简单解释</div>
+          <pre>对于世界建模（world modeling），未来动作 token 被视为干净的条件输入，而不是编辑目标。因此，在这一任务中，动作流不使用双重 clean-noisy 填充。未来视觉流以 token-editing 形式构建，模型在历史观测、自车状态（ego-state）和导航 token，以及所提供的未来动作序列的条件下，预测被污染的未来视觉 token。  
+简要解释：这一段说明了世界建模时，动作主要作为条件信息输入，模型重点学习根据过去信息和未来动作去恢复/预测未来视觉 token。
+
+对于策略建模（policy modeling），上下文 token 遵循因果注意力（causal attention）结构，因此模型可以在不访问未来上下文的情况下，基于历史观测和可用状态信息进行条件建模。未来动作 token 构成编辑目标块（editing target block），并被允许在动作块内部进行双向注意力（bidirectionally）。这种双向动作注意力使模型能够联合精炼一整段未来动作序列，而因果上下文掩码（causal context mask）则防止来自观测侧的未来信息泄漏。  
+简要解释：这一段强调策略建模时，观测侧必须保持因果性，而动作侧允许双向交互，以便整体优化未来动作序列。
+
+对于世界-策略建模（world-policy modeling），未来视觉 token 和未来动作 token 都可以通过 token-editing 监督进行训练。我们为每个可编辑流采用双路径填充顺序（dual-path filling order），其中干净 token 和噪声 token 作为独立块（separate blocks）放置。注意力掩码在干净目标块（clean target block）与对应的噪声预测块（noisy prediction block）之间强制双向隔离：噪声 token 可以使用被允许的上下文和任务特定的可见条件，但不能直接关注其干净目标。在训练期间，teacher forcing 提供历史真实值信息作为上下文，而模型学习将有噪的视觉和动作 token 编辑为其干净目标。  
+简要解释：这一段说明世界建模与策略建模统一起来后，视觉与动作都可以用“先加噪再编辑回干净目标”的方式训练，并通过掩码控制信息流。
+
+统一的预训练目标（pretraining objective）将 token 级分类损失与连续运动重建损失结合起来。对于视觉 token 编辑，模型通过离散视觉词表（discrete visual vocabulary）上的交叉熵损失（cross-entropy loss）进行监督。不同于只监督被污染位置的目标，我们将 token 分类损失应用于所有可编辑的视觉 token 位置，包括干净 token 和被污染 token。对于被污染位置，该损失训练模型从噪声输入中恢复原始干净目标。对于干净位置，同样的损失鼓励恒等映射（identity mapping），要求模型保留那些已经接近真实值的 token，而不是不必要地编辑它们。这种全位置监督（all-position supervision）为 token 编辑提供了一个隐式停止信号（implicit stopping signal）：模型不仅学习如何纠正噪声 token，也学习何时不需要编辑。当存在潜在视觉嵌入（latent visual embeddings）时，我们进一步施加潜在重建损失（latent reconstruction loss），以保留超越离散 token 索引的细粒度视觉语义。  
+简要解释：这一段说明视觉部分的训练目标不仅要“改对被污染 token”，还要学会“别乱改已经正确的 token”，并可进一步保留更细致的语义信息。
+
+训练目标（Training objectives）。
+
+对于动作 token 编辑，模型通过离散动作词表（discrete action vocabulary）上的交叉熵损失进行监督。除了 token 分类之外，我们还施加运动级监督（motion-level supervision），以确保离散动作分布与连续未来运动在物理上保持一致。首先，我们监督与预测动作分布相关联的解码加速度（decoded acceleration），以鼓励离散动作 token 保留准确的底层运动语义。其次，我们将预测的动作分布转换为连续加速度，并对其在时间上积分两次，以重建未来自车轨迹（ego trajectory），并在该轨迹上应用轨迹级回归损失（trajectory-level regression loss）。此外，我们还引入一个针对积分后未来位置的辅助因子分解位置分类损失（auxiliary factorized position classification loss）。这个辅助任务分别监督纵向和横向坐标，并为由预测动作 token 所诱导的轨迹提供细粒度空间约束。词表配置和损失公式的详细内容见 Appendix 7.2。  
+简要解释：这一段说明动作不仅要在离散 token 层面预测正确，还必须在连续轨迹层面保持物理合理性，因此同时使用分类、轨迹回归和位置分类等多种监督。
+
+一种获得用于运动重建的连续加速度的朴素方法，是将预测动作概率与加速度词表相乘，并使用得到的全分布期望（full-distribution expectation）。然而，动作预测通常天然是多模态的（multi-modal）：不同的加速度模式可能对应不同但都合理的驾驶决策。直接对整个预测分布取期望，可能会把彼此不兼容的模式平均掉，从而产生物理上不合理的中间加速度。我们将这一问题称为 decoding-induced mode averaging。  
+简要解释：这一段指出，如果直接对多模态动作分布求平均，可能会把多个合理驾驶模式“平均坏了”，导致生成的加速度不真实。
+
+为缓解这一问题，我们仅在构建连续加速度、轨迹重建以及辅助位置监督损失时，使用一种 mode-aware decoding 策略。我们用多模态高斯混合模型（Gaussian mixture model, GMM）拟合加速度词表上的预测类别分布。具体而言，我们考虑包含 1、2 和 3 个分量的 GMM，并选择拟合误差最低的那个。随后，我们使用 top-p sampling 选择一个高斯模式（Gaussian mode），在所选模式内部重新归一化动作概率，并基于重新归一化后的分布和加速度词表计算期望加速度。得到的 mode-aware 加速度随后用于轨迹重建的时间积分。  
+简要解释：这一段说明作者用“先识别主导模式、再在该模式内计算加速度”的方式，避免多模态平均带来的不合理运动。
+
+8</pre>
+        </article>
+      </div>
+    </section>
+
+    <section class="spread" id="page-9">
+      <header><span>Page 9</span><a href="#top">Top</a></header>
+      <div class="cols">
+        <figure class="original">
+          <img src="faithful_page_images/Xiaomi-Discrete-WAM/page-009.png" alt="Xiaomi-Discrete-WAM page 9" loading="lazy" />
+        </figure>
+        <article class="translation">
+          <div class="label">中文翻译 + 简单解释</div>
+          <pre>模式感知解码（mode-aware decoding）独立于用于 action tokenization 的 soft-label interpolation。后者是在构造 action 目标时，用来消除确定性硬分配（hard-assignment）量化误差；而前者则被引入，用于防止连续重建损失把彼此不兼容的动作模式（action modes）平均化。mode-selection 步骤引入了额外的近似，其作用及误差分解见 Appendix 7.2.1。  
+简要解释：这里强调两类机制各司其职：soft-label interpolation 负责减轻离散化误差，mode-aware decoding 负责避免多峰动作分布在连续回归时被“平均掉”。
+
+最终目标是任务相关损失项的加权和：  
+\[
+\text{cls}\;\text{cls}\;\text{cls}\quad
+L = \lambda_v L^{\text{cls}}_v + \lambda_a L_a + \lambda_{\text{acc}} L_{\text{acc}} + \lambda_{\text{traj}} L_{\text{traj}} + \lambda_{\text{pos}} L_{\text{pos}} + \lambda_s L_s + \lambda_{\text{dec}} L_{\text{dec}} .
+\tag{9}
+\]
+  
+简要解释：总损失由视觉、动作、加速度、轨迹、位置、特殊 token 和决策分类等多个部分共同组成，各项通过系数 \(\lambda\) 做平衡。
+
+其中，\(L^{\text{cls}}_v\) 表示视觉 token 词表上的交叉熵损失，\(L_a\) 表示动作 token 词表上的交叉熵损失。\(L_{\text{acc}}\) 是加速度级别的回归损失，而 \(L_{\text{traj}}\) 是在将预测加速度积分到未来 ego trajectories 之后得到的轨迹级回归损失。\(L^{\text{cls}}_{\text{pos}}\) 表示对积分后的未来位置进行的辅助分解位置分类损失（auxiliary factorized position classification loss），对纵向（longitudinal）和横向（lateral）坐标分别设置分类头。\(L^{\text{cls}}_s\) 表示辅助 special tokens 的分类损失，例如用于组织不同训练序列的 task tokens 或 control tokens。\(L_{\text{dec}}\) 表示 decision classification loss。系数 \(\lambda_v\)、\(\lambda_a\)、\(\lambda_{\text{acc}}\)、\(\lambda_{\text{traj}}\)、\(\lambda_{\text{pos}}\)、\(\lambda_{\text{dec}}\) 和 \(\lambda_s\) 用于平衡各个损失项的相对贡献。不同训练任务会根据其预测目标激活不同的损失子集。  
+简要解释：这一段逐一定义了各个损失项的含义。核心思想是把视觉、动作和决策相关监督统一到一个多任务目标里，但不同任务只使用其中一部分损失。
+
+我们采用多阶段训练日程（multi-stage training schedule），逐步对齐视觉世界建模（visual world modeling）与动作生成（action generation）。在第一阶段，我们使用 world-policy modeling 和 world modeling 两类任务进行视觉预训练。此阶段只应用视觉预测损失（vision prediction loss），而未来动作 token 通过 teacher forcing 作为条件输入提供。该阶段训练出的离散视觉表示能够预测未来场景演化，并与 action-conditioned dynamics 对齐。  
+简要解释：第一阶段先让模型学会“看懂世界”并预测未来画面，同时把未来动作当作已知条件喂给模型，以便学到更稳定的视觉表征。
+
+训练日程。  
+简要解释：这是后续训练流程的总标题，下面按阶段描述具体策略。
+
+在第二阶段，我们联合训练视觉预测和动作预测。除了 world modeling 之外，world-policy modeling 任务还会激活动作预测损失，因此模型在共享的 token-editing 框架下，需要同时恢复未来视觉 token 和未来动作 token。该阶段加强了 policy generation 与 action-conditioned world evolution 之间的耦合。第三阶段，我们使用 LoRA adapter 进行动作 finetuning。该阶段聚焦于 discrete diffusion policy model，对未来动作生成与 refinement 进行专门微调，同时保留前几个阶段学到的视觉世界表示。  
+简要解释：第二阶段让视觉与动作预测真正联动起来，第三阶段则只针对动作策略做低成本微调，同时不破坏前面学到的世界表征。
+
+3.2  
+后训练（Post Training）
+
+为进一步捕获数据集中由于覆盖有限而难以学到的罕见行为或安全关键行为，我们引入后训练（post-training）微调阶段，利用基于模型的轨迹采样（model-based trajectory sampling）和强化学习（reinforcement learning）在困难场景上优化策略，同时保留先前学到的行为。  
+简要解释：后训练的目标是补足长尾场景和高风险场景，让策略在难例上更稳健，而不是只依赖原始数据分布。
+
+对于每个驾驶场景上下文 \(C_t\)，Discrete-WAM 通过 token-edit planner 生成一组候选轨迹 \(\{\tau_1,\ldots,\tau_G\}\)，用于高效探索。每条轨迹都会通过 \(r\) 轮迭代编辑：
+\[
+\tau_i^{(r)} \sim p_\theta(\hat A_{t+1:t+H}\mid \tilde A_{t+1:t+H}, \hat D_t, C_t)\,p_\psi(\hat D_t \mid C_t).
+\]
+这会产生一组多样且高质量的 rollouts，并用在线奖励函数 \(R(\tau_i)\) 进行评估，即 \((E)/PDMS metrics\)。对 \(D_t\) 的分层建模还支持两种采样策略。1) 在最可能的决策 \(\arg\max p_\psi(\hat D_t \mid C_t)\) 下进行组采样（Group sampling）。2) Discrete-WAM 还可以直接利用决策 \(\hat D_t\) 的完整分布，并针对每个 decision token 分别执行组采样。这进一步支持对 \(\log p_\psi(\hat D_t \mid C_t)\) 进行 decision-level post training update。  
+简要解释：这里通过“先选决策、再采样轨迹”的方式生成多种候选未来，并用奖励函数筛选；同时也保留对整个决策分布的训练更新，从而兼顾探索和分层决策学习。
+
+策略采样（Policy sampling）。
+
+遵循 Grouped Relative Policy Optimization（GRPO）范式，我们使用 following [101] 的 one-step reconstruction estimator，计算当前策略 \(\pi_{\theta,i}^A\) 下逐 token 的对数概率：
+\[
+\sum_{h=1}^{H}\log p_\theta(\hat A_{t+h}\mid \hat A_{&lt;t+h}, \hat D_t, C_t)
+\]
+决策分布则直接汇总为 \(\pi_{\theta,i}^D \sim \log p_\psi(\hat D_t \mid C_t)\)。优势值（advantage）计算为
+\[
+A_i = R(\tau_i) - \frac{1}{G}\sum_{i=1}^{G} R(\tau_i),
+\]
+整体目标变为：  
+\[
+\mathbb{E}_{\tau \sim \pi_{\theta,\psi}}
+\left[
+\frac{1}{G}\sum_{i=1}^{G}
+\min\!\Big(
+\rho_i^k A_i^k,\,
+\text{clip}(\rho_i^k, 1-\epsilon, 1+\epsilon)A_i^k
+\Big)
+- KL(\pi_{\theta,\psi}\,\|\,\pi_{\text{ref}})
+\right],
+\tag{10}
+\]
+\[
+k \in (A,D).
+\]
+
+训练目标（Training objectives）。  
+简要解释：这一段把后训练写成 GRPO 风格的策略优化：先按轨迹奖励算优势，再用 clipped objective 和 KL 约束更新策略，同时同时处理动作分支 \(A\) 和决策分支 \(D\)。</pre>
+        </article>
+      </div>
+    </section>
+
+    <section class="spread" id="page-10">
+      <header><span>Page 10</span><a href="#top">Top</a></header>
+      <div class="cols">
+        <figure class="original">
+          <img src="faithful_page_images/Xiaomi-Discrete-WAM/page-010.png" alt="Xiaomi-Discrete-WAM page 10" loading="lazy" />
+        </figure>
+        <article class="translation">
+          <div class="label">中文翻译 + 简单解释</div>
+          <pre>方法
+
+| 方法 | NC↑ | DAC↑ | DDC↑ | TLC↑ | EP↑ | TTC↑ | LK↑ | HC↑ | EC↑ | EPDMS*↑ | EPDMS↑ |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| Transfuser [16] | 96.9 | 89.9 | 97.8 | 99.7 | 87.1 | 95.4 | 92.7 | 98.3 | 87.2 | 76.7 | - |
+| ReCogDrive [45] | 98.3 | 95.2 | 99.5 | 99.8 | 87.1 | 97.5 | 96.6 | 98.3 | 86.5 | 83.6 | - |
+| WAM-Flow [84] | 98.5 | 94.5 | 99.5 | 99.8 | 86.9 | 96.8 | 97.4 | 97.6 | 73.9 | 84.7 | - |
+| Epona [98] | 97.1 | 95.7 | 99.3 | 99.7 | 88.6 | 96.3 | 97.0 | 98.0 | 67.8 | - | 85.1 |
+| DiffusionDriveV2 [105] | 97.7 | 96.6 | 99.2 | 99.8 | 88.9 | 97.2 | 96.0 | 97.8 | 91.0 | 85.5 | 87.5 |
+| Hydra-MDP++ [47] | 98.4 | 98.0 | 99.4 | 99.8 | 87.5 | 97.7 | 95.3 | 98.3 | 77.4 | 85.1 | - |
+| DriveSuprim [92] | 97.8 | 97.9 | 99.5 | 99.9 | 90.6 | 97.1 | 96.6 | 98.3 | 77.9 | 86.0 | - |
+| DriveVLA-W0 [43] | 98.5 | 99.1 | 98.0 | 99.7 | 86.4 | 98.1 | 93.2 | 97.9 | 58.9 | 86.1 | - |
+| DreamerAD [91] | 98.0 | 97.2 | 99.5 | 99.8 | 87.8 | 97.4 | 97.5 | 98.3 | 72.4 | - | 87.7 |
+| SparseDriveV2 [69] | 98.1 | 98.1 | 99.6 | 99.8 | 91.1 | 97.3 | 96.9 | 98.2 | 78.4 | 86.7 | 90.1 |
+| Discrete-WAM | 98.5 | 98.2 | 99.7 | 99.8 | 90.5 | 97.9 | 97.2 | 98.3 | 78.1 | 87.0 | 90.4 |
+
+表 1：在 NAVSIM-v2 基准上与当前最先进方法的比较。我们报告无碰撞（no collision, NC）、可行驶区域符合度（drivable area compliance, DAC）、行驶方向符合度（driving direction compliance, DDC）、交通灯符合度（traffic light compliance, TLC）、自车进度（ego progress, EP）、碰撞时间（time-to-collision, TTC）、车道保持（lane keeping, LK）、历史舒适性（human comfort, HC）、扩展舒适性（ego comfort, EC）、EPDMS*（在基准 bug 修复之前）以及 EPDMS。最佳结果用粗体标出，次优结果以下划线标出。  
+简要解释：该表展示了 Discrete-WAM 在 NAVSIM-v2 上对安全、规则、进度和舒适性等多维指标的综合表现。
+
+| 指标 | DriveDreamer [77] | WoVoGen [57] | Drive-WM [79] | GenAD (OpenDV) [88] | Vista [21] | DrivingWorld [27] | Discrete-WAM |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| FID ↓ | 52.6 | 27.6 | 15.8 | 15.4 | 6.9 | 7.4 | 6.6 |
+| FVD ↓ | 452.0 | 417.7 | 122.7 | 184.0 | 89.4 | 90.9 | 80.0 |
+| 最大生成时长 / 帧数* | 4s / 48 | 2.5s / 5 | 8s / 16 | 4s / 8 | 15s / 150 | 40s / 400 | 4s / 8 |
+
+表 2：生成式驾驶世界模型（generative driving world models）的比较。我们报告 FID、FVD 以及最大生成时长/帧数。最佳结果用粗体标出。  
+简要解释：该表说明 Discrete-WAM 在生成质量（FID、FVD）上更强，同时仍保持了较长的可生成时长。
+
+其中，\(\rho_i^k = \pi_{\theta,\psi,i}^k / \pi_{\text{ref},i}^k\) 表示重要性采样比（importance sampling ratio）中的项。  
+简要解释：这里给出了策略优化中使用的重要性采样比定义，用来把当前策略与参考策略联系起来。
+
+## 4 评估
+
+### 4.1 设置
+
+**数据集与基准。** 我们在 NAVSIM-v1 和 v2 基准 [8, 17] 上展示 Discrete-WAM 的端到端（E2E）生成与规划能力，该基准提供了用于端到端驾驶的大规模驾驶场景。按照标准协议，我们在 navtest 划分上评估 Discrete-WAM，该划分包含 1.2 万个以 2 Hz 采样的驾驶场景。NAVSIM 使用 PDMS 和扩展版 EPDMS 评估 4s 视野轨迹的规划质量，其中安全和规则关键指标作为乘性约束纳入，而进度和舒适性相关项则通过加权聚合组合。报告的指标包括无责任碰撞（NC）、可行驶区域符合度（DAC）、行驶方向符合度（DDC）、交通灯符合度（TLC）、自车进度（EP）、碰撞时间（TTC）、车道保持（LK）、历史舒适性（HC）以及扩展舒适性（EC）。详细的指标公式和基线见附录 7.2.4。  
+简要解释：这一段说明了评测用的数据集、划分方式和指标体系，核心是用 NAVSIM 检验模型在真实驾驶规划中的安全性、合规性、进度和舒适性。
+
+**实现细节。** Discrete-WAM 采用了如第 3.1 节所述的多阶段训练日程。带有任务家族的统一 world-policy 预训练在完整的 nuPlan 训练集 [6] 上进行 200k 步，学习率为 \(1 \times 10^{-4}\)。预训练之后，Discrete-WAM 在 navtrain 数据集上进行 10 个 epoch 的监督微调（SFT）。最后，Discrete-WAM 再进行 2 个 epoch 的强化学习（RL）后训练，以进一步改进规划行为。SFT 和 RL 后训练阶段都使用 LoRA 微调，学习率为 \(1 \times 10^{-5}\)。所有阶段均在 32 张 NVIDIA H20 GPU 上，使用 AdamW 优化器和余弦调度进行训练。模型细节见附录 7.2.4。  
+简要解释：这一段交代了训练流水线和超参数，说明模型先学通用世界-策略表示，再做监督微调，最后用强化学习进一步优化规划表现。
+
+### 4.2 定量结果
+
+**规划结果。** 在 NAVSIM v2 上，Discrete-WAM 取得了 90.4 EPDMS 的强规划结果，优于一系列与 world modeling、post-training 或生成式规划器（generative planners）联合构建的方法  
+简要解释：这一句给出核心结论，强调 Discrete-WAM 在 NAVSIM v2 的规划指标上已经达到很强的水平。</pre>
+        </article>
+      </div>
+    </section>
+
+    <section class="spread" id="page-11">
+      <header><span>Page 11</span><a href="#top">Top</a></header>
+      <div class="cols">
+        <figure class="original">
+          <img src="faithful_page_images/Xiaomi-Discrete-WAM/page-011.png" alt="Xiaomi-Discrete-WAM page 11" loading="lazy" />
+        </figure>
+        <article class="translation">
+          <div class="label">中文翻译 + 简单解释</div>
+          <pre>论文标题：Discrete-WAM：用于世界-策略学习（World-Policy Learning）的统一离散视觉-动作 Token 编辑
+
+方法
+
+| 方法 | NC↑ | DAC↑ | TTC↑ | Comf.↑ | EP↑ | PDMS↑ |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| VADv2 [13] | 97.2 | 89.1 | 91.6 | **100** | 76.0 | 80.9 |
+| UniAD [28] | 97.8 | 91.9 | 92.9 | **100** | 78.8 | 83.4 |
+| Transfuser [16] | 97.7 | 92.8 | 92.8 | **100** | 79.2 | 84.0 |
+| PARA-Drive [81] | 97.9 | 92.4 | 93.0 | 99.8 | 79.3 | 84.0 |
+| GoalFlow [83] | 98.3 | 93.8 | 94.3 | **100** | 79.8 | 85.7 |
+| Epona [98] | 97.9 | 95.1 | 93.8 | &lt;u&gt;99.9&lt;/u&gt; | 80.4 | 86.2 |
+| Hydra-MDP++ [47] | 97.6 | 96.0 | 93.1 | **100** | 80.4 | 86.6 |
+| DiffusionDrive [49] | 98.2 | 96.2 | 94.7 | **100** | 82.2 | 88.1 |
+| WoTE [44] | 98.5 | 96.8 | 94.9 | &lt;u&gt;99.9&lt;/u&gt; | 81.9 | 88.3 |
+| DriveSuprim [92] | 97.8 | 97.3 | 93.6 | **100** | 86.7 | 89.9 |
+| DriveVLA-W0 [43] | 98.7 | **99.1** | &lt;u&gt;95.3&lt;/u&gt; | 99.3 | 83.3 | 90.2 |
+| WAM-Flow [84] | &lt;u&gt;99.2&lt;/u&gt; | 98.3 | **97.0** | 99.7 | 82.3 | 90.3 |
+| ReCogDrive [45] | 97.9 | 97.3 | 94.9 | **100** | 87.3 | 90.8 |
+| ReflectDrive-2 [73] | 97.3 | 98.1 | 92.5 | **100** | &lt;u&gt;89.4&lt;/u&gt; | 91.0 |
+| DiffusionDriveV2 [105] | 98.3 | 97.9 | 94.8 | &lt;u&gt;99.9&lt;/u&gt; | 87.5 | 91.2 |
+| iPad [24] | 98.6 | 98.3 | 94.9 | **100** | 88.0 | 91.7 |
+| SparseDrive-V2 [69] | 98.5 | &lt;u&gt;98.4&lt;/u&gt; | 95.0 | &lt;u&gt;99.9&lt;/u&gt; | &lt;u&gt;88.6&lt;/u&gt; | &lt;u&gt;92.0&lt;/u&gt; |
+| Discrete-WAM | &lt;u&gt;98.8&lt;/u&gt; | &lt;u&gt;98.4&lt;/u&gt; | &lt;u&gt;95.3&lt;/u&gt; | **100** | **88.7** | **92.2** |
+
+表 3 在 NAVSIM-v1 上与最先进（state-of-the-art）的规划方法比较。所有方法都使用官方 NAVSIM-v1 指标进行评估：无碰撞（NC）、可行驶区域符合度（DAC）、碰撞时间（TTC）、舒适性（Comf.）、自车进度（EP）以及最终规划驾驶指标分数（PDMS）。每一列中的最佳结果以粗体显示，次佳结果以下划线显示。  
+简要解释：该表从安全、规则遵循、进度和舒适性等多个维度比较了规划方法，Discrete-WAM 在综合指标 PDMS 上取得了最强结果。
+
+在离散化条件下。具体而言，Discrete-WAM 相比 WAM-Flow [84] 的 EPDMS 提升了 +2.7，同时安全性和舒适性也都有提升。与基于 world-model 的方法 [43, 91, 98] 相比，Discrete-WAM 相比 [98] 的相对提升为 6.2%，相比 [91] 的相对提升为 3.1%。与 reinforced cognitive planner 相比，Discrete-WAM 取得了 4.1% 的相对增益。在 NAVSIMv1 基准上也观察到一致的性能提升，其中 Discrete-WAM 相比 WAM-Flow [84] 的 PDMS 提升了 +2.1，相比基于 world-model 的规划器 [98] 的 PDMS 提升了 +7.0。这些结果表明，统一的 world-policy 预训练和 token-editing 形式都对规划性能提升作出了贡献。前者学习了对齐的视觉-动作-未来表示，支持组合式泛化；后者提供了可预测的场景潜变量，增强因果感知，并使规划细化更加可靠。  
+简要解释：这里强调提升并不是单一模块带来的，而是统一预训练学到的对齐表示与 token 编辑式规划共同作用的结果。
+
+世界生成结果。
+
+表 2 定量比较了 Discrete-WAM 与先前生成式驾驶 world model 在图像和视频生成质量上的表现。虽然 Discrete-WAM 主要面向短时域的统一生成，以便于下游规划，但它获得了最佳的整体视觉保真度，FID 为 6.6、FVD 为 80.0，优于包括 Vista [21] 和 DrivingWorld [27] 在内的现有方法。值得注意的是，尽管一些先前方法支持显著更长的 rollout，但它们的生成质量会随着 horizon 的增加而下降。这些结果表明，所提出的离散 world-action 建模框架能够更有效地捕捉未来驾驶动力学和场景演化，同时保持更低的生成成本。  
+简要解释：这段说明，Discrete-WAM 不只是能做规划，也能以较低代价生成更高质量的未来场景与视频。
+
+4.3 分析
+
+统一预训练的影响。我们比较三种策略，以分离统一预训练的作用。“From scratch” 直接在下游规划数据上训练策略模型，不使用任何统一预训练。“FT” 先用统一预训练初始化模型，然后在监督微调过程中更新所有可训练参数。“LoRA-SFT” 先进行面向视觉的 world-policy 预训练，其中未来动作被作为 teacher-forced 条件，且只使用视觉预测损失，随后再用 LoRA adapters 对策略进行微调。我们研究统一预训练在不同……  
+简要解释：这段是在定义对照实验，目的是把“直接训练”“完整微调”和“LoRA 微调 + 预训练”三种训练路径拆开比较，看统一预训练到底贡献了多少。</pre>
+        </article>
+      </div>
+    </section>
+
+    <section class="spread" id="page-12">
+      <header><span>Page 12</span><a href="#top">Top</a></header>
+      <div class="cols">
+        <figure class="original">
+          <img src="faithful_page_images/Xiaomi-Discrete-WAM/page-012.png" alt="Xiaomi-Discrete-WAM page 12" loading="lazy" />
+        </figure>
+        <article class="translation">
+          <div class="label">中文翻译 + 简单解释</div>
+          <pre>**论文标题：**Discrete-WAM：统一的离散视觉-动作 Token 编辑用于世界-策略学习
+
+**表 4：**NAVSIM-v2 基准上策略训练方式的影响。  
+消融（Ablations）
+
+| 消融 | NC↑ | DAC↑ | DDC↑ | TLC↑ | EP↑ | TTC↑ | LK↑ | HC↑ | EC↑ | EPDMS*↑ | EPDMS↑ |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| 从头训练（From scratch） | 98.5 | 98.1 | 99.6 | 99.7 | 90.2 | 97.8 | 97.1 | 96.8 | 75.6 | 86.5 | 89.8 |
+| 全量微调（FT） | 98.6 | 99.6 | 99.6 | 99.7 | 90.2 | 97.8 | 97.1 | 96.4 | 75.4 | 86.4 | 89.7 |
+| LoRA-SFT | 98.6 | 99.6 | 99.6 | 99.7 | 90.2 | 97.8 | 97.1 | 96.4 | 75.4 | 86.4 | 90.0 |
+
+简要解释：该表比较了三种策略训练方式。从头训练已经很强，但全量微调没有进一步带来明显收益；LoRA-SFT 在更轻量的适配下保留了预训练的世界-策略知识，并取得最佳 EPDMS。
+
+**表 5：**NAVSIM-v2 基准上后训练的影响。  
+消融（Ablations）
+
+| 消融 | NC↑ | DAC↑ | DDC↑ | TLC↑ | EP↑ | TTC↑ | LK↑ | HC↑ | EC↑ | EPDMS*↑ | EPDMS↑ |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| SFT | 98.2 | 99.6 | 99.5 | 98.6 | 90.2 | 97.6 | 97.7 | 95.2 | 73.6 | 86.5 | 89.1 |
+| SFT-Dt | 98.3 | 99.6 | 99.6 | 98.6 | 90.3 | 97.8 | 97.0 | 97.9 | 76.8 | 86.7 | 90.0 |
+| RL | 97.9 | 98.3 | 78.1 | 87.0 | 90.4 | 98.0 | 98.1 | 99.8 | 90.3 | 90.3 | 90.4 |
+
+简要解释：该表说明在监督微调之后引入决策条件 Dt 和 RL 后训练，都能继续提升性能。真实决策条件提供了有效的行为先验，而 RL 后训练进一步兼顾了舒适性和安全性。
+
+**表 6：**NAVSIM-v2 基准上决策建模的影响。  
+消融（Ablations）
+
+| 消融 | NC↑ | DAC↑ | DDC↑ | TLC↑ | EP↑ | TTC↑ | LK↑ | HC↑ | EC↑ | EPDMS*↑ | EPDMS↑ |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| Base | 98.2 | 92.9 | 99.3 | 97.6 | 94.2 | 99.5 | 99.8 | 86.7 | 98.8 | 84.7 | 87.3 |
+| Base-Dt | 98.2 | 99.3 | 97.6 | 94.2 | 99.5 | 99.8 | 86.7 | 98.8 | 87.3 | 87.2 | 87.7 |
+
+简要解释：该表表明，预训练阶段的决策学习能够提供明显的行为先验，使高层意图与低层轨迹生成更一致，并在下游 SFT 前就具备决策条件下的规划能力。
+
+在 Dt 下的适应策略。正如表 4 所示，从头训练已经给出了很强的性能，表明 Discrete-WAM 具备充足的拟合能力。然而，全量微调并没有进一步改善结果，可能是因为规划目标与原有表示相互正交，从而覆盖了有用的预训练表征。相比之下，LoRA-SFT 取得了最佳性能，将 EPDMS 提升到 90.0，说明轻量化适配在适应规划任务时，能够更好地保留预训练的世界-策略知识。  
+简要解释：这一段强调，模型并不缺少拟合能力，问题在于适配方式。轻量化方法比全量微调更能保留已有能力，因此效果更好。
+
+如表 5 所示，与基础监督微调相比，利用真实的决策条件将 EPDMS 从 89.1 提升到 90.0，验证了决策级引导能够提供有效的行为先验。尽管如此，这种设置仍然缺少对不同决策及其对应轨迹细化的探索。我们的 RL 后训练进一步将 EPDMS 提升到 90.4，并将 EPDMS 提升到 87.0，在舒适性和安全性上都带来了收益。这说明所提出的后训练阶段能够同时受益于高层决策优化与低层 token 编辑，使规划器能够探索更优的“决策-轨迹”组合，而不只是固定决策下的轨迹细化。  
+简要解释：这一段说明，后训练不仅优化轨迹，还让模型主动搜索更好的决策与轨迹搭配，因此整体表现更好。
+
+**后训练的影响。**
+
+表 6 反映了预训练阶段的决策学习所带来的能力。引入 Dt 后，EPDMS 从 84.7 提升到 87.2，各项子指标也都有一致提升。这表明，在预训练阶段，决策能够提供强行为先验，使高层意图更好地与低层轨迹生成对齐。结果说明，统一的 world-policy 预训练不仅学习场景预测，也在下游 SFT 之前学习了具备决策条件的规划能力。有趣的是，性能在 k = 16 时达到峰值，随后随着锚点集合扩大而逐步下降。正如图 4-a 所示，我们将其归因于多样性与优化难度之间的权衡：更大的 top-d 值提高了决策覆盖率，但也引入了更多低质量锚点，增加了奖励方差并削弱了 GRPO 的优势信号。因此，适中的锚点集合能提供最有效的策略细化。  
+简要解释：这一段说明，预训练中的决策建模确实有帮助，但锚点过多会把优化变难，适中的规模更利于训练。
+
+**决策建模的影响。**
+
+我们评估了四种用于迭代 policy-token 解码的调度策略。`full_replace` 是基线调度器，在每一轮都会预测并替换所有 policy token。`replace_confidence` 只接受预测置信度超过预定义阈值的 token，而将其余 token 保持不变，留待后续细化。`replace_js_entropy` 进一步考虑跨轮次的不确定性与分布变化，会更新高熵、具有较大 Jensen-Shannon 散度，或 argmax 预测不稳定的 token。最后，`replace_js_freeze` 加入了硬冻结机制：连续若干轮保持稳定的 token 会被冻结，不再更新。对于每种调度器，我们评估不同的调度轮数，并报告最低与最高可用轮次之间的 L2 变化。  
+简要解释：这一段在比较不同的 token 更新策略，核心是在“更新多少”和“保留多少”之间找到更好的平衡，以稳定地迭代改进规划结果。
+
+**调度策略的影响。**</pre>
+        </article>
+      </div>
+    </section>
+
+    <section class="spread" id="page-13">
+      <header><span>Page 13</span><a href="#top">Top</a></header>
+      <div class="cols">
+        <figure class="original">
+          <img src="faithful_page_images/Xiaomi-Discrete-WAM/page-013.png" alt="Xiaomi-Discrete-WAM page 13" loading="lazy" />
+        </figure>
+        <article class="translation">
+          <div class="label">中文翻译 + 简单解释</div>
+          <pre>图 4 Discrete-WAM 的消融可视化结果。  
+a) 不同决策次数下的性能权衡效果。橙色曲线表示采用不同决策次数的 EPDMS。红色曲线表示在各自决策次数下的平均 L2 规划误差。  
+b) 重编辑调度（re-edit schedules）的计算性能权衡。横轴表示 x = 1/R，纵轴表示 y = 1000(E_{FR,1} − E_{s,R})。  
+c) 离散扩散（discrete diffusion）与自回归策略解码（autoregressive policy decoding）的推理延迟对比。我们比较了 replace_confidence 离散扩散解码与自回归动作解码器。  
+简要解释：该图展示了 Discrete-WAM 在不同调度次数、计算成本与推理延迟之间的权衡关系，用于说明不同编辑策略的效率和效果差异。
+
+如表 8 所示。我们报告了每种调度策略在最低可用轮次与最高可用轮次之间的 L2 变化，定义为 ∆L2 = L2_{high round} − L2_{low round}。结果表明，增加轮次并不总是能提升性能。对于 full_replace，额外轮次会持续增大 L2 误差，这说明反复覆盖所有动作 token 可能会扰动已经相当合理的预测。这个效应对 acceleration-token 解码尤其有害，因为早期加速度 token 的微小变化会通过时间积分被放大，最终转化为长时程的位置误差。相比之下，选择性调度器在更多轮次下会改进或保持 L2 性能。通过只更新置信度高、未确定、分布不稳定或未冻结的 token，这些调度器利用额外计算来细化动作序列中尚未解决的部分，同时保留稳定预测。  
+简要解释：这一段的核心结论是，更多编辑轮次并不必然更好；关键在于是否只针对不确定 token 做选择性更新，而不是无差别地重写全部 token。
+
+我们进一步分析了调度计算量与轨迹性能之间的权衡。由于我们没有严格测量 wall-clock latency 或精确 FLOPs，因此使用调度轮次数 R 作为计算成本的粗略代理，并定义反计算坐标为 x = 1/R。对于轨迹性能，我们计算四个评估预测时域上的平均 L2 误差，记为 E_{s,R} = 1/4 ∑_{t∈{1,2,3,4}} L2_{s,R}@t，其中 s 表示调度策略，R 表示调度轮次。为了更清晰地可视化，我们使用相对基线坐标，并以 R = 1 时的 full_replace 作为基线：y_{s,R} = 1000(E_{FR,1} − E_{s,R})。正的 y 表示平均 L2 误差低于基线，负值表示性能更差。得到的计算-性能坐标报告于表 7，并可视化于 Fig. 4-b。  
+简要解释：这一段定义了图 4-b 的坐标含义，把“计算成本”和“轨迹误差改善”统一到同一张图里，便于比较不同调度策略的性价比。
+
+我们进一步分析了 replace_confidence 调度器在一个典型左转场景中的详细编辑动态。如 Fig. 5 所示，随着调度轮次数增加，token 接受率逐渐下降，表明更多动作 token 变得稳定，不再需要进一步编辑。被接受和被拒绝的 token 也呈现出明显分离的置信度分布：被接受的 token 一贯具有更高置信度，而被拒绝的 token 置信度更低，并保留到后续轮次再进行细化。这表明，置信度是区分“已准备好更新”的 token 与“仍不确定”的 token 的有效信号。与此同时，平均归一化熵在各轮次中下降，说明模型预测在迭代编辑过程中变得越来越清晰。  
+简要解释：这一段说明 replace_confidence 的工作机制是逐轮筛掉已稳定的 token，把计算资源集中到仍不确定的 token 上，从而让预测逐步收敛。
+
+基于置信度替换的调度动态。  
+
+进一步的 token 级可视化解释了这一行为。初始置信度高的 token 往往具有较高的最终保留率，这意味着一旦这些位置被高置信度预测出来，它们在后续轮次中就不太会被覆盖。相反，初始置信度低的 token 通常具有更高的熵，这表明其动作分布更为模糊。随着调度推进，它们的置信度逐渐升高、熵逐渐降低，显示出一个逐步降低不确定性的过程。在不同轮次中，我们还持续观察到置信度与熵之间存在反向关系：高置信度 token 通常具有低熵，而高熵 token 更可能在后续轮次中被拒绝并重新细化。这些观察解释了为什么基于置信度的选择性替换可以改进多轮策略编辑：额外轮次主要分配给不确定 token，而稳定 token 得以保留。  
+简要解释：这一段从 token 级别说明了为什么选择性编辑有效：稳定 token 被保留，模糊 token 被反复修正，因此整体策略质量会随着多轮编辑提高。</pre>
+        </article>
+      </div>
+    </section>
+
+    <section class="spread" id="page-14">
+      <header><span>Page 14</span><a href="#top">Top</a></header>
+      <div class="cols">
+        <figure class="original">
+          <img src="faithful_page_images/Xiaomi-Discrete-WAM/page-014.png" alt="Xiaomi-Discrete-WAM page 14" loading="lazy" />
+        </figure>
+        <article class="translation">
+          <div class="label">中文翻译 + 简单解释</div>
+          <pre>图 5：基于置信度的 token 替换调度动态。我们在一个具有代表性的左转场景中，用四轮编辑可视化 `replace_confidence`，以检查其细致的多轮调度行为。第一轮被视为初始化轮，因为此时没有前一次预测可用，所以所有 token 都被接受。左侧栏报告轮级统计信息，包括 accept/keep ratio、accepted/rejected token confidence，以及 mean normalized entropy。右侧面板展示跨轮次的 token 级细节，其中每一行对应一轮，横轴表示 action-token 的时间步，为了便于阅读，仅显示偶数步 0, 2, 4, . . . , 38。红色柱表示原始熵（raw entropy），紫色/橙色柱分别表示被接受/被拒绝的 token，红色虚线标记置信度阈值，蓝色曲线显示每个 token 的累计 accepted-update ratio。该可视化表明，高置信度 token 更可能被接受并保留，而高熵 token 会在多轮中逐步细化，从而带来熵的持续下降。  
+简要解释：这一图说明了 `replace_confidence` 的核心机制是“按置信度筛选并逐轮精修”，低熵、高置信度 token 更容易直接保留，高熵 token 则会被反复更新直到更稳定。
+
+我们进一步比较了离散扩散策略解码器（discrete diffusion policy decoder）与自回归动作解码器（autoregressive action decoder）的在线推理延迟。对于离散扩散策略，我们使用 `replace_confidence` 调度策略，并评估不同的编辑轮数，包括 1, 2, 3, 5, 6, 10, 15 和 30 轮。对于自回归基线，我们实现了一个 AR policy decoder，用于按顺序生成未来动作序列。为了使比较聚焦于解码模式本身，我们对两种方法都关闭了工程加速技巧：离散扩散解码器在不使用额外解码优化的情况下进行评估，AR 解码器在不使用 KV-cache acceleration 的情况下进行评估。所有延迟测量均在 NVIDIA H20 GPUs 上进行在线推理。  
+简要解释：这里的实验设置刻意去除了加速手段，目的是公平比较两种解码范式本身的计算特性，而不是比较工程优化后的系统性能。
+
+推理延迟分析。  
+简要解释：这是对后续延迟结果的主题概括，重点是分析不同解码方式在推理速度上的差异。
+
+如 Fig. 4-c 所示，在适中的编辑轮数下，discrete diffusion decoding 的延迟明显低于 AR decoder。这是因为在每一轮离散扩散编辑中，action tokens 可以并行解码，而 AR decoder 必须按顺序生成动作序列。尽管 discrete diffusion 的延迟会随着编辑轮数增加而上升，但在常见的低轮数和中轮数设置下，它仍然比 AR decoding 更高效。该结果突出了并行 policy-token editing 的计算优势。  
+简要解释：并行编辑能显著减少单次推理的串行依赖，因此在轮数不太高时，离散扩散方法通常比自回归生成更快。
+
+我们强调，这一比较反映的是在受控、无加速设置下，并行编辑与顺序生成之间在理论解码复杂度上的差异。在真实部署中，AR decoding 可以受益于 KV-cache acceleration，而 discrete diffusion 不使用同样的加速机制。因此，这里测得的延迟不应被解释为完整的部署级速度对比，而应被看作对两种解码范式内在效率的分析。  
+简要解释：作者在这里提醒读者，实验延迟结果更适合用于理解“方法本身谁更省算力”，而不是直接当作线上部署时的绝对速度结论。</pre>
+        </article>
+      </div>
+    </section>
+
+    <section class="spread" id="page-15">
+      <header><span>Page 15</span><a href="#top">Top</a></header>
+      <div class="cols">
+        <figure class="original">
+          <img src="faithful_page_images/Xiaomi-Discrete-WAM/page-015.png" alt="Xiaomi-Discrete-WAM page 15" loading="lazy" />
+        </figure>
+        <article class="translation">
+          <div class="label">中文翻译 + 简单解释</div>
+          <pre>论文标题：离散-WAM：用于世界-策略学习的统一离散视觉-动作 Token 编辑（Discrete-WAM: Unified Discrete Vision-Action Token Editing for World-Policy Learning）
+
+**表 7 不同重编辑调度（re-edit schedules）的计算性能。** 计算坐标定义为 `x = 1/R`，其中 `R` 是调度轮次（scheduling round）。性能坐标为相对基线的平均 L2 改善，`y = 1000(E_{FR,1} − E_{s,R})`，其中 `E_{FR,1}` 表示 `R = 1` 时 `Full replace` 的平均 L2 误差，而 `E_{s,R}` 表示调度 `s` 在轮次 `R` 的平均 L2 误差。  
+简要解释：这张表是在比较不同编辑调度策略的计算开销与效果收益；`x` 越大表示调度轮次越少、计算越省，而 `y` 越大表示相对基线的误差下降越明显。
+
+| Schedule | Round | x = 1/R | Es,R | y |
+|---|---:|---:|---:|---:|
+| Full replace | R1 | 1.000 | 0.67325 | 0.000 |
+| Full replace | R3 | 0.333 | 0.67853 | −5.275 |
+| Confidence replace | R1 | 1.000 | 0.66950 | 3.747 |
+| Confidence replace | R2 | 0.500 | 0.66643 | 6.825 |
+| Confidence replace | R3 | 0.333 | 0.66488 | 8.375 |
+| JS-entropy replace | R2 | 0.500 | 0.66710 | 6.150 |
+| JS-entropy replace | R3 | 0.333 | 0.66690 | 6.350 |
+| JS-freeze replace | R4 | 0.250 | 0.67695 | −3.700 |
+| JS-freeze replace | R6 | 0.167 | 0.66943 | 3.825 |
+
+**4.4 调度（Schedule）**  
+简要解释：这一小节讨论的是在不同重编辑轮次设置下，模型性能与计算代价之间的权衡关系。
+
+**表 8 重编辑调度轮次对 L2 轨迹误差的影响。** 负值表示额外的编辑轮次会降低 L2 误差。  
+简要解释：这张表衡量的是随着编辑轮次增加，轨迹误差是否持续下降；若数值为负，说明增加轮次带来了改进。
+
+| Rounds | ∆L2@1s | ∆L2@2s | ∆L2@3s | ∆L2@4s |
+|---|---:|---:|---:|---:|
+| Full replace | R3–R1 | +0.0019 | +0.0040 | +0.0068 | +0.0084 |
+| Confidence replace | R3–R1 | −0.0001 | −0.0007 | −0.0014 | −0.0040 |
+| JS-entropy replace | R3–R2 | −0.0001 | −0.0003 | −0.0003 | −0.0001 |
+| JS-freeze replace | R6–R4 | −0.0022 | −0.0055 | −0.0073 | −0.0151 |
+
+**表 9 纵向图像区域消融对策略预测的影响。** 我们比较三种前视图像设置：`Full image` 保持原始前视图像不变，`Upper-only` 仅保留上方三分之一区域，`Upper-masked` 将上方三分之一区域遮蔽。加速度误差以 `m/s^2` 报告，轨迹位置误差以米为单位报告。数值越低表示性能越好。  
+简要解释：这张表是在测试图像上半部分对策略预测到底有多重要；通过保留或遮蔽上方区域，可以观察模型对不同视觉区域的依赖程度。
+
+| Ablations | ax Err. (m/s2)↓ | ay Err. (m/s2)↓ | Traj. x Err. (m)↓ | Traj. y Err. (m)↓ | Traj. Err. (m)↓ |
+|---|---:|---:|---:|---:|---:|
+| Upper-only | 0.477 | 0.918 | 0.274 | 0.652 | 0.780 |
+| Upper-masked | 0.476 | 0.916 | 0.268 | 0.647 | 0.772 |
+| Full image | 0.475 | 0.914 | 0.267 | 0.646 | 0.770 |
+
+**定性结果（Qualitative Results）**  
+**图 6 展示了 Discrete-WAM 的定性规划结果。** 预测轨迹与专家示范高度一致，同时在几何上与底层道路拓扑保持一致。在直道巡航场景中，规划器保持稳定的车道居中，并准确捕捉预期的纵向推进。在转弯和曲道路段中，Discrete-WAM 生成平滑轨迹，与车道边界高度对齐，并在整个机动过程中保持合适的曲率。值得注意的是，在更复杂的城市场景中，例如变道（lane-changing）或轻微贴靠（nudging），Discrete-WAM 也能在没有显式基于规则约束的情况下生成可行的未来规划。  
+简要解释：这一段强调模型不只是“像”专家驾驶，而是在道路几何和交通语义上都学到了合理的规划行为，尤其在复杂城市驾驶场景中仍能输出可执行轨迹。
+
+**规划结果。**
+
+**图 7 可视化了 Discrete-WAM 在多种驾驶场景下的未来世界生成结果。** 给定历史观测和当前帧，Discrete-WAM 会在多个预测步上生成时间上连贯的未来视觉状态。生成的序列保留了场景布局、道路几何、周围车辆和自车运动一致性，同时捕捉了不同城市驾驶条件下真实的前向演化。结果表明，所提出的离散视觉-动作 token 编辑框架能够有效建模由动作条件驱动的场景动力学，用于世界生成。  
+简要解释：这一段说明模型不仅能预测“怎么开”，还能预测“世界会怎么变”，即把动作与未来视觉变化联系起来，完成动作条件下的世界模型生成。
+
+**世界生成结果。**
+
+**通过注意力图可视化分析策略解码器（policy decoder）的视觉 grounding 行为。** 模型包含 18 层 Transformer、16 个 attention heads 和 8 个 key-value heads。所有注意力图都基于 `replace_confidence` 推理设置下的第一轮编辑计算得到。由于每个策略预测包含 40 个未来动作 tokens，除非另有说明，我们会在 policy queries、attention heads 和 layers 上对注意力图取平均。  
+简要解释：这一段交代了注意力分析的模型结构和统计方式，目的是说明后面的可视化结果来自哪里，以及为什么是“平均后的”注意力图。
+
+**图 8 显示了前视图和侧视图相机的平均注意力图。** 策略解码器会关注与驾驶相关的语义区域，包括道路、车道线、周围车辆、交通标志，以及其他动态或结构性线索。这表明动作 token 预测是建立在视觉场景语义之上的，而不仅仅是低层图像外观。与此同时，我们观察到天空区域也持续出现较高注意力，尤其是在前视图图像中。  
+简要解释：这一段说明模型的注意力并不是随机分布，而是集中在真正影响驾驶决策的区域；天空区域的高注意力则提示模型可能形成了某种稳定的背景关注模式。
+
+为了检查这种行为在网络深度上的变化，我们选择第 0、6、12 和 17 层来可视化逐层注意力图，同时在 attention heads 和 policy queries 上取平均。如图 9 所示，不同层强调了不同层次的空间和语义抽象。浅层在整个场景上显示出更广泛的注意力，而更深层则在车道、道路边界、车辆和全局场景布局上产生更结构化的响应。天空激活在多个层中都可见，这表明它是一种稳定的注意力模式，而不是某一层或某一个 head 的偶然产物。  
+简要解释：这一段说明注意力会随着层数加深而从“广泛扫描”转向“结构化理解”，同时天空注意力的持续存在说明它不是噪声，而是模型内部较稳定的表示习惯。</pre>
+        </article>
+      </div>
+    </section>
+
+    <section class="spread" id="page-16">
+      <header><span>Page 16</span><a href="#top">Top</a></header>
+      <div class="cols">
+        <figure class="original">
+          <img src="faithful_page_images/Xiaomi-Discrete-WAM/page-016.png" alt="Xiaomi-Discrete-WAM page 16" loading="lazy" />
+        </figure>
+        <article class="translation">
+          <div class="label">中文翻译 + 简单解释</div>
+          <pre>图 6 Discrete-WAM 的规划性能。Discrete-WAM 在各种驾驶场景中展现出强大的规划性能，包括 nudging、变道（lane changing）、巡航（cruising）或起步离开（pull-away）。
+简要解释：这张图说明 Discrete-WAM 不仅能理解场景，还能在多种具体驾驶动作上输出有效规划。
+
+图 7 Discrete-WAM 的世界生成结果。Discrete-WAM 在多种驾驶场景下都能生成连贯的结果。
+简要解释：这张图强调模型生成的世界状态与驾驶上下文保持一致，整体连贯性较强。
+
+我们假设，在没有显式 CLS 或 register tokens 的情况下，天空区域可能充当隐式的全局锚点。天空区域在空间上更稳定、视觉上更平滑，而且局部纹理较少，因此适合作为吸收注意力质量（attention mass）或组织全局场景上下文的位置。它们还可能编码一些弱全局线索，例如光照、天气、地平线位置或场景开阔程度。因此，天空注意力（sky attention）可能反映的是 attention-sink 行为与隐式 register 行为的混合，而不是直接依赖天空像素作为因果性的驾驶证据。
+简要解释：这一段提出一个解释模型注意力分布的假设，即模型关注天空，不一定是因为天空本身提供驾驶决策证据，也可能是因为它承担了全局信息聚合的作用。
+
+为了检验这一假设，我们在前视图像上进行了天空区域消融（sky-region ablation）。由于天空区域通常占据图像上方，我们将前视图像的上三分之一近似视为天空区域。我们比较了三种设置：原始图像、顶部遮蔽图像（top-masked image，遮蔽上方三分之一区域）以及仅保留天空图像（sky-only image，仅保留上方三分之一区域）。这
+简要解释：这一段说明了消融实验的设计思路，通过分别去掉天空、只保留天空，来验证模型对天空区域的依赖程度。</pre>
+        </article>
+      </div>
+    </section>
+
+    <section class="spread" id="page-17">
+      <header><span>Page 17</span><a href="#top">Top</a></header>
+      <div class="cols">
+        <figure class="original">
+          <img src="faithful_page_images/Xiaomi-Discrete-WAM/page-017.png" alt="Xiaomi-Discrete-WAM page 17" loading="lazy" />
+        </figure>
+        <article class="translation">
+          <div class="label">中文翻译 + 简单解释</div>
+          <pre>图 8 平均 policy attention maps。三个面板分别显示左视图、前视图和右视图摄像头。attention maps 是对 Transformer 层、attention heads 以及来自第一轮 editing 的 policy action queries 取平均得到的。policy decoder 会关注与驾驶相关的区域，例如车道、车辆、道路结构和交通标志，同时也会在上方天空区域表现出稳定激活。
+
+简要解释：这一图说明策略解码器不仅看道路局部语义，也会把天空等上方区域当作稳定的上下文“注意力汇聚点”。
+
+图 9 分层 policy attention maps。所有面板都显示前视图摄像头。我们通过对 attention heads 和 policy queries 取平均，分别可视化第 0、6、12 和 17 层。不同层会强调不同的空间结构和语义结构，而上方区域的激活在多个层中都保持可见，这表明这是一种稳定的注意力模式，而不是某一层特有的孤立伪影。
+
+简要解释：这一图强调上方区域的注意力并非偶然噪声，而是在多层中持续存在，说明它可能承担稳定的全局上下文角色。
+
+图 10 用于 policy attention 的上方区域消融。我们比较了原始前视图图像、上方遮罩图像（将顶部三分之一区域遮住）以及仅保留上方区域的图像（只保留顶部三分之一区域）。遮挡上方区域会把注意力重新分配到局部驾驶语义，例如道路边界、车道线、车辆和交通标志；而仅保留上方区域时，模型仍然可以生成看起来合理、但不那么准确的轨迹，这表明上方区域 token 可能提供全局上下文线索，而下方区域对于细粒度的 policy 预测仍然至关重要。
+
+简要解释：这一消融实验说明，天空/上方区域确实参与了模型决策，但真正决定轨迹精度的核心信息仍来自下方道路语义。
+
+这是一种近似干预，因为天空并不保证总是恰好位于顶部三分之一区域，但它提供了一种受控方式来研究所观察到的注意力模式。
+
+简要解释：这里说明消融设置并不等同于真实世界的严格因果切除，而是用于分析注意力现象的实验性近似。
+
+图 10 展示了消融结果。当上方区域被遮挡时，注意力会重新分配到局部驾驶语义上，例如道路边界、车道标线、车辆和交通标志。这证实了在原始输入中，天空区域吸收了相当一部分注意力。当仅保留上方区域时，模型仍然可以生成合理的轨迹，但与完整图像基线相比，轨迹质量会下降。这表明天空区域 token 可能提供有用的全局上下文或隐式锚定，而下方图像区域提供了准确 policy 预测所需的细粒度局部语义。表 9 中的定量结果也显示出相同趋势：遮挡上方区域会轻微降低轨迹质量，而仅使用上方区域的性能最差。这表明天空区域 token 可能提供有用的全局上下文，但下方图像区域中的局部驾驶语义对于准确 policy 预测仍然必不可少。总体而言，attention 可视化表明 policy decoder 同时使用了局部驾驶语义和全局上下文区域。天空激活应被解释为稳定的 attention-sink 或隐式 register 行为，而不是天空像素对驾驶具有直接因果作用的证据。更多 attention map 示例见附录 7.4。
+
+简要解释：这一段把可视化与定量结果结合起来，说明天空区域更像是全局上下文或注意力汇聚点，而不是直接的驾驶因果信号。
+
+反事实结果。
+
+简要解释：这一小节开始讨论通过反事实生成来检验模型的因果可理解性。
+
+为了体现因果可理解性，我们在事实轨迹（factual rollouts）以及一系列反事实 world-model 生成下评估 DiscreteWAM 的 surprise value。具体而言，world model 同时注入 ground-truth action A_{t:t+H} 条件或给定一个 sweep
+
+简要解释：这一段说明作者想通过对比真实动作条件和反事实条件下的生成结果，来衡量 DiscreteWAM 对因果变化的敏感性。</pre>
+        </article>
+      </div>
+    </section>
+
+    <section class="spread" id="page-18">
+      <header><span>Page 18</span><a href="#top">Top</a></header>
+      <div class="cols">
+        <figure class="original">
+          <img src="faithful_page_images/Xiaomi-Discrete-WAM/page-018.png" alt="Xiaomi-Discrete-WAM page 18" loading="lazy" />
+        </figure>
+        <article class="translation">
+          <div class="label">中文翻译 + 简单解释</div>
+          <pre>图11 带有惊讶度指标的反事实结果。我们通过事实性（factual）和反事实（counterfactual）的世界模型（world-model）生成结果来比较惊讶值 S。可以观察到惊讶度与 PDMS 之间存在清晰的相关性，这表明 Discrete-WAM 能够捕捉诸如碰撞和可行驶区域违规等安全关键场景动力学，以及横向扰动动作 Ã_{t:t+H} 的影响。惊讶度定义为 S = KL(pθ(·|A_{t:t+H}, V_t) || pθ(·|Ã_{t:t+H}, V_t)) [18]。我们还报告了平均像素 L1 距离 ∆img 作为参考。可以观察到惊讶度与 PDMS 之间存在强负相关。如图11所示，当 PDMS 降为 0（与静态物体碰撞、驶出道路边界）时，S 会陡增，这表明 Discrete-WAM 捕捉到了由动作条件化（action-conditioned）的场景动力学和安全关键结果。随着由于可行驶区域违规或不安全交互导致驾驶质量恶化，生成的未来观测对世界模型来说会变得越来越难以预测，从而带来更高的惊讶值。与此同时，∆img 的逐步增大进一步表明了在预测误差下学到的这种现象。相反，当没有受到严重安全惩罚（PDMS = 1）时，无论在事实性还是反事实 rollout 中，惊讶度都始终保持较低。这说明惊讶度为模型不确定性提供了一个有意义的代理，并且有潜力用于风险感知规划和安全评估。  
+简要解释：这一段说明，模型的“惊讶度”越高，通常意味着未来场景越难预测，也更可能对应碰撞、越界等安全风险，因此它可以作为不确定性和风险评估的信号。
+
+5
+
+结论与未来方向
+
+在这项工作中，我们提出了 Discrete-WAM，一个面向自动驾驶的统一离散视觉-动作世界-策略框架（unified discrete vision-action world-policy framework）。Discrete-WAM 将未来视觉状态、驾驶决策和自车动作形式化到一个共享的离散 token 空间中，并通过统一的 token 编辑范式（token-editing paradigm）对其进行联合建模。一个离散扩散框架（discrete diffusion framework）在共同的生成目标下，将世界建模（world modeling）、世界-策略建模（world-policy modeling）以及分层的决策条件策略学习（hierarchical decision-conditioned policy learning）整合到一起。我们在 NAVSIM benchmarks 上的大量实验表明，Discrete-WAM 在实现强规划性能的同时，还支持可控世界生成、反事实推理以及面向安全的策略改进。  
+简要解释：这一段总结了本文的核心贡献：把“看见什么、怎么决策、怎么行动”放进同一个离散表示空间里联合学习，从而同时提升规划能力、可控生成能力和安全性。
+
+展望未来，仍有几个很有前景的方向。首先，是构建一个完全统一的世界-动作基础模型（world-action foundation model），能够支持长时程交互式仿真和策略学习。其次，更丰富的层次化抽象（hierarchical abstractions）与语言条件化目标（language-conditioned objectives）可能进一步提升规划的多样性和可控性。第三，基于奖励的后训练（reward-guided post-training）可以推广到轨迹级监督之外，从而在稀疏或安全关键反馈下实现更有效的策略优化。最后，统一的离散 token 空间为通过想象 rollout（imagined rollouts）、反事实推理和测试时规划（test-time planning）实现可扩展自我改进提供了机会，并可能为通用具身决策系统（general-purpose embodied decision-making systems）提供一条路径。  
+简要解释：这一段提出了后续研究方向，重点是把当前框架进一步扩展为更通用、更长时程、能结合语言和奖励进行优化的基础模型。
+
+18</pre>
+        </article>
+      </div>
+    </section>
+
+    <section class="spread" id="page-19">
+      <header><span>Page 19</span><a href="#top">Top</a></header>
+      <div class="cols">
+        <figure class="original">
+          <img src="faithful_page_images/Xiaomi-Discrete-WAM/page-019.png" alt="Xiaomi-Discrete-WAM page 19" loading="lazy" />
+        </figure>
+        <article class="translation">
+          <div class="label">中文翻译 + 简单解释</div>
+          <pre>**参考文献**
+
+[1] Jacob Austin, Daniel D. Johnson, Jonathan Ho, Daniel Tarlow, and Rianne Van Den Berg. 结构化去噪扩散模型（Structured denoising diffusion models）在离散状态空间（discrete state-spaces）中的应用。发表于 *Advances in Neural Information Processing Systems*，34:17981–17993，2021。  
+简要解释：这篇工作讨论了如何把扩散模型用于离散状态空间，是后续离散生成建模的重要基础之一。
+
+[2] Alisson Azzolini, Junjie Bai, Hannah Brandon, Jiaxin Cao, Prithvijit Chattopadhyay, Huayu Chen, Jinju Chu, Yin Cui, Jenna Diamond, Yifan Ding, et al. Cosmos-reason1：从物理常识到具身推理（From physical common sense to embodied reasoning）。arXiv 预印本 arXiv:2503.15558，2025。  
+简要解释：该工作关注把物理常识与具身推理结合起来，强调模型对真实世界交互规律的理解能力。
+
+[3] Florent Bartoccioni, Elias Ramzi, Victor Besnier, Shashanka Venkataramanan, Tuan-Hung Vu, Yihong Xu, Loick Chambon, Spyros Gidaris, Serkan Odabas, David Hurych, et al. VAVIM 和 VAVAM：通过视频生成建模实现自动驾驶（Autonomous driving through video generative modeling）。arXiv 预印本 arXiv:2502.15672，2025。  
+简要解释：这篇工作尝试用视频生成模型来支持自动驾驶中的预测与决策。
+
+[4] Heli Ben-Hamu, Itai Gat, Daniel Severo, Niklas Nolte, and Brian Karrer. 通过基于熵界定的 unmasking 实现从 masked diffusion models 的加速采样（Accelerated sampling from masked diffusion models via entropy bounded unmasking）。载于 *Advances in Neural Information Processing Systems*，2025。  
+简要解释：该文研究如何更快地从 masked diffusion models 采样，核心是用熵约束来指导逐步解掩码。
+
+[5] Hongzhe Bi, Hengkai Tan, Shenghao Xie, Zeyuan Wang, Shuhe Huang, Haitian Liu, Ruowen Zhao, Yao Feng, Chendong Xiang, Yinze Rong, et al. Motus：一个统一的潜在动作世界模型（A unified latent action world model）。载于 *Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition*，35101–35113，2026。  
+简要解释：这篇论文把动作建模与世界模型统一到潜在空间中，用于更紧凑地表示环境演化与控制。
+
+[6] Holger Caesar, Juraj Kabzan, Kok Seang Tan, Whye Kit Fong, Eric Wolff, Alex Lang, Luke Fletcher, Oscar Beijbom, and Sammy Omari. nuPlan：一个面向自动驾驶车辆的闭环、基于机器学习的规划基准（A closed-loop ml-based planning benchmark for autonomous vehicles）。arXiv 预印本 arXiv:2106.11810，2021。  
+简要解释：nuPlan 是自动驾驶规划评测基准，强调闭环评估，能更真实地检验规划策略。
+
+[7] Changxiao Cai and Gen Li. 基于置信度的解码对扩散语言模型在理论上是高效的（Confidence-based decoding is provably efficient for diffusion language models）。arXiv 预印本 arXiv:2603.22248，2026。  
+简要解释：该工作从理论上分析了扩散语言模型的解码效率，并提出基于置信度的解码思路。
+
+[8] Wei Cao, Marcel Hallgarten, Tianyu Li, Daniel Dauner, Xunjiang Gu, Caojun Wang, Yakov Miron, Marco Aiello, Hongyang Li, Igor Gilitschenski, et al. Pseudo-simulation for autonomous driving. arXiv 预印本 arXiv:2506.04218，2025。  
+简要解释：这篇论文讨论如何构造伪仿真（pseudo-simulation）来支持自动驾驶算法训练与评估。
+
+[9] Jun Cen, Chaohui Yu, Hangjie Yuan, Yuming Jiang, Siteng Huang, Jiayan Guo, Xin Li, Yibing Song, Hao Luo, Fan Wang, et al. WorldVLA：迈向自回归动作世界模型（Towards autoregressive action world model）。arXiv 预印本 arXiv:2506.21539，2025。  
+简要解释：该工作把动作生成与世界建模结合为自回归框架，尝试统一视觉-语言-动作的预测过程。
+
+[10] Hao Chen, Jiaming Liu, Zhonghao Yan, Nuowei Han, Renrui Zhang, Chenyang Gu, Jialin Gao, Ziyu Guo, Siyuan Qian, Yinxi Wang, et al. Last-R1：通过面向 VLA 模型的自适应物理潜在推理（adaptive physical latent reasoning）强化动作（Reinforcing action via adaptive physical latent reasoning for VLA models）。arXiv 预印本 arXiv:2604.28192，2026。  
+简要解释：这篇工作面向 VLA（vision-language-action）模型，强调通过物理潜在推理来增强动作质量。
+
+[11] Li Chen, Penghao Wu, Kashyap Chitta, Bernhard Jaeger, Andreas Geiger, and Hongyang Li. 端到端自动驾驶：挑战与前沿（End-to-end autonomous driving: Challenges and frontiers）。*IEEE Transactions on Pattern Analysis and Machine Intelligence*，46(12):10164–10183，2024。  
+简要解释：这是一篇综述/前沿性论文，总结端到端自动驾驶的关键挑战与研究方向。
+
+[12] Long Chen, Yuchen Li, Chao Huang, Bai Li, Yang Xing, Daxin Tian, Li Li, Zhongxu Hu, Xiaoxiang Na, Zixuan Li, et al. 自动驾驶与智能车辆的里程碑：综述中的综述（Milestones in autonomous driving and intelligent vehicles: Survey of surveys）。*IEEE Transactions on Intelligent Vehicles*，8(2):1046–1056，2022。  
+简要解释：该文是综述中的综述，系统回顾自动驾驶与智能车辆领域的重要发展节点。
+
+[13] Shaoyu Chen, Bo Jiang, Hao Gao, Bencheng Liao, Qing Xu, Qian Zhang, Chang Huang, Wenyu Liu, and Xinggang Wang. VADv2：通过概率规划实现端到端向量化自动驾驶（End-to-end vectorized autonomous driving via probabilistic planning）。arXiv 预印本 arXiv:2402.13243，2024。  
+简要解释：这篇工作把自动驾驶表示为向量化结构，并通过概率规划提升端到端预测与决策能力。
+
+[14] Sitan Chen, Kevin Cong, and Jerry Li. masked diffusion models 的最优推理调度（Optimal inference schedules for masked diffusion models）。arXiv 预印本 arXiv:2511.04647，2025。  
+简要解释：该文研究 masked diffusion models 在推理阶段应如何安排步数和顺序，目标是提高效率与效果。
+
+[15] Zhili Chen, Maosheng Ye, Shuangjie Xu, Tongyi Cao, and Qifeng Chen. PPAD：端到端自动驾驶中预测与规划的迭代交互（Iterative interactions of prediction and planning for end-to-end autonomous driving）。载于 *European Conference on Computer Vision*，239–256。Springer，2024。  
+简要解释：这篇论文强调预测与规划之间的迭代耦合，而不是一次性独立完成两者。
+
+[16] Kashyap Chitta, Aditya Prakash, Bernhard Jaeger, Zehao Yu, Katrin Renz, and Andreas Geiger. TransFuser：基于 transformer 的传感器融合模仿学习用于自动驾驶（Imitation with transformer-based sensor fusion for autonomous driving）。*IEEE Transactions on Pattern Analysis and Machine Intelligence*，45(11):12878–12895，2022。  
+简要解释：TransFuser 是自动驾驶中的经典多模态融合方法，利用 transformer 结构整合不同传感器信息。
+
+[17] Daniel Dauner, Marcel Hallgarten, Tianyu Li, Xinshuo Weng, Zhiyu Huang, Zetong Yang, Hongyang Li, Igor Gilitschenski, Boris Ivanovic, Marco Pavone, et al. NavSim：数据驱动的非反应式自动驾驶车辆仿真与基准评测（Data-driven non-reactive autonomous vehicle simulation and benchmarking）。*Advances in Neural Information Processing Systems*，37:28706–28719，2024。  
+简要解释：NavSim 提供了一个基于数据驱动的仿真与评测框架，用于更真实地测试自动驾驶策略。</pre>
+        </article>
+      </div>
+    </section>
+
+    <section class="spread" id="page-20">
+      <header><span>Page 20</span><a href="#top">Top</a></header>
+      <div class="cols">
+        <figure class="original">
+          <img src="faithful_page_images/Xiaomi-Discrete-WAM/page-020.png" alt="Xiaomi-Discrete-WAM page 20" loading="lazy" />
+        </figure>
+        <article class="translation">
+          <div class="label">中文翻译 + 简单解释</div>
+          <pre>[18] Carolyn C. Duncan-Johnson 和 Emanuel Donchin. 关于如何量化惊奇（quantifying surprise）：事件相关电位（event-related potentials）随主观概率变化的差异。Psychophysiology, 14(5):456–467, 1977。  
+简要解释：这篇文献讨论了“惊奇”如何在脑电的事件相关电位中体现，属于认知神经科学与概率知觉研究的经典工作。
+
+[19] Guhao Feng, Yihan Geng, Jian Guan, Wei Wu, Liwei Wang, 和 Di He. 扩散语言模型（diffusion language model）的理论收益与局限。载于 Advances in Neural Information Processing Systems, 2025。  
+简要解释：这篇文献从理论角度分析 diffusion language model 的优势与边界，适合用来理解该类生成模型的基本能力与限制。
+
+[20] Hao Gao, Shaoyu Chen, Bo Jiang, Bencheng Liao, Yiang Shi, Xiaoyang Guo, Yuechuan Pu, Xiangyu Li, Wenyu Liu, Qian Zhang, 等. Rad：通过基于大规模 3DGS（3dgs-based）的强化学习训练端到端驾驶策略。Advances in Neural Information Processing Systems, 38:32551–32576, 2026。  
+简要解释：这篇工作聚焦自动驾驶中的端到端策略学习，强调借助大规模 3DGS 和强化学习来训练驾驶策略。
+
+[21] Shenyuan Gao, Jiazhi Yang, Li Chen, Kashyap Chitta, Yihang Qiu, Andreas Geiger, Jun Zhang, 和 Hongyang Li. Vista：一个具有高保真度和多样可控性的可泛化驾驶世界模型（world model）。Advances in Neural Information Processing Systems, 37:91560–91596, 2024。  
+简要解释：这篇文献提出用于自动驾驶的 world model，重点在于既能泛化，又能保持较高画质/细节与控制能力。
+
+[22] Shenyuan Gao, William Liang, Kaiyuan Zheng, Ayaan Malik, Seonghyeon Ye, Sihyun Yu, Wei-Cheng Tseng, Yuzhu Dong, Kaichun Mo, Chen-Hsuan Lin, 等. Dreamdojo：一个来自大规模人类视频（large-scale human videos）的通用机器人世界模型（generalist robot world model）。arXiv 预印本 arXiv:2602.06949, 2026。  
+简要解释：这篇工作将大规模人类视频用于构建通用机器人 world model，目标是提升机器人对复杂世界动态的理解与生成能力。
+
+[23] Yanchen Guan, Haicheng Liao, Zhenning Li, Jia Hu, Runze Yuan, Guohui Zhang, 和 Chengzhong Xu. 自动驾驶中的世界模型（world models for autonomous driving）：初步综述（an initial survey）。IEEE Transactions on Intelligent Vehicles, 2024。  
+简要解释：这是一篇综述类文献，系统梳理自动驾驶领域 world model 的研究脉络、方法类别与发展趋势。
+
+[24] Ke Guo, Haochen Liu, Xiaojun Wu, Jia Pan, 和 Chen Lv. ipad：迭代式、以 proposal 为中心的端到端自动驾驶（Iterative proposal-centric end-to-end autonomous driving）。arXiv 预印本 arXiv:2505.15111, 2025。  
+简要解释：这篇文献强调通过迭代 proposal 来优化端到端自动驾驶决策流程，突出 proposal-centric 的建模方式。
+
+[25] Steffen Hagedorn, Marcel Hallgarten, Martin Stoll, 和 Alexandru Paul Condurache. 预测与规划在深度学习自动驾驶系统中的融合：综述（A review）。IEEE Transactions on Intelligent Vehicles, 10(5):3626–3643, 2024。  
+简要解释：这篇综述聚焦“预测”和“规划”在自动驾驶深度学习系统中的结合方式及其研究现状。
+
+[26] Anthony Hu, Lloyd Russell, Hudson Yeo, Zak Murez, George Fedoseev, Alex Kendall, Jamie Shotton, 和 Gianluca Corrado. Gaia-1：用于自动驾驶的生成式世界模型（a generative world model）。arXiv 预印本 arXiv:2309.17080, 2023。  
+简要解释：这篇工作提出面向自动驾驶的生成式 world model，说明其可用于建模环境演化与驾驶场景生成。
+
+[27] Xiaotao Hu, Wei Yin, Mingkai Jia, Junyuan Deng, Xiaoyang Guo, Qian Zhang, Xiaoxiao Long, 和 Ping Tan. Drivingworld：通过 Video GPT 构建自动驾驶世界模型。arXiv 预印本 arXiv:2412.19505, 2024。  
+简要解释：这篇文献尝试借助 Video GPT 思路来构建驾驶场景 world model，强调视频生成与驾驶世界建模的结合。
+
+[28] Yihan Hu, Jiazhi Yang, Li Chen, Keyu Li, Chonghao Sima, Xizhou Zhu, Siqi Chai, Senyao Du, Tianwei Lin, Wenhai Wang, 等. 面向规划的自动驾驶（Planning-oriented autonomous driving）。载于 Proceedings of the IEEE/CVF conference on computer vision and pattern recognition, pages 17853–17862, 2023。  
+简要解释：这篇工作强调自动驾驶应以规划为核心来组织模型设计，体现“规划导向”的系统架构思路。
+
+[29] Wenhui Huang, Songyan Zhang, Qihang Huang, Zhidong Wang, Zhiqi Mao, Collister Chua, Zhan Chen, Long Chen, 和 Chen Lv. Automot：一个统一的视觉-语言-动作模型（vision-language-action model），采用异步混合 Transformer（asynchronous mixture-of-transformers）用于端到端自动驾驶。arXiv 预印本 arXiv:2603.14851, 2026。  
+简要解释：这篇文献提出统一的 VLA（vision-language-action）模型，并通过异步 MoT 架构服务于端到端驾驶。
+
+[30] Yuzhou Huang, Benjin Zhu, Hengtong Lu, Victor Shea-Jay Huang, Haiming Zhang, Wei Chen, Jifeng Dai, Yan Xie, 和 Hongsheng Li. Mindvla-u1：在统一流式架构（unified streaming architecture）下，VLA 胜过 VA，用于自动驾驶。arXiv 预印本 arXiv:2605.12624, 2026。  
+简要解释：这篇工作主张在统一流式架构中，视觉-语言-动作模型（VLA）优于仅视觉-动作（VA）框架，面向驾驶任务。
+
+[31] Zhiyu Huang, Haochen Liu, 和 Chen Lv. Gameformer：用于自动驾驶的、基于博弈论（game-theoretic）的交互式预测与规划 Transformer 模型的建模与学习。载于 Proceedings of the IEEE/CVF International Conference on Computer Vision, pages 3903–3913, 2023。  
+简要解释：这篇工作把博弈论引入交互式预测与规划，强调交通参与者之间的相互作用建模。
+
+[32] Physical Intelligence, Kevin Black, Noah Brown, James Darpinian, Karan Dhabalia, Danny Driess, Adnan Esmail, Michael Equi, Chelsea Finn, Niccolo Fusai, 等. π0.5：一个具有开放世界泛化能力（open-world generalization）的视觉-语言-动作模型（vision-language-action model）。arXiv 预印本 arXiv:2504.16054, 2025。  
+简要解释：这篇文献提出具有开放世界泛化能力的 VLA 模型，强调在未知环境中的泛化表现。
+
+[33] Anqing Jiang, Yu Gao, Yiru Wang, Zhigang Sun, Shuo Wang, Yuwen Heng, Hao Sun, Shichen Tang, Lijuan Zhu, Jinhao Chai, 等. Irl-vla：通过奖励世界模型（reward world model）训练视觉-语言-动作策略（vision-language-action policy）。arXiv 预印本 arXiv:2508.06571, 2025。  
+简要解释：这篇工作把 reward world model 引入 VLA 策略训练，用奖励建模来提升决策学习效果。
+
+[34] Sicong Jiang, Zilin Huang, Kangan Qian, Ziang Luo, Tianze Zhu, Yang Zhong, Yihong Tang, Menglin Kong, Yunlong Wang, Siwen Jiao, 等. 面向自动驾驶的视觉-语言-动作模型（vision-language-action models）综述。载于 Proceedings of the IEEE/CVF International Conference on Computer Vision, pages 4524–4536, 2025。  
+简要解释：这是一篇综述，系统总结了自动驾驶领域 VLA 模型的发展、方法谱系与关键挑战。</pre>
+        </article>
+      </div>
+    </section>
+
+    <section class="spread" id="page-21">
+      <header><span>Page 21</span><a href="#top">Top</a></header>
+      <div class="cols">
+        <figure class="original">
+          <img src="faithful_page_images/Xiaomi-Discrete-WAM/page-021.png" alt="Xiaomi-Discrete-WAM page 21" loading="lazy" />
+        </figure>
+        <article class="translation">
+          <div class="label">中文翻译 + 简单解释</div>
+          <pre>论文标题：离散-WAM：用于世界-策略学习的统一离散视觉-动作 token 编辑（Discrete-WAM: Unified Discrete Vision-Action Token Editing for World-Policy Learning）
+
+[35] Peter Karkus, Maximilian Igl, Yuxiao Chen, Kashyap Chitta, Jef Packer, Bertrand Douillard, Ran Tian, Alexander Naumann, Guillermo Garcia-Cobo, Shuhan Tan, 等。自动驾驶中的超越行为克隆：闭环训练技术综述。Authorea Preprints，2025。  
+简要解释：该文献是在自动驾驶领域讨论闭环训练方法的综述，重点是说明仅靠行为克隆不够，需要更强的闭环优化技术。
+
+[36] Jaeyeon Kim, Kulin Shah, Vasilis Kontonis, Sham M. Kakade, 和 Sitan Chen。在掩码扩散（masked diffusions）中，训练应对最坏情况，规划追求最佳情况：理解 token 排序。载于第 42 届国际机器学习会议论文集（Proceedings of the 42nd International Conference on Machine Learning），卷 267 of Proceedings of Machine Learning Research，第 30749–30768 页。PMLR，2025。  
+简要解释：这篇工作研究掩码扩散模型里的 token 顺序问题，分析不同排序方式对训练和规划表现的影响。
+
+[37] Moo Jin Kim, Yihuai Gao, Tsung-Yi Lin, Yen-Chen Lin, Yunhao Ge, Grace Lam, Percy Liang, Shuran Song, Ming-Yu Liu, Chelsea Finn, 等。Cosmos Policy：用于视觉运动控制与规划的视频模型微调。arXiv 预印本 arXiv:2601.16163，2026。  
+简要解释：这项工作把视频模型微调用于视觉-运动控制与规划，说明视频基础模型可直接服务于策略学习。
+
+[38] Lingdong Kong, Wesley Yang, Jianbiao Mei, Youquan Liu, Ao Liang, Dekai Zhu, Dongyue Lu, Wei Yin, Xiaotao Hu, Mingkai Jia, 等。3D 和 4D 世界建模：综述。arXiv 预印本 arXiv:2509.07996，2025。  
+简要解释：该综述聚焦 3D/4D 世界模型，梳理了世界建模在时空理解与预测方面的研究进展。
+
+[39] Hugo Lavenant 和 Giacomo Zanella。具有分解近似的掩码扩散的误差界与最优调度。arXiv 预印本 arXiv:2510.25544，2025。  
+简要解释：该文献从理论上分析掩码扩散的误差上界，并讨论如何安排采样/编辑调度更优。
+
+[40] Yann LeCun 等。通往自主机器智能之路 0.9 版。2，2022-06-27。Open Review，62(1):1–62，2022。  
+简要解释：这是 LeCun 关于自主机器智能路线的经典观点性文章，对后续世界模型和智能体研究影响较大。
+
+[41] Gen Li 和 Changxiao Cai。扩散语言模型的收敛理论：信息论视角。arXiv 预印本 arXiv:2505.21400，2025。  
+简要解释：该文献从信息论角度讨论扩散语言模型的收敛性质，为这类生成模型提供理论依据。
+
+[42] Pengxiang Li, Yinan Zheng, Yue Wang, Huimin Wang, Hang Zhao, Jingjing Liu, Xianyuan Zhan, Kun Zhan, 和 Xianpeng Lang。用于自动驾驶中反思式视觉-语言-动作模型的离散扩散。arXiv 预印本 arXiv:2509.20109，2025。  
+简要解释：这篇工作将离散扩散引入自动驾驶的 VLA 模型，强调“反思式”推理与动作生成。
+
+[43] Yingyan Li, Shuyao Shang, Weisong Liu, Bing Zhan, Haochen Wang, Yuqi Wang, Yuntao Chen, Xiaoman Wang, Yasong An, Chufeng Tang, 等。DriveVLA-W0：世界模型放大自动驾驶中的数据缩放定律。arXiv 预印本 arXiv:2510.12796，2025。  
+简要解释：该工作研究世界模型如何增强自动驾驶中的数据规模效应，突出世界模型对数据效率的放大作用。
+
+[44] Yingyan Li, Yuqi Wang, Yang Liu, Jiawei He, Lue Fan, 和 Zhaoxiang Zhang。通过 BEV 世界模型进行在线轨迹评估的端到端驾驶。载于 IEEE/CVF 国际计算机视觉会议论文集，第 27137–27146 页，2025。  
+简要解释：这项工作把 BEV（鸟瞰图）世界模型用于在线轨迹评估，从而改进端到端驾驶决策。
+
+[45] Yongkang Li, Kaixin Xiong, Xiangyu Guo, Fang Li, Sixu Yan, Gangwei Xu, Lijun Zhou, Long Chen, Haiyang Sun, Bing Wang, 等。RecogDrive：一种用于端到端自动驾驶的强化认知框架。arXiv 预印本 arXiv:2506.08052，2025。  
+简要解释：该文献尝试把强化学习与认知框架结合，提升端到端自动驾驶中的理解与决策能力。
+
+[46] Yongkang Li, Lijun Zhou, Sixu Yan, Bencheng Liao, Tianyi Yan, Kaixin Xiong, Long Chen, Hongwei Xie, Bing Wang, Guang Chen, 等。UniDriveVLA：统一自动驾驶中的理解、感知与动作规划。arXiv 预印本 arXiv:2604.02190，2026。  
+简要解释：这篇工作试图将理解、感知和规划统一到一个自动驾驶 VLA 框架中，强调任务一体化。
+
+[47] Zhenxin Li, Kailin Li, Shihao Wang, Shiyi Lan, Zhiding Yu, Yishen Ji, Zhiqi Li, Ziyue Zhu, Jan Kautz, Zuxuan Wu, 等。Hydra-MDP：基于多目标 Hydra 蒸馏的端到端多模态规划。arXiv 预印本 arXiv:2406.06978，2024。  
+简要解释：该工作使用多目标 Hydra 蒸馏来做多模态规划，主要面向端到端决策问题。
+
+[48] Zhenxin Li, Shihao Wang, Shiyi Lan, Zhiding Yu, Zuxuan Wu, 和 Jose M Alvarez。Hydra-Next：通过开放环训练实现稳健闭环驾驶。载于 IEEE/CVF 国际计算机视觉会议论文集，第 27305–27314 页，2025。  
+简要解释：这篇工作关注如何用开放环训练提升闭环驾驶鲁棒性，说明训练范式和部署表现之间的关系。
+
+[49] Bencheng Liao, Shaoyu Chen, Haoran Yin, Bo Jiang, Cheng Wang, Sixu Yan, Xinbang Zhang, Xiangyu Li, Ying Zhang, Qian Zhang, 等。DiffusionDrive：用于端到端自动驾驶的截断扩散模型。载于计算机视觉与模式识别会议论文集，第 12037–12047 页，2025。  
+简要解释：该文献提出截断扩散模型来生成驾驶动作/轨迹，属于扩散式自动驾驶方法。
+
+[50] Haohong Lin, Yunzhi Zhang, Wenhao Ding, Jiajun Wu, 和 Ding Zhao。基于模型的策略自适应用于闭环端到端自动驾驶。载于 CVPR 2025 的 Foundation Models Meet Embodied Agents 工作坊，2025。  
+简要解释：这篇工作讨论如何借助模型进行策略自适应，以提升闭环端到端自动驾驶性能。
+
+[51] Hongbin Lin, Yiming Yang, Yifan Zhang, Chaoda Zheng, Jie Feng, Sheng Wang, Zhennan Wang, Shijia Chen, Boyang Wang, Yu Zhang, 等。FutureX：通过潜在链式思维世界模型增强端到端自动驾驶。arXiv 预印本 arXiv:2512.11226，2025。  
+简要解释：该文献把潜在 chain-of-thought 世界模型引入端到端自动驾驶，强调通过世界建模增强推理与预测能力。</pre>
+        </article>
+      </div>
+    </section>
+
+    <section class="spread" id="page-22">
+      <header><span>Page 22</span><a href="#top">Top</a></header>
+      <div class="cols">
+        <figure class="original">
+          <img src="faithful_page_images/Xiaomi-Discrete-WAM/page-022.png" alt="Xiaomi-Discrete-WAM page 22" loading="lazy" />
+        </figure>
+        <article class="translation">
+          <div class="label">中文翻译 + 简单解释</div>
+          <pre>[52] Haochen Liu, Li Chen, Yu Qiao, Chen Lv, and Hongyang Li. 面向交互式自动驾驶的推理型多智能体行为拓扑（Reasoning multi-agent behavioral topology for interactive autonomous driving）。《Advances in Neural Information Processing Systems》, 37:92605–92637, 2024。  
+简要解释：这篇工作关注自动驾驶中的多智能体交互，重点是用“行为拓扑”刻画车辆之间的关系与推理过程。
+
+[53] Haochen Liu, Zhiyu Huang, Wenhui Huang, Haohan Yang, Xiaoyu Mo, and Chen Lv. 面向自动驾驶的混合预测集成规划（Hybrid-prediction integrated planning for autonomous driving）。《IEEE Transactions on Pattern Analysis and Machine Intelligence》, 47(4):2597–2614, 2025。  
+简要解释：这篇文章把预测与规划结合起来，强调用混合预测结果提升自动驾驶决策质量。
+
+[54] Haochen Liu, Tianyu Li, Haohan Yang, Li Chen, Caojun Wang, Ke Guo, Haochen Tian, Hongchen Li, Hongyang Li, and Chen Lv. 结合自感知扩展的强化细化，用于端到端自动驾驶（Reinforced refinement with self-aware expansion for end-to-end autonomous driving）。《IEEE Transactions on Pattern Analysis and Machine Intelligence》, 2026。  
+简要解释：这篇工作强调端到端自动驾驶中的“强化细化”，并引入自感知扩展来提升模型表现。
+
+[55] Sulin Liu, Juno Nam, Andrew Campbell, Hannes St&quot;ark, Yilun Xu, Tommi Jaakkola, and Rafael G’omez-Bombarelli. 生成时思考：具有计划去噪的离散扩散（Think while you generate: Discrete diffusion with planned denoising）。arXiv preprint arXiv:2410.06264, 2024。  
+简要解释：这篇文章讨论离散扩散模型如何在生成过程中显式规划去噪步骤，以改进生成质量。
+
+[56] Francesco Locatello, Dirk Weissenborn, Thomas Unterthiner, Aravindh Mahendran, Georg Heigold, Jakob Uszkoreit, Alexey Dosovitskiy, and Thomas Kipf. 基于槽注意力的对象中心学习（Object-centric learning with slot attention）。《Advances in neural information processing systems》, 33:11525–11538, 2020。  
+简要解释：这是一篇对象中心学习的经典工作，提出了 Slot Attention 来从图像中分解出独立对象表示。
+
+[57] Jiachen Lu, Ze Huang, Zeyu Yang, Jiahui Zhang, and Li Zhang. Wovogen：用于可控多摄像头驾驶场景生成的世界体积感知扩散（World volume-aware diffusion for controllable multi-camera driving scene generation）。收录于 European conference on computer vision, pages 329–345. Springer, 2024。  
+简要解释：这篇工作面向多摄像头驾驶场景生成，重点是利用“世界体积”信息增强可控生成能力。
+
+[58] Omer Luxembourg, Haim Permuter, and Eliya Nachmani. Plan for speed：掩码扩散语言模型的扩张式调度（Dilated scheduling for masked diffusion language models）。arXiv preprint arXiv:2506.19037, 2025。  
+简要解释：这篇文章研究如何为掩码扩散语言模型设计更高效的采样/调度策略，从而提升速度。
+
+[59] Teli Ma, Jia Zheng, Zifan Wang, Chunli Jiang, Andy Cui, Junwei Liang, and Shuo Yang. Dit4dit：联合建模视频动态与动作，用于可泛化机器人控制（Jointly modeling video dynamics and actions for generalizable robot control）。arXiv preprint arXiv:2603.10448, 2026。  
+简要解释：这篇工作把视频动态和动作统一建模，目标是提升机器人控制的泛化能力。
+
+[60] Yingzi Ma, Yulong Cao, Wenhao Ding, Shuibai Zhang, Yan Wang, Boris Ivanovic, Ming Jiang, Marco Pavone, and Chaowei Xiao. dvlm-ad：通过可控推理增强用于驾驶的扩散视觉语言模型（Enhance diffusion vision-language-model for driving via controllable reasoning）。arXiv preprint arXiv:2512.04459, 2025。  
+简要解释：这篇文章关注驾驶任务中的扩散式视觉语言模型，并通过可控推理增强其表现。
+
+[61] Yong-Hyun Park, Chieh-Hsin Lai, Satoshi Hayakawa, Yuhta Takida, and Yuki Mitsufuji. 跳跃你的步数：优化离散扩散模型的采样调度（Optimizing sampling schedule of discrete diffusion models）。收录于 International Conference on Learning Representations, volume 2025, pages 96272–96300, 2025。  
+简要解释：这篇工作研究离散扩散模型的采样步数与调度设计，目标是提高采样效率。
+
+[62] Fred Zhangzhi Peng, Zachary Bezemek, Sawan Patel, Jarrid Rector-Brooks, Sherwood Yao, Alexander Tong, and Pranam Chatterjee. 掩码扩散模型采样的路径规划（Path planning for masked diffusion model sampling）。arXiv preprint arXiv:2502.03540, 2025。  
+简要解释：这篇文章把采样过程视作路径规划问题，探索如何更有效地引导掩码扩散模型完成采样。
+
+[63] Yair Schiff, Omer Belhasin, Roy Uziel, Guanghan Wang, Marianne Arriola, Gilad Turok, Michael Elad, and Volodymyr Kuleshov. 从错误中学习：自我纠错的掩码扩散模型（Self-correcting masked diffusion models）。arXiv preprint arXiv:2602.11590, 2026。  
+简要解释：这篇工作提出让掩码扩散模型能够识别并修正自身生成错误，从而提高鲁棒性。
+
+[64] Shuyao Shang, Yuntao Chen, Yuqi Wang, Yingyan Li, and ZHAO-XIANG ZHANG. Drivedpo：通过 safety DPO 进行策略学习，用于端到端自动驾驶（Policy learning via safety DPO for end-to-end autonomous driving）。《Advances in Neural Information Processing Systems》, 38:81565–81585, 2026。  
+简要解释：这篇文章将安全约束与 DPO 结合，用于端到端自动驾驶中的策略学习。
+
+[65] Zhihong Shao, Peiyi Wang, Qihao Zhu, Runxin Xu, Junxiao Song, Xiao Bi, Haowei Zhang, Mingchuan Zhang, YK Li, Yang Wu, et al. Deepseekmath：推动开源语言模型中的数学推理极限（Pushing the limits of mathematical reasoning in open language models）。arXiv preprint arXiv:2402.03300, 2024。  
+简要解释：这是一篇聚焦数学推理能力提升的工作，讨论如何在开源语言模型中突破数学推理上限。
+
+[66] Chen Shi, Jinrui Xu, Shaoshuai Shi, Kehua Sheng, Bo Zhang, and Li Jiang. DriveWAM：视频生成先验使自动驾驶中的可扩展世界-动作建模成为可能（Video generative priors enable scalable world-action modeling for autonomous driving）。arXiv preprint arXiv:2605.28544, 2026。  
+简要解释：这篇工作利用视频生成先验来支持自动驾驶中的世界-动作建模，并强调可扩展性。
+
+[67] Oriane Siméoni, Huy V Vo, Maximilian Seitzer, Federico Baldassarre, Maxime Oquab, Cijo Jose, Vasil Khalidov, Marc Szafraniec, Seungeun Yi, Michaël Ramamonjisoa, et al. DINOv3。arXiv preprint arXiv:2508.10104, 2025。  
+简要解释：这是 DINO 系列的后续工作，通常与自监督视觉表征学习有关。
+
+[68] Ziying Song, Lin Liu, Hongyu Pan, Bencheng Liao, Mingzhe Guo, Lei Yang, Yongchang Zhang, Shaoqing Xu, Caiyan Jia, and Yadan Luo. Diver：强化扩散打破端到端自动驾驶中的模仿瓶颈（Reinforced diffusion breaks imitation bottlenecks in end-to-end autonomous driving）。arXiv preprint arXiv:2507.04049, 2025。  
+简要解释：这篇工作强调用强化式扩散方法突破纯模仿学习在端到端自动驾驶中的限制。
+
+[69] Wenchao Sun, Xuewu Lin, Keyu Chen, Zixiang Pei, Xiang Li, Yining Shi, and Sifa Zheng. Sparsedrivev2：评分就是你所需要的一切，用于端到端自动驾驶（Scoring is all you need for end-to-end autonomous driving）。arXiv preprint arXiv:2603.29163, 2026。  
+简要解释：这篇文章主张用评分机制即可支撑端到端自动驾驶中的关键决策与优化。</pre>
+        </article>
+      </div>
+    </section>
+
+    <section class="spread" id="page-23">
+      <header><span>Page 23</span><a href="#top">Top</a></header>
+      <div class="cols">
+        <figure class="original">
+          <img src="faithful_page_images/Xiaomi-Discrete-WAM/page-023.png" alt="Xiaomi-Discrete-WAM page 23" loading="lazy" />
+        </figure>
+        <article class="translation">
+          <div class="label">中文翻译 + 简单解释</div>
+          <pre>[70] Haochen Tian, Tianyu Li, Haochen Liu, Jiazhi Yang, Yihang Qiu, Guang Li, Junli Wang, Yinfeng Gao, Zhang Zhang, Liang Wang, et al. Simscale: 通过大规模真实世界仿真学习驾驶（Learning to drive via real-world simulation at scale）. arXiv 预印本 arXiv:2511.23369, 2025。  
+简要解释：这条参考文献介绍了一个通过大规模真实世界仿真来学习驾驶的工作，强调数据规模与仿真环境对驾驶学习的重要性。
+
+[71] Wenwen Tong, Chonghao Sima, Tai Wang, Li Chen, Silei Wu, Hanming Deng, Yi Gu, Lewei Lu, Ping Luo, Dahua Lin, et al. Scene as occupancy（场景即占据）. 载于 Proceedings of the IEEE/CVF International Conference on Computer Vision，页 8406–8415，2023。  
+简要解释：该工作把场景建模为占据表示，属于自动驾驶中常见的三维环境理解范式。
+
+[72] Aaron van den Oord, Oriol Vinyals, and Koray Kavukcuoglu. Neural discrete representation learning（神经离散表示学习）. 载于 Advances in Neural Information Processing Systems，2017。  
+简要解释：这篇经典工作提出了神经离散表示学习方法，是离散潜变量、向量量化等方向的重要基础。
+
+[73] Huimin Wang, Yue Wang, Bihao Cui, Pengxiang Li, Ben Lu, Mingqian Wang, Tong Wang, Chuan Tang, Teng Zhang, and Kun Zhan. Reflectdrive-2: Reinforcement-learning-aligned self-editing for discrete diffusion driving（面向离散扩散驾驶的、与强化学习对齐的自编辑）. arXiv 预印本 arXiv:2605.04647, 2026。  
+简要解释：该工作关注离散扩散式驾驶生成，并引入与强化学习对齐的自编辑机制来提升生成结果的可用性。
+
+[74] Linbo Wang, Yupeng Zheng, Qiang Chen, Shiwei Li, Yichen Zhang, Zebin Xing, Qichao Zhang, Xiang Li, Deheng Qian, Pengxuan Yang, et al. Latent-wam: 面向端到端自动驾驶的潜空间世界动作建模（Latent world action modeling for end-to-end autonomous driving）. arXiv 预印本 arXiv:2603.24581, 2026。  
+简要解释：这篇论文把世界动作建模放到潜空间中进行，以支持端到端自动驾驶的学习与规划。
+
+[75] Linhan Wang, Zichong Yang, Chen Bai, Guoxiang Zhang, Xiaotong Liu, Xiaoyin Zheng, Xiao-Xiao Long, Chang-Tien Lu, and Cheng Lu. Drive-jepa: 视频 JEPA 与多模态轨迹蒸馏相结合的端到端驾驶（Video JEPA meets multimodal trajectory distillation for end-to-end driving）. arXiv 预印本 arXiv:2601.22032, 2026。  
+简要解释：该工作将视频表征学习与多模态轨迹蒸馏结合，用于端到端驾驶任务。
+
+[76] Wenshuo Wang, Letian Wang, Chengyuan Zhang, Changliu Liu, and Lijun Sun. 社会交互在自动驾驶中的作用：综述与展望（Social interactions for autonomous driving: A review and perspectives）. Foundations and Trends® in Robotics, 10(3-4):198–377, 2022。  
+简要解释：这是一篇综述，系统总结了自动驾驶中社会交互建模的问题、进展与未来方向。
+
+[77] Xiaofeng Wang, Zheng Zhu, Guan Huang, Xinze Chen, Jiagang Zhu, and Jiwen Lu. Drivedreamer: 面向自动驾驶的真实世界驾驶世界模型（Towards real-world-drive world models for autonomous driving）. 载于 European conference on computer vision，页 55–72。Springer，2024。  
+简要解释：该工作聚焦于更贴近真实道路数据和场景分布的驾驶世界模型构建。
+
+[78] Yan Wang, Wenjie Luo, Junjie Bai, Yulong Cao, Tong Che, Ke Chen, Yuxiao Chen, Jenna Diamond, Yifan Ding, Wenhao Ding, et al. Alpamayo-r1: 在长尾场景中连接推理与动作预测，以实现可泛化的自动驾驶（Bridging reasoning and action prediction for generalizable autonomous driving in the long tail）. arXiv 预印本 arXiv:2511.00088, 2025。  
+简要解释：该工作强调在长尾驾驶场景下，把推理能力与动作预测结合起来提升泛化性。
+
+[79] Yuqi Wang, Jiawei He, Lue Fan, Hongxin Li, Yuntao Chen, and Zhaoxiang Zhang. Driving into the future: 使用世界模型进行多视角视觉预测与规划的自动驾驶（Multiview visual forecasting and planning with world model for autonomous driving）. 载于 Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition，页 14749–14759，2024。  
+简要解释：这篇论文利用世界模型对多视角未来视觉进行预测，并服务于规划任务。
+
+[80] Julong Wei, Shanshuai Yuan, Pengfei Li, Qingda Hu, Zhongxue Gan, and Wenchao Ding. Occllama: 面向自动驾驶的占据-语言-动作生成式世界模型（An occupancy-language-action generative world model for autonomous driving）. arXiv 预印本 arXiv:2409.03272, 2024。  
+简要解释：该工作把占据、语言和动作统一到一个生成式世界模型中，面向自动驾驶应用。
+
+[81] Xinshuo Weng, Boris Ivanovic, Yan Wang, Yue Wang, and Marco Pavone. Para-drive: 用于实时自动驾驶的并行化架构（Parallelized architecture for real-time autonomous driving）. 载于 Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition，页 15449–15458，2024。  
+简要解释：这篇论文关注实时性，通过并行化架构提升自动驾驶系统的推理效率。
+
+[82] Tianze Xia, Yongkang Li, Lijun Zhou, Jingfeng Yao, Kaixin Xiong, Haiyang Sun, Bing Wang, Kun Ma, Guang Chen, Hangjun Ye, et al. Drivelaw: 在潜空间驾驶世界中统一规划与视频生成（Unifying planning and video generation in a latent driving world）. 载于 Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition，页 39701–39712，2026。  
+简要解释：该工作将规划与视频生成统一到潜在驾驶世界建模框架里，强调多任务一致性。
+
+[83] Zebin Xing, Xingyu Zhang, Yang Hu, Bo Jiang, Tong He, Qian Zhang, Xiaoxiao Long, and Wei Yin. Goalflow: 面向端到端自动驾驶中多模态轨迹生成的目标驱动流匹配（Goal-driven flow matching for multimodal trajectories generation in end-to-end autonomous driving）. 载于 Proceedings of the Computer Vision and Pattern Recognition Conference，页 1602–1611，2025。  
+简要解释：该工作通过目标驱动的流匹配来生成多模态轨迹，服务于端到端自动驾驶决策。
+
+[84] Yifang Xu, Jiahao Cui, Feipeng Cai, Zhihao Zhu, Hanlin Shang, Shan Luan, Mingwang Xu, Neng Zhang, Yaoyi Li, Jia Cai, et al. Wam-flow: 通过离散流匹配实现的并行粗到细运动规划，用于自动驾驶（Parallel coarse-to-fine motion planning via discrete flow matching for autonomous driving）. arXiv 预印本 arXiv:2512.06112, 2025。  
+简要解释：这篇论文把离散流匹配用于运动规划，并采用从粗到细的并行生成策略。
+
+[85] Zhenhua Xu, Yujia Zhang, Enze Xie, Zhen Zhao, Yong Guo, Kwan-Yee K Wong, Zhenguo Li, and Hengshuang Zhao. Drivegpt4: 通过大语言模型实现可解释的端到端自动驾驶（Interpretable end-to-end autonomous driving via large language model）. IEEE Robotics and Automation Letters, 2024。  
+简要解释：该工作尝试用大语言模型增强端到端自动驾驶的可解释性，使决策过程更透明。
+
+[86] Tianyi Yan, Tao Tang, Xingtai Gui, Yongkang Li, Jiasen Zheng, Weiyao Huang, Lingdong Kong, Wencheng Han, Xia Zhou, Xueyang Zhang, et al. Ad-r1: 面向端到端自动驾驶的闭环强化学习（Closed-loop reinforcement learning for end-to-end autonomous driving）  
+简要解释：这条参考文献在页面末尾处截断，已显示部分表明其核心是把闭环强化学习用于端到端自动驾驶。</pre>
+        </article>
+      </div>
+    </section>
+
+    <section class="spread" id="page-24">
+      <header><span>Page 24</span><a href="#top">Top</a></header>
+      <div class="cols">
+        <figure class="original">
+          <img src="faithful_page_images/Xiaomi-Discrete-WAM/page-024.png" alt="Xiaomi-Discrete-WAM page 24" loading="lazy" />
+        </figure>
+        <article class="translation">
+          <div class="label">中文翻译 + 简单解释</div>
+          <pre>与 impartial world models（无偏世界模型）一起。  
+简要解释：这是前一条参考文献的结尾片段，说明相关工作与“无偏世界模型”有关。
+
+[87] An Yang, Anfeng Li, Baosong Yang, Beichen Zhang, Binyuan Hui, Bo Zheng, Bowen Yu, Chang Gao, Chengen Huang, Chenxu Lv, et al. Qwen3 technical report. arXiv 预印本 arXiv:2505.09388，2025 年。  
+简要解释：这是 Qwen3 的技术报告条目，记录了作者团队与预印本编号。
+
+[88] Jiazhi Yang, Shenyuan Gao, Yihang Qiu, Li Chen, Tianyu Li, Bo Dai, Kashyap Chitta, Penghao Wu, Jia Zeng, Ping Luo, et al. Genad：用于自动驾驶的通用预测模型（Generalized predictive model for autonomous driving）。arXiv 预印本 arXiv:2403.09630，2024 年。  
+简要解释：这是一篇关于自动驾驶通用预测模型的预印本论文，强调其面向驾驶场景的预测能力。
+
+[89] Jiazhi Yang, Shenyuan Gao, Yihang Qiu, Li Chen, Tianyu Li, Bo Dai, Kashyap Chitta, Penghao Wu, Jia Zeng, Ping Luo, et al. 用于自动驾驶的通用预测模型（Generalized predictive model for autonomous driving）。载于 IEEE/CVF Conference on Computer Vision and Pattern Recognition 论文集，页 14662–14672，2024 年。  
+简要解释：这是 [88] 对应的正式会议发表版本，内容聚焦于自动驾驶中的通用预测建模。
+
+[90] Jiazhi Yang, Kunyang Lin, Jinwei Li, Wencong Zhang, Tianwei Lin, Longyan Wu, Zhizhong Su, Hao Zhao, Ya-Qin Zhang, Li Chen, et al. Rise：具有组合式世界模型（compositional world model）的自我改进机器人策略（Self-improving robot policy）。arXiv 预印本 arXiv:2602.11075，2026 年。  
+简要解释：这篇工作讨论如何借助组合式世界模型，让机器人策略能够自我改进。
+
+[91] Pengxuan Yang, Yupeng Zheng, Deheng Qian, Zebin Xing, Qichao Zhang, Linbo Wang, Yichen Zhang, Shaoyu Guo, Zhongpu Xia, Qiang Chen, et al. Dreamerad：利用潜在世界模型（latent world model）实现高效强化学习，用于自动驾驶（Efficient reinforcement learning via latent world model for autonomous driving）。arXiv 预印本 arXiv:2603.24587，2026 年。  
+简要解释：这篇论文关注用潜在世界模型提升自动驾驶中的强化学习效率。
+
+[92] Wenhao Yao, Zhenxin Li, Shiyi Lan, Zi Wang, Xinglong Sun, Jose M Alvarez, and Zuxuan Wu. Drivesuprim：面向端到端规划的精确轨迹选择（Towards precise trajectory selection for end-to-end planning）。载于 AAAI Conference on Artificial Intelligence 论文集，第 40 卷：11910–11918，2026 年。  
+简要解释：这项工作聚焦于端到端规划中的轨迹筛选与精确选择。
+
+[93] Ziyang Yao, Zeyu Zhu, YunCheng Jiang, Zibin Guo, and Huijing Zhao. Unified driving tokens：表示与几何引导的离散分词器（Representation and geometry-guided discrete tokenizer），用于驾驶世界模型和规划（for driving world models and planning）。arXiv 预印本 arXiv:2606.01935，2026 年。  
+简要解释：这篇论文提出统一的驾驶 token 表示方法，试图把表示学习和几何信息结合起来服务于世界模型与规划。
+
+[94] Bowen Ye, Bin Zhang, and Hang Zhao. Dap：用于自动驾驶的离散 token 自回归规划器（A discrete-token autoregressive planner for autonomous driving）。arXiv 预印本 arXiv:2511.13306，2025 年。  
+简要解释：这项工作提出用离散 token 和自回归方式来进行自动驾驶规划。
+
+[95] Seonghyeon Ye, Yunhao Ge, Kaiyuan Zheng, Shenyuan Gao, Sihyun Yu, George Kurian, Suneel Indupuru, You Liang Tan, Chuning Zhu, Jiannan Xiang, et al. World action models are zero-shot policies. arXiv 预印本 arXiv:2602.15922，2026 年。  
+简要解释：这篇论文强调 world action models 可以直接作为零样本策略使用。
+
+[96] Tianyuan Yuan, Zibin Dong, Yicheng Liu, and Hang Zhao. Fast-wam：world action models 需要测试时未来想象吗？（Do world action models need test-time future imagination?）arXiv 预印本 arXiv:2603.16666，2026 年。  
+简要解释：这篇工作在探讨 world action models 是否必须依赖测试时的未来想象机制。
+
+[97] Rongxiang Zeng and Yongqi Dong. 用于自动驾驶的潜在世界模型（Latent world models for automated driving）：统一分类法、评估框架与开放问题（A unified taxonomy, evaluation framework, and open challenges）。arXiv 预印本 arXiv:2603.09086，2026 年。  
+简要解释：这是一篇综述性质工作，梳理自动驾驶潜在世界模型的分类、评估和未解问题。
+
+[98] Kaiwen Zhang, Zhenyu Tang, Xiaotao Hu, Xingang Pan, Xiaoyang Guo, Yuan Liu, Jingwei Huang, Li Yuan, Qian Zhang, Xiao-Xiao Long, et al. Epona：用于自动驾驶的自回归扩散世界模型（Autoregressive diffusion world model for autonomous driving）。载于 IEEE/CVF International Conference on Computer Vision 论文集，页 27220–27230，2025 年。  
+简要解释：这篇论文把自回归与扩散模型结合起来，构建面向自动驾驶的世界模型。
+
+[99] Kewei Zhang, Jin Wang, Sensen Gao, Chengyue Wu, Yulong Cao, Songyang Han, Boris Ivanovic, Langechuan Liu, Marco Pavone, Song Han, et al. Fast-ddrive：用于自动驾驶的高效 block-diffusion VLM（Efficient block-diffusion vlm for autonomous driving）。arXiv 预印本 arXiv:2605.23163，2026 年。  
+简要解释：这项工作关注如何用更高效的 block-diffusion 视觉语言模型服务自动驾驶任务。
+
+[100] Leo Zhang and Saifuddin Syed. 余弦调度（cosine schedule）对掩码离散扩散模型（masked discrete diffusion models）而言是 Fisher-Rao 最优的（is fisher-rao-optimal）。arXiv 预印本 arXiv:2508.04884，2025 年。  
+简要解释：这篇论文从理论上分析了离散扩散模型中的调度策略，指出余弦调度具有最优性质。
+
+[101] Siyan Zhao, Devaansh Gupta, Qinqing Zheng, and Aditya Grover. d1：通过强化学习扩展扩散大语言模型（diffusion large language models）中的推理能力（Scaling reasoning in diffusion large language models via reinforcement learning）。Advances in Neural Information Processing Systems，第 38 卷：56729–56762，2026 年。  
+简要解释：这篇工作讨论如何用强化学习提升扩散式大语言模型的推理能力与规模化表现。
+
+[102] Yixiu Zhao, Jiaxin Shi, Feng Chen, Shaul Druckmann, Lester Mackey, and Scott Linderman. 离散扩散模型（discrete diffusion models）的有信息纠正器（Informed correctors）。arXiv 预印本 arXiv:2407.21243，2024 年。  
+简要解释：这篇论文研究如何为离散扩散模型设计更有效的纠正器，从而改善生成质量。
+
+[103] Zewei Zhou, Tianhui Cai, Seth Z Zhao, Yun Zhang, Zhiyu Huang, Bolei Zhou, and Jiaqi Ma. Autovla：一个用于端到端自动驾驶的视觉-语言-行动模型（vision-language-action model），具备自适应推理与强化微调（adaptive reasoning and reinforcement fine-tuning）。arXiv 预印本 arXiv:2506.13757，2025 年。  
+简要解释：这项工作把视觉、语言和行动统一到同一个模型中，并通过自适应推理与强化微调提升自动驾驶效果。</pre>
+        </article>
+      </div>
+    </section>
+
+    <section class="spread" id="page-25">
+      <header><span>Page 25</span><a href="#top">Top</a></header>
+      <div class="cols">
+        <figure class="original">
+          <img src="faithful_page_images/Xiaomi-Discrete-WAM/page-025.png" alt="Xiaomi-Discrete-WAM page 25" loading="lazy" />
+        </figure>
+        <article class="translation">
+          <div class="label">中文翻译 + 简单解释</div>
+          <pre>[104] Chuning Zhu, Raymond Yu, Siyuan Feng, Benjamin Burchfiel, Paarth Shah, 和 Abhishek Gupta. 《Unified world models: Coupling video and action diffusion for pretraining on large robotic datasets》（统一世界模型：耦合视频与动作扩散，用于大规模机器人数据集预训练）。arXiv preprint arXiv:2504.02792, 2025。  
+简要解释：这一条参考文献介绍了一种将视频扩散与动作扩散结合起来的统一世界模型方法，目标是在大规模机器人数据上进行预训练，以提升模型对环境和动作关系的建模能力。
+
+[105] Jialv Zou, Shaoyu Chen, Bencheng Liao, Zhiyu Zheng, Yuehao Song, Lefei Zhang, Qian Zhang, Wenyu Liu, 和 Xinggang Wang. 《Diffusiondrivev2: Reinforcement learning-constrained truncated diffusion modeling in end-to-end autonomous driving》（DiffusionDriveV2：受强化学习约束的截断扩散建模，用于端到端自动驾驶）。arXiv preprint arXiv:2512.07745, 2025。  
+简要解释：这一条参考文献讨论了在端到端自动驾驶中使用截断扩散模型，并引入强化学习约束，以提升生成或决策过程的可控性与驾驶表现。
+
+25</pre>
+        </article>
+      </div>
+    </section>
+
+    <section class="spread" id="page-26">
+      <header><span>Page 26</span><a href="#top">Top</a></header>
+      <div class="cols">
+        <figure class="original">
+          <img src="faithful_page_images/Xiaomi-Discrete-WAM/page-026.png" alt="Xiaomi-Discrete-WAM page 26" loading="lazy" />
+        </figure>
+        <article class="translation">
+          <div class="label">中文翻译 + 简单解释</div>
+          <pre>6 贡献与致谢
+
+核心贡献者
+
+简要解释：这一部分是论文对主要贡献人员的集中说明，通常用来区分对论文工作起核心推动作用的成员。
+
+贡献者
+
+• 姚子扬∗  
+• 刘浩辰∗†  
+• 蒋云程∗†§  
+• 朱泽宇‡  
+• 郭子斌  
+• 赵靖伟  
+• 陈光  
+• 叶航军  
+
+• 王菁茹  
+• 刘天乐  
+• 崔建伟  
+• 杨奎源  
+• 谢宏伟  
+
+简要解释：这里列出了全部参与者；带有不同符号的名字对应不同职责或身份，说明每位成员在项目中的贡献分工不同。
+
+∗ 贡献相同。  
+† 项目负责人。  
+‡ 在小米 EV 完成的工作。  
+§ 通讯作者。
+
+简要解释：这些脚注解释了作者名单中的符号含义，帮助读者理解共同一作、负责人、工作归属和通讯作者等标注规则。
+
+26</pre>
+        </article>
+      </div>
+    </section>
+
+    <section class="spread" id="page-27">
+      <header><span>Page 27</span><a href="#top">Top</a></header>
+      <div class="cols">
+        <figure class="original">
+          <img src="faithful_page_images/Xiaomi-Discrete-WAM/page-027.png" alt="Xiaomi-Discrete-WAM page 27" loading="lazy" />
+        </figure>
+        <article class="translation">
+          <div class="label">中文翻译 + 简单解释</div>
+          <pre>27
+
+7
+
+附录
+
+7.1
+
+相关工作
+
+7.1.1
+
+世界策略建模
+
+世界模型（World models, WMs）已成为物理智能的核心范式之一，其目标是建模在智能体动作作用下外部世界如何演化[23]。在自动驾驶领域，早期受世界模型启发的方法通常会借助中间表示与规划相结合，例如占用预测（occupancy forecasting）[53, 71, 80] 或联合运动预测（joint motion prediction）[15, 25, 31, 52]，其中未来动力学主要被学习出来以服务下游决策。随着大规模视觉基础模型（vision foundation models）[38] 的出现，近期研究越来越转向未来视觉监督（future visual supervision）[21, 57, 77, 89]，利用图像和视频生成作为丰富的监督信号，用于表征学习（representation learning）[75]、面向规划的推理（planning-oriented reasoning）[91]，甚至显式或隐式的奖励建模（reward modeling）[44, 79]。与此同时，另一条研究路线聚焦于仿真和数据生成引擎。这类方法通过结构化世界建模（structured world modeling）[90] 构造交互式或长尾场景，例如行为仿真（behavior simulation）[50]、3D 场景重建（3D scene reconstruction）[20, 70]，或生成式视频模型（generative video models）[77, 88]。通过合成多样化的未来结果和反事实交互（counterfactual interactions），它们为策略评估、闭环训练和安全验证提供了可扩展环境。尽管这些方法已取得成功，但现有大多数方法仍将世界建模与规划视为松耦合组件，即世界模型主要充当辅助预测器或模拟器，而不是在统一因果表述下与决策过程联合优化。
+
+简要解释：这一段在说明世界模型研究的两大方向，一类偏重预测未来世界状态，另一类偏重仿真与数据生成，但二者大多没有真正与策略学习统一起来。
+
+这一局限促使近期出现了世界-动作建模（world-action modeling, WAM）[104]，其将未来观测与策略生成联合表述为一个统一的学习问题[9, 43]。有些工作将未来世界与智能体动作建模为一个单一生成过程[59, 82, 95]，另一些工作则强调统一预训练（unified pretraining）[96]、共享的世界-策略表征（shared world-policy representations）[5]、潜在动作建模（latent action modeling）[22]，以及感知价值的世界模型（value-aware world models）[37]，以减少显式观测生成的冗余，并加强环境动力学与控制之间的耦合。然而，现有表述大多建立在连续潜在空间之上，这通常会带来表征歧义（representation ambiguity）[66, 98]。这些局限最近又推动了基于离散 token 空间的并行生成范式被采用，包括掩码建模（mask modeling）和离散扩散（discrete diffusion）[73, 84, 99]。虽然这类方法提高了生成效率并支持迭代细化，但其中大多数仍将决策建模为从观测到动作的直接映射，而没有显式学习覆盖未来世界与策略的统一生成先验。与此形成对比的是，Discrete-WAM 将观测与动作置于共享的离散表示空间中进行建模。统一生成预训练在世界演化与策略生成之上建立共同先验，而联合离散扩散表述则为世界建模和决策提供了统一框架。
+
+简要解释：这一段强调，从 WAM 发展到 Discrete-WAM 的关键动机是把世界演化和动作生成放到同一个离散生成空间里，从而真正共享先验并统一优化。
+
+7.1.2
+
+离散扩散调度
+
+采样调度（sampling schedules）在离散和掩码扩散模型中起着核心作用，因为它们不仅决定反向步骤的数量，还决定每一步会联合解码哪些 token。在离散扩散模型中，早期工作如 D3PM 对离散腐蚀核（discrete corruption kernels）进行了形式化建模，包括吸收态过程（absorbing-state processes），这为基于掩码的反向生成提供了基础[1]。后续工作从多个互补视角研究了调度问题。
+
+简要解释：这一段说明，离散扩散里的“调度”不只是步数安排，还决定每步解码哪些 token，因此对采样质量和效率都很关键。
+
+一条研究线聚焦于时间网格或噪声水平调度。JYS 通过最小化路径空间 KL 上界来优化采样时间网格，表明非均匀调度可以降低离散扩散采样中的离散化误差[61]。相关的信息几何分析进一步指出，在特定几何假设下，常用的余弦调度（cosine schedule）可被解释为针对掩码离散扩散的 Fisher–Rao 最优调度[100]。
+
+简要解释：这一段讲的是如何设计“时间步/噪声强度”的分配方式，核心结论是非均匀或余弦式调度在某些条件下更优。
+
+第二条研究线研究每次迭代应解码多少 token。[41] 从扩散语言模型中推导出一个信息论收敛界，并表明在一般假设下，平衡的块调度（balanced block schedules）可使 KL 误差按 O(1/T) 的形式下降。[14] 进一步将最优推理调度刻画为对一条信息曲线的最佳阶跃函数近似，明确指出最优块大小取决于数据分布的依赖结构。[39] 还分析了由因子化（factorized）所诱导的误差
+
+简要解释：这一段讨论每轮解码多少 token 更合适，结论是最优块大小与数据依赖结构有关，而不是固定不变的。</pre>
+        </article>
+      </div>
+    </section>
+
+    <section class="spread" id="page-28">
+      <header><span>Page 28</span><a href="#top">Top</a></header>
+      <div class="cols">
+        <figure class="original">
+          <img src="faithful_page_images/Xiaomi-Discrete-WAM/page-028.png" alt="Xiaomi-Discrete-WAM page 28" loading="lazy" />
+        </figure>
+        <article class="translation">
+          <div class="label">中文翻译 + 简单解释</div>
+          <pre>近似，并从信息轮廓（information-profile）视角推导渐近最优的调度方案。  
+简要解释：这里强调的是，调度策略不仅可以经验性设定，还可以基于信息结构来推导，从而逼近理论上的最优解。
+
+第三条路线利用置信度（confidence）或熵（entropy）来调整解掩码预算（unmasking budget）。EB-Sampler 将采样误差分解为去噪器模型误差（denoiser model error）和联合依赖误差（joint-dependence error），并使用熵有界的解掩码（entropy-bounded unmasking）来加速 masked diffusion 采样，同时控制一次性解码过多不确定 token 的风险 [4]。[7] 对基于置信度的解码给出了可证明的分析，并表明，基于熵和的停止规则（entropy-sum stopping rules）能够实现 KL 精确采样（KL-accurate sampling），其期望步数取决于数据分布的内在熵（intrinsic entropy）。  
+简要解释：这一段说明，解码时可以用“有多确定”来决定先解多少 token，以加速采样并避免同时处理太多不稳定位置。
+
+第四条路线研究哪些位置应该一起解码。DUS 提出了一种膨胀式解掩码调度（dilated unmasking schedule），在早期迭代中选择彼此分离的位置，以减小联合解码 token 之间的熵差，随后在后期进行更细粒度的局部解码 [58]。当依赖关系是局部的或混合得很快时，这种方法尤其合适，但对于以全局一致性约束为主的任务，它可能不那么可靠。  
+简要解释：这一段关注“哪些 token 应该成组解码”，结论是先分散、后局部细化更稳，但对强全局约束任务未必足够。
+
+最后，一些工作通过学习得到的规划器或修正机制来扩展调度。DDPD 和 P2 将位置规划（position planning）与 token 去噪解耦，使模型能够学习非平凡的解掩码路径 [55, 62]。Informed correctors 和 self-correcting masked diffusion 进一步引入修正或重新掩码（remasking）机制，以修正早先的解码错误 [63, 102]。这些方法在实践上很有用，但其理论保证通常弱于上面的信息论调度分析。最近的理论还表明，尽管 masked diffusion 在 token 级质量上可能很高效，但在最坏情况下，序列级正确性（sequence-level correctness）仍可能需要随着序列长度增长而增加步数 [19, 36]。因此，调度应被理解为一种降低离散化误差（discretization error）和并行依赖误差（parallel-dependence error）的机制，而不是解决所有长程依赖约束的通用方案。  
+简要解释：这一段总结了调度研究的边界，调度能减少误差、提速，但不能替代对复杂长程依赖的整体建模。
+
+**7.1.3**
+
+**策略后训练（Policy Post-training）**
+
+尽管大规模预训练已经显著提升了 E2E 自动驾驶系统的泛化能力 [11]，但其本质上是在 open-loop 目标下优化，因此无法完全应对 closed-loop 交互所引入的分布偏移（distribution shifts）[76]。特别是，behavior cloning 只能学习去匹配示范动作，却不会直接优化 closed-loop 评测中使用的序列目标，从而造成持续存在的目标差距（objective gap）[35]。为缓解这一差异，研究者探索了离线强化学习（offline reinforcement learning）和用于策略对齐（policy alignment）的后训练策略 [48, 68]。早期方法构造正、负轨迹对，并应用偏好优化（preference optimization），例如 DPO 风格排序（DPO-style ranking）[64] 或逆强化学习（inverse reinforcement learning）[33]，以鼓励更优行为。然而，这些方法优化的仍然是相对偏好，而非长时程驾驶目标。最近，基于策略梯度（policy-gradient-based）的方法，例如 GRPO [65]，被引入以直接优化轨迹级奖励（trajectory-level rewards）和 closed-loop 指标 [44, 45, 54]。不过，现有方法通常作用于完整轨迹，因此只是在固定决策条件下改进轨迹生成，而没有显式优化高层决策过程本身。另一条并行研究路线利用基于 3DGS 的模拟器或学习到的世界模型（world models），通过交互来实现在线 RL [20, 50, 70, 86]。尽管这些方法提供了 closed-loop 优化的机制，但其性能本质上会受到累积的仿真误差和模型误差限制，这会给策略学习引入额外偏差。最近的方法尝试通过直接在潜在转移空间（latent transition spaces）中进行强化学习来缓解这一问题 [10, 73, 74, 91]，在避免显式模拟器 rollout 的同时，仍然提升长时程推理能力。相比之下，我们的框架通过统一的 GRPO 目标同时优化决策选择和轨迹规划。通过在结构化的决策-规划层级（decision-planning hierarchy）上进行策略优化，我们的方法不仅在 closed-loop 指标下提升规划质量，还显式细化了决策空间本身，从而能够更有效地优化长时程驾驶行为。  
+简要解释：这一段是在说明，传统后训练多半只改“怎么走”，而本文的方法同时改“先做什么决定”和“再怎么规划轨迹”，因此更适合端到端优化驾驶策略。
+
+**7.2**
+
+**额外实现细节（Additional Implementation Details）**
+
+**7.2.1**
+
+**Token 设计（Token Design）**
+
+我们为量化器（quantizer）采用码本大小 KV = 16384，并将图像 patch 的 HV、WV 设为 16。管线其余部分与我们之前的设置保持一致。  
+简要解释：这一句是在给出离散化设计参数，说明视觉输入被切成什么尺度、量化器使用多大的词表。
+
+图/表说明：视觉 token 配置。  
+图/表说明：决策 token 配置。  
+图/表说明：我们将高层驾驶决策参数化为一个离散决策词表。  
+
+28</pre>
+        </article>
+      </div>
+    </section>
+
+    <section class="spread" id="page-29">
+      <header><span>Page 29</span><a href="#top">Top</a></header>
+      <div class="cols">
+        <figure class="original">
+          <img src="faithful_page_images/Xiaomi-Discrete-WAM/page-029.png" alt="Xiaomi-Discrete-WAM page 29" loading="lazy" />
+        </figure>
+        <article class="translation">
+          <div class="label">中文翻译 + 简单解释</div>
+          <pre>由横向路径候选和纵向速度轮廓构建。具体地，令 \(P=\{p_i\}_{i=1}^{N_{\text{lat}}}\) 表示横向路径原语（lateral path primitives）集合，令 \(S=\{s_j\}_{j=1}^{N_{\text{lon}}}\) 表示纵向速度轮廓（longitudinal speed profiles）集合。它们的笛卡尔积定义了一个决策 token 空间：\(D=P\times S,\ |D|=N_{\text{lat}}N_{\text{lon}}=400\)，其中每个决策 token \(d_{i,j}\in D\) 指定了一个粗粒度行为先验，将路径拓扑与速度演化结合起来。在预训练期间，我们采用基于 EPDMS 子评分的 winner-take-all 准则，对所有候选决策进行评估并分配监督。被选中的决策为
+\[
+d^\star=\arg\max_{d\in D} R_{\text{EPDMS}}(d),
+\]
+其中 \(R_{\text{EPDMS}}\) 聚合了安全性（safety）、进展（progress）、舒适性（comfort）以及规则遵循（rule-compliance）等子评分。然后，模型使用交叉熵目标从当前观测和上下文中预测 \(d^\star\)：
+\[
+L_{\text{dec}}=-\log p_\theta(d^\star \mid o,c)+L_{\text{score}}.
+\]
+
+简要解释：这一段定义了一个离散化的高层决策空间，把“走哪条路”和“以什么速度走”组合成候选行为，并用 EPDMS 的综合评分从中选出最优决策作为预训练监督信号。
+
+对于 SFT 和后训练（post-training），我们进一步将决策空间限制为排名最高的 top-D 候选项，形成一个紧凑的决策集合 \(D_{\text{top}}\subset D\)。后续的监督微调和 RL 优化都在 \(D_{\text{top}}\) 内进行，这样既保留了高质量的行为多样性，又避免了在次优决策上进行探索。
+
+简要解释：这一段说明在微调和强化学习阶段，不再搜索整个决策空间，而是只在高分候选里优化，从而兼顾效率和行为质量。
+
+动作和辅助位置监督的词表配置。对于加速度 token 词表，我们在以自车为中心的纵向和横向加速度二维网格上进行建模。两个加速度分量都裁剪到有效范围 \([-4,4]\) m/s\(^2\)。纵向和横向加速度维度都均匀划分为 \(N_x=N_y=60\) 个 bin，形成一个网格结构的加速度词表，共有 \(60\times 60=3600\) 个原型。每个词表条目对应一个二维加速度原型
+\[
+v_{ij}=(c^x_i,c^y_j),\quad i,j\in\{1,\ldots,60\},
+\]
+其中 \(c^x_i\) 和 \(c^y_j\) 分别表示纵向和横向加速度维度上均匀间隔的 bin 中心。连续加速度通过双线性插值表示为四个相邻原型上的软标签，如第 2.3 节所述。
+
+简要解释：这一段把连续加速度离散成二维网格 token，便于分类学习，并用软标签缓解离散化带来的量化误差。
+
+除了加速度 token 分类之外，我们还引入一个辅助位置分类任务，用于监督对预测加速度积分后得到的轨迹。为了避免笛卡尔积二维位置网格带来的过大词表规模，我们将位置监督分解为两个相互独立的一维分类任务，分别对应以自车为中心的纵向位置和横向位置。纵向位置范围为 \([-2,65]\) m，横向位置范围为 \([-25,25]\) m。两个维度都采用 0.02 m 的 grid-cell 分辨率，因此
+\[
+N^x_p=\frac{65-(-2)}{0.02}=3350,\qquad
+N^y_p=\frac{25-(-25)}{0.02}=2500.
+\]
+因此，辅助位置头分别预测两个分类分布：一个对应 3350 个纵向 bin，另一个对应 2500 个横向 bin，而不是一个单独的 \(3350\times 2500\) 联合词表。这种分解式位置监督在保持分类空间可计算的同时，提供了细粒度的轨迹级空间约束。
+
+简要解释：这一段用两个一维分类头替代一个巨大的二维联合分类头，既保留了轨迹空间约束，又显著降低了计算和存储成本。
+
+设 \(p_h=(x_h,y_h)\) 表示通过积分预测的加速度序列得到的未来位置，预测时域为第 \(h\) 步。辅助位置分类损失定义为纵向和横向交叉熵损失之和：
+
+**Auxiliary factorized position classification loss.**
+
+\[
+L_{\text{pos}}=\sum_{h=1}^{H}\Big(
+\mathrm{CE}\big(p^{x,\ast}_{\theta,h},q^x_{\theta,h}\big)
++
+\mathrm{CE}\big(p^{y,\ast}_{\theta,h},q^y_{\theta,h}\big)
+\Big),
+\]
+其中 \(p^{x,\ast}_{\theta,h}\) 和 \(p^{y,\ast}_{\theta,h}\) 分别表示在离散化的 \(x\) 与 \(y\) 位置 bin 上的目标分布，\(q^x_{\theta,h}\) 和 \(q^y_{\theta,h}\) 是对应的预测分布。这种分解式表述避免了联合二维位置词表的开销，同时仍然对积分后的轨迹提供直接监督。
+
+简要解释：这一段给出了辅助位置监督的损失函数，核心思想是分别约束 \(x\) 和 \(y\) 方向的未来位置预测，使模型学到更准确的轨迹演化。
+
+**7.2.2**
+
+**Detailed Token-Editing Objective**
+
+我们给出统一预训练中使用的 token-editing 目标的详细数学形式。在时间步 \(t\)，场景上下文记为 \(C_t\)，其中包含历史视觉 tokens、自车状态 tokens 以及导航 tokens。模型也可以条件化在一个高层决策 token 序列 \(D_t\subset D_{\text{top}}\) 上。
+
+简要解释：这一小节开始定义 token editing 的训练目标，其中场景上下文与高层决策 token 共同作为条件输入，用于统一预训练框架下的世界-策略学习。</pre>
+        </article>
+      </div>
+    </section>
+
+    <section class="spread" id="page-30">
+      <header><span>Page 30</span><a href="#top">Top</a></header>
+      <div class="cols">
+        <figure class="original">
+          <img src="faithful_page_images/Xiaomi-Discrete-WAM/page-030.png" alt="Xiaomi-Discrete-WAM page 30" loading="lazy" />
+        </figure>
+        <article class="translation">
+          <div class="label">中文翻译 + 简单解释</div>
+          <pre>令 `X = {x_j}^N_{j=1}` 表示一个干净的目标 token 序列。根据任务不同，`X` 可以是未来的视觉 token 序列 `V_{t+1:t+H}`，也可以是未来的动作 token 序列 `A_{t+1:t+H}`。目标序列的损坏版本记为 `\tilde{X} = {\tilde{x}_j}^N_{j=1}`。模型的有效输入由场景上下文、可选的决策 token，以及损坏后的目标 token 连接而成：`[C_t, D_t, \tilde{X}]`。不同于引入特殊 mask token 的 masked diffusion 方法，我们的形式化定义是在原始离散词表内部对 token 进行破坏。令 `M^\gamma_X` 表示在破坏比例 `\gamma \in [0, 1]` 下被破坏的 token 位置。与 `X` 对应的词表为  
+``
+(
+V, X = V_{t+1:t+H} ,
+B_X =
+(11)
+A, X = A_{t+1:t+H} ,
+``  
+其中 `V` 和 `A` 分别表示视觉词表和动作词表。损坏序列构造如下：  
+``
+(
+\eta_j, j \in M^\gamma_X,
+\tilde{x}_j =
+\eta_j \sim \mathrm{Unif}(B_X),
+(12)
+x_j, j \notin M^\gamma_X,
+``  
+其中 `Unif(B_X)` 表示在 `B_X` 中有效 token 上的均匀分布。  
+简要解释：这一段定义了模型的输入、目标序列及其“破坏”方式。核心思想是：不使用专门的 mask 符号，而是在原始词表里随机替换一部分 token，让模型学习从上下文中恢复正确序列。
+
+token-editing loss 施加在所有可编辑位置上，包括被破坏和未破坏的 token：  
+``
+L_{edit}(X) = - \frac{1}{N} \sum_{j=1}^{N} \log p_\theta(x_j \mid C_t, D_t, \tilde{X}, \gamma).
+(13)
+``  
+对于被破坏的位置，这个损失训练模型恢复干净的目标 token。对于干净的位置，它鼓励恒等映射（identity mapping），让模型学会保留已经正确的 token，并为 token 编辑提供一种隐式停止信号。  
+简要解释：这个损失不仅要求模型“修复错误”，也要求模型“不要乱改正确内容”。因此模型会逐步编辑 token，直到不再需要修改为止。
+
+不同模态的破坏模式不同。对于视觉预测，被破坏的 image-token 位置从所有大小为 `\lfloor \gamma N_v \rfloor` 的子集中均匀采样：  
+``
+M^\gamma_v \sim \mathrm{Unif}\big(\{M \subseteq \{1, \ldots, N_v\} : |M| = \lfloor \gamma N_v \rfloor\}\big).
+(14)
+``  
+对于动作预测，破坏遵循因果后缀模式：  
+``
+h_\gamma = \lfloor (1 - \gamma)H \rfloor,
+``  
+``
+M^\gamma_a = \{h_\gamma + 1, \ldots, H\}.
+(15)
+``  
+因此，前 `h_\gamma` 个动作 token 保持干净，而剩余后缀被破坏。这个设计符合基于加速度的动作 token 的时间依赖关系。  
+简要解释：视觉 token 的破坏是随机分布的；动作 token 的破坏则是“从后往前”遮住后缀，因为未来动作天然依赖前面的历史部分，这样更符合时序建模。
+
+最终训练目标结合了 token 分类损失与连续运动回归损失：  
+``
+L = \lambda_v L^{cls}_v + \lambda_a L_a^{cls} + \lambda_{acc} L_{acc} + \lambda_{traj} L_{traj} + \lambda_s L_s^{cls} + \lambda_{dec} L_{dec}.
+(16)
+``  
+这里，`L^{cls}_v` 和 `L_a^{cls}` 是视觉和动作词表上的交叉熵损失。`L_{acc}` 是加速度级回归损失，`L_{traj}` 是轨迹级回归损失，它通过将预测的加速度积分为未来 ego trajectories 得到。`L^{cls}_s` 表示辅助特殊 token 的分类损失。不同任务会根据其预测目标激活这些损失中的不同子集。  
+简要解释：总损失把分类和回归两类目标统一起来，使模型既能预测离散 token，又能优化连续运动量，从而覆盖视觉、动作和轨迹等不同学习信号。
+
+**7.2.3**
+
+**模型结构设计**
+
+我们的模型建立在一个 decoder-only Transformer [87] 之上，隐藏维度 `d = 2048`，包含 18 层 Transformer 层、16 个 attention heads，以及 8 个使用 grouped-query attention 的 key-value heads。Rotary positional embeddings 采用 `Qwen3-MRoPE` 方案，`\theta = 10^6`，并使用 multi-axis section splits [24, 20, 20]。总参数量约为 `1B`。用于 LoRA finetuning 的参数量约为 `30M`。  
+简要解释：这一段给出了模型架构的具体规模和配置。它说明该方法使用了较大的 decoder-only Transformer，并通过 Qwen3-MRoPE、GQA 和 LoRA 等设计，在保持能力的同时兼顾效率与微调成本。</pre>
+        </article>
+      </div>
+    </section>
+
+    <section class="spread" id="page-31">
+      <header><span>Page 31</span><a href="#top">Top</a></header>
+      <div class="cols">
+        <figure class="original">
+          <img src="faithful_page_images/Xiaomi-Discrete-WAM/page-031.png" alt="Xiaomi-Discrete-WAM page 31" loading="lazy" />
+        </figure>
+        <article class="translation">
+          <div class="label">中文翻译 + 简单解释</div>
+          <pre>**7.2.4 基准细节**
+
+我们使用 Predictive Driver Model Score（PDMS）及其在 NAVSIM 中使用的扩展版本 EPDMS 来评估规划性能。PDMS 最早在 NAVSIM v1 [17] 中作为一种基于仿真的 open-loop 指标提出，其中将预测的 4 秒轨迹在 BEV 模拟器中展开，并通过将乘性安全约束与加权的规划质量子分数结合来打分。其定义为：
+
+\[
+\mathrm{PDMS}
+=
+\left(
+\frac{\prod_{m\in\{\mathrm{TTC},\mathrm{EP},\mathrm{C}\}} w_m\, m(\mathrm{agent})}
+{\prod_{m\in\{\mathrm{TTC},\mathrm{EP},\mathrm{C}\}} w_m}
+\right)
+\cdot
+\prod_{m\in\{\mathrm{NC},\mathrm{DAC}\}} m(\mathrm{agent}) .
+\tag{17}
+\]
+
+简要解释：这一段在说明 PDMS 的构成方式。它把安全性相关的乘性约束和规划质量相关的加权项结合起来，用于衡量自动驾驶规划输出的整体质量。
+
+**评估指标。**
+
+其中，NC 表示无责任碰撞（no at-fault collision），DAC 表示可行驶区域合规性（drivable-area compliance），TTC 表示碰撞时间（time-to-collision），EP 表示自车进度（ego progress），C 表示舒适性（comfort）。NAVSIM v2 [8] 进一步采用扩展的 Predictive Driver Model Score（EPDMS），在乘性评分中增加了行驶方向合规性（DDC）和信号灯合规性（TLC），并在加权评分中增加了车道保持（LK）、历史舒适性（HC）以及扩展舒适性（EC）。EPDMS 进一步加入如下过滤项：
+
+\[
+\mathrm{filter}_m(\mathrm{agent}, \mathrm{human}) =
+\begin{cases}
+1.0, &amp; \text{if } m(\mathrm{human}) = 0,\\
+m(\mathrm{agent}), &amp; \text{otherwise}.
+\end{cases}
+\tag{18}
+\]
+
+这种过滤方式避免了当人类演示中也存在同样违规时对规划器进行惩罚；这种情况可能由于标注噪声或在特定上下文中合理的机动动作而发生。EPDMS 中加权项的权重为 \(w_{EP}=5\)、\(w_{TTC}=5\)、\(w_{LK}=2\)、\(w_{HC}=2\)、\(w_{EC}=2\)。
+
+简要解释：这一段解释了 EPDMS 相比 PDMS 的扩展点，以及为什么要引入过滤机制。核心目的是避免把人类示范里本来就存在的“违规”错误算到模型头上，从而让评估更公平。
+
+我们将 Discrete-WAM 与一组多样化的最先进自动驾驶系统进行比较，包括模块化端到端规划器r [13, 16, 28]、生成式规划器 [24, 45, 47, 49, 69, 105]、基于世界模型的方法 [43, 98]、world-action policies [74, 84, 91]，以及 vision-language-action（VLA）方法 [33, 43]。
+
+简要解释：这一段说明了实验对比对象的范围很广，覆盖了传统模块化方法、生成式方法、世界模型方法、world-action 方法和 VLA 方法，用来体现 Discrete-WAM 的相对性能。
+
+**7.3 分析结果**
+
+本节给出第 3.1 节中使用的理论分析。我们使用一种通用记号，其中 C 表示上下文（context），Z 表示潜在骨架（latent skeleton），而 \(Y_U=\{Y_i: i\in U\}\) 表示一组未来 token。对于策略建模，Z 对应于决策骨架 \(D_t\)，而 \(Y_U\) 对应于未来动作 token 的一个子集。
+
+简要解释：这一段先统一符号体系，方便后面推导。它把“上下文、潜在骨架、未来 token”抽象出来，并说明在策略建模里这些符号分别对应什么。
+
+**7.3.1 单步 KL 分解**
+
+对于一个 token 组 \(Y_U\)，条件总相关性（conditional total correlation）定义为
+
+\[
+TC(Y_U \mid C)
+=
+D_{KL}\!\left(
+q(Y_U \mid C)\,\Big\|\, \prod_{i\in U} q(Y_i \mid C)
+\right).
+\tag{19}
+\]
+
+等价地，
+
+\[
+TC(Y_U \mid C)
+=
+\sum_{i\in U} H(Y_i \mid C) - H(Y_U \mid C).
+\tag{20}
+\]
+
+假设一个并行 token 预测器将该 token 组分解为
+
+\[
+p_\theta(Y_U \mid C)
+=
+\prod_{i\in U} p_\theta(Y_i \mid C).
+\tag{21}
+\]
+
+那么，单步 KL 误差可分解为
+
+\[
+D_{KL}\!\left(
+q(Y_U \mid C)\,\Big\|\, \prod_{i\in U} p_\theta(Y_i \mid C)
+\right)
+=
+TC(Y_U \mid C)
++
+\sum_{i\in U} D_{KL}\!\left(q(Y_i \mid C)\,\|\, p_\theta(Y_i \mid C)\right).
+\tag{22}
+\]
+
+简要解释：这一部分给出了一个关键的理论分解：整体的 KL 误差可以拆成两部分，一部分来自 token 之间的相关性，另一部分来自每个 token 的边缘分布拟合误差。这说明并行独立预测不仅要拟合每个 token 本身，还要面对 token 间依赖带来的误差下界。</pre>
+        </article>
+      </div>
+    </section>
+
+    <section class="spread" id="page-32">
+      <header><span>Page 32</span><a href="#top">Top</a></header>
+      <div class="cols">
+        <figure class="original">
+          <img src="faithful_page_images/Xiaomi-Discrete-WAM/page-032.png" alt="Xiaomi-Discrete-WAM page 32" loading="lazy" />
+        </figure>
+        <article class="translation">
+          <div class="label">中文翻译 + 简单解释</div>
+          <pre>**Discrete-WAM：统一的离散视觉-动作 token 编辑用于世界-策略学习**
+
+证明。通过展开 KL 散度，
+
+\[
+D_{KL}\!\left(q(Y_U \mid C)\,\middle\|\, \prod_{i\in U} p_\theta(Y_i \mid C)\right)
+\tag{23}
+\]
+
+可得
+
+\[
+= \mathbb{E}_q \log q(Y_U \mid C) - \sum_{i\in U}\log p_\theta(Y_i \mid C).
+\]
+
+在上式中加上并减去 \(\sum_{i\in U}\log q(Y_i \mid C)\) 得到
+
+\[
+\mathbb{E}_q \log \frac{q(Y_U \mid C)}{\prod_{i\in U} q(Y_i \mid C)}
++
+\mathbb{E}_q \log \prod_{i\in U}\frac{q(Y_i \mid C)}{p_\theta(Y_i \mid C)},
+\tag{24}
+\]
+
+这恰好是条件总相关（conditional total correlation）与 token 级模型误差之和。
+
+简要解释：这一段把整体的 KL 分解成两部分：一部分衡量 token 之间的依赖性，另一部分衡量单个 token 的建模误差。
+
+7.3.2
+
+Latent Skeleton Decomposition
+
+我们将潜在骨架 \(Z\) 的冗余增益（redundancy gain）定义为
+
+\[
+R_Z(U \mid C) = \sum_{i\in U} I(Y_i; Z \mid C) - I(Y_U; Z \mid C).
+\tag{25}
+\]
+
+则骨架条件下的残余总相关满足
+
+\[
+\mathbb{E}_Z\, TC(Y_U \mid C, Z) = TC(Y_U \mid C) - R_Z(U \mid C).
+\tag{26}
+\]
+
+简要解释：这里定义了 \(Z\) 能为 token 群组提供多少“去冗余”收益；如果 \(Z\) 捕获了 token 的共同原因，那么残余相关性就会下降。
+
+证明。利用总相关的熵形式，
+
+\[
+\mathbb{E}_Z\, TC(Y_U \mid C, Z)
+=
+\sum_{i\in U} H(Y_i \mid C, Z) - H(Y_U \mid C, Z).
+\tag{27}
+\]
+
+由于
+
+\[
+H(Y_i \mid C, Z) = H(Y_i \mid C) - I(Y_i; Z \mid C),
+\tag{28}
+\]
+
+\[
+H(Y_U \mid C, Z) = H(Y_U \mid C) - I(Y_U; Z \mid C),
+\tag{29}
+\]
+
+因此可得
+
+\[
+\mathbb{E}_Z\, TC(Y_U \mid C, Z)
+=
+\sum_{i\in U} H(Y_i \mid C) - H(Y_U \mid C)
+-
+\left[
+\sum_{i\in U} I(Y_i; Z \mid C) - I(Y_U; Z \mid C)
+\right]
+\tag{30}
+\]
+
+\[
+= TC(Y_U \mid C) - R_Z(U \mid C).
+\]
+
+这个恒等式表明，引入潜在骨架并不会自动降低 token 之间的依赖。只有当 \(R_Z(U \mid C) &gt; 0\) 时，残余总相关才会下降。当 \(Z\) 是细粒度 token 的上游共同原因骨架时，这一点通常成立；但当 \(Z\) 是下游碰撞点（collider）或 token 群组的协同摘要（synergistic summary）时，这一点可能失效。
+
+简要解释：这一段给出了严格分解结果。\(Z\) 只有在真正捕获“共同来源”信息时才会减少依赖；如果它只是后验汇总或碰撞结构，反而不一定带来去相关效果。
+
+32</pre>
+        </article>
+      </div>
+    </section>
+
+    <section class="spread" id="page-33">
+      <header><span>Page 33</span><a href="#top">Top</a></header>
+      <div class="cols">
+        <figure class="original">
+          <img src="faithful_page_images/Xiaomi-Discrete-WAM/page-033.png" alt="Xiaomi-Discrete-WAM page 33" loading="lazy" />
+        </figure>
+        <article class="translation">
+          <div class="label">中文翻译 + 简单解释</div>
+          <pre>**第 33 页**
+
+### 7.3.3 残差混合下的正冗余增益（Positive Redundancy Gain under Residual Mixing）
+
+我们现在给出足够条件，在这些条件下，一个潜在骨架（latent skeleton）会产生正冗余增益。
+
+**假设 1：上游共同原因骨架（Upstream common-cause skeleton）。** 给定上下文 \(C\)，潜在骨架 \(Z\) 是一个上游的低频变量，它约束细粒度 token 组 \(Y_U\) 的生成：
+\[
+C \to Z \to Y_U .
+\tag{31}
+\]
+这排除了在观察完整 token 组之后才计算得到的下游轨迹摘要、评估标签或选择变量。
+
+**简要解释：** 这条假设要求 \(Z\) 必须是“先于”细粒度 token 生成的上游变量，而不是事后总结出来的结果变量；这样它才适合作为解释未来 token 结构的骨架。
+
+**假设 2：骨架前依赖下界（Pre-skeleton dependence lower bound）。** 存在 \(\kappa(U) &gt; 0\)，使得
+\[
+TC(Y_U \mid C) \ge \kappa(U).
+\tag{32}
+\]
+这意味着在条件化于骨架之前，这个 token 组已经包含非平凡的组级依赖（group-level dependence）。
+
+**简要解释：** 如果 token 之间本来就几乎没有共同结构，那么再引入骨架也很难带来额外收益；这里要求它们在进入骨架条件化前就存在足够的整体相关性。
+
+**假设 3：骨架条件化后的残差混合（Residual mixing after skeleton conditioning）。** 在条件化于 \((C, Z)\) 之后，细粒度 token 之间的残余依赖随距离衰减：
+\[
+I(Y_i ; Y_j \mid C, Z) \le \beta \exp\!\left(-\frac{d(i, j)}{\ell_z}\right),
+\tag{33}
+\]
+其中，\(\beta\) 衡量残余局部耦合强度，\(d(i,j)\) 是 token \(i\) 与 \(j\) 之间的距离，\(\ell_z\) 是残余相关长度（residual correlation length）。在该假设下，骨架条件化后的残差总相关（skeleton-conditioned residual total correlation）满足上界
+\[
+\mathbb{E}_Z\, TC(Y_U \mid C, Z) \le \epsilon_z(U),
+\tag{34}
+\]
+其中
+\[
+\epsilon_z(U) = \mathbb{E}_Z \left[
+\sum_{\{i,j\}\subset U}
+\beta \exp\!\left(-\frac{d(i, j)}{\ell_z}\right)
+\right].
+\tag{35}
+\]
+
+**简要解释：** 这条假设表示：一旦已知骨架 \(Z\)，token 之间剩下的相关性应该主要是局部的、快速衰减的“残差项”，因此整体残差总相关可以用一个可计算的上界来控制。
+
+结合潜在骨架分解与上述假设，有
+\[
+R_Z(U \mid C) = TC(Y_U \mid C) - \mathbb{E}_Z\, TC(Y_U \mid C, Z)
+\ge \kappa(U) - \epsilon_z(U).
+\]
+因此，如果
+\[
+\kappa(U) &gt; \epsilon_z(U),
+\tag{37}
+\]
+则
+\[
+R_Z(U \mid C) &gt; 0.
+\tag{38}
+\]
+
+**简要解释：** 这说明只要骨架前的整体依赖强于骨架条件化后的残差依赖，那么骨架 \(Z\) 就带来正的冗余增益，即它确实帮助解释并压缩了 token 组中的共享信息。
+
+等价地，在残差混合上界下，一个可验证的充分条件是
+\[
+\kappa(U) &gt;
+\mathbb{E}_Z \left[
+\sum_{\{i,j\}\subset U}
+\beta \exp\!\left(-\frac{d(i, j)}{\ell_z}\right)
+\right]
+\Longrightarrow
+R_Z(U \mid C) &gt; 0.
+\tag{39}
+\]
+
+**简要解释：** 这个条件更直观：只要骨架前的依赖强度超过骨架后剩余的局部残差相关，就能保证正冗余增益成立。
+
+这个条件对轨迹规划（trajectory planning）有直接解释。只有当骨架 \(Z\) 能解释多个未来 action token 共享的强低频依赖，并且在条件化之后只留下较弱的局部残余依赖时，它才是有用的。如果 \(Z\) 很难预测、充当一个下游碰撞点（downstream collider），或者不能减少残余依赖，那么正增益条件可能不成立。
+
+**简要解释：** 这一段把理论条件落到规划任务上：好的骨架应该抓住多个未来动作 token 的共同低频结构；如果它只是“难预测的中间变量”或不能真正降依赖，就无法带来有效收益。</pre>
+        </article>
+      </div>
+    </section>
+
+    <section class="spread" id="page-34">
+      <header><span>Page 34</span><a href="#top">Top</a></header>
+      <div class="cols">
+        <figure class="original">
+          <img src="faithful_page_images/Xiaomi-Discrete-WAM/page-034.png" alt="Xiaomi-Discrete-WAM page 34" loading="lazy" />
+        </figure>
+        <article class="translation">
+          <div class="label">中文翻译 + 简单解释</div>
+          <pre>**7.3.4**
+
+**KL 上界与模型误差及重编辑调度**
+
+我们最终将 token 级模型误差、初始提议不匹配、骨架预测误差以及重编辑调度纳入统一考虑。令 \(\pi\) 表示一个具有 \(R\) 轮的迭代 token-editing 调度。在第 \(r\) 轮，令 \(A_r\) 为活跃编辑集合，令 \(S_r\) 为在更新活跃 token 之前的编辑状态。token 级模型误差定义为  
+\[
+\delta^{(r)}_{i,r}(S_r, Z) = D_{\mathrm{KL}}\, q(Y_i \mid S_r)\,\|\,p_\theta(Y_i \mid S_r).
+\tag{40}
+\]
+
+简要解释：这一段先定义多轮 token 编辑过程中的关键状态变量，并把后续 KL 上界分解所需的 token 级误差项明确下来。
+
+我们还定义初始提议不匹配为  
+\[
+\delta_{\mathrm{init}}
+=
+\mathbb{E}_{q(C,Z)}
+D_{\mathrm{KL}}
+\bigl(
+q_0(Y^{(0)} \mid C, Z)\,\|\,p_0(Y^{(0)} \mid C, Z)
+\bigr),
+\tag{41}
+\]
+其中 \(q_0\) 是参考的初始提议分布，而 \(p_0\) 是模型所使用的初始提议分布。如果两个过程从相同的提议分布出发，则 \(\delta_{\mathrm{init}}=0\)。
+
+简要解释：这里补充了初始阶段的偏差来源；若参考过程与模型使用同一初始提议分布，这一项就会消失。
+
+对于给定的骨架 \(Z\)，在每一轮编辑中应用一步 KL 分解可得  
+\[
+D_{\mathrm{KL}}\, q(Y^{(R)} \mid C, Z)\,\|\,p_{\theta,\pi}(Y^{(R)} \mid C, Z)
+\]
+\[
+\le
+\delta_{\mathrm{init}}
++
+\sum_{r=1}^{R}
+\mathbb{E}\!\left[
+\sum_{i\in A_r}\delta^{(r)}_{i,r}(S_r, Z)
++
+TC(Y_{A_r}\mid S_r, Z)
+\right].
+\tag{42}
+\]
+
+简要解释：这一式把整段生成/编辑过程的 KL 散度拆成逐轮、逐 token 的误差累加项，同时保留集合级的相关性项 \(TC\)。
+
+对每个活跃编辑集合使用残差混合界（residual mixing bound），
+\[
+TC(Y_{A_r}\mid S_r, Z)
+\le
+\sum_{\{i,j\}\subset A_r}
+\beta_r \exp\!\left(-\frac{d_r(i,j)}{\ell_r}\right),
+\tag{43}
+\]
+我们得到  
+\[
+D_{\mathrm{KL}}\, q(Y^{(R)} \mid C, Z)\,\|\,p_{\theta,\pi}(Y^{(R)} \mid C, Z)
+\]
+\[
+\le
+\delta_{\mathrm{init}}
++
+\sum_{r=1}^{R}
+\mathbb{E}\!\left[
+\sum_{i\in A_r}\delta^{(r)}_{i,r}(S_r, Z)
++
+\sum_{\{i,j\}\subset A_r}
+\beta_r \exp\!\left(-\frac{d_r(i,j)}{\ell_r}\right)
+\right].
+\tag{44}
+\]
+
+简要解释：这一段用残差混合界把活跃集合内部 token 之间的依赖项进一步上界化，得到一个可累加、且带指数衰减形式的上界。
+
+在我们的层级策略模型中，潜在骨架 \(Z\) 被实例化为决策 token \(D_t\)，并由场景上下文预测。因此，我们引入骨架预测误差，用于度量目标骨架分布与模型预测骨架分布之间的不匹配：
+\[
+\delta_Z = D_{\mathrm{KL}}\bigl(q(Z \mid C)\,\|\,p_\psi(Z \mid C)\bigr).
+\tag{45}
+\]
+
+简要解释：这里说明骨架 \(Z\) 实际上对应决策 token \(D_t\)，所以还需要单独衡量“骨架是否预测准确”。
+
+完整的 KL 上界为  
+\[
+D_{\mathrm{KL}}\bigl(q(Y\mid C)\,\|\,p_{\psi,\theta,\pi}(Y\mid C)\bigr)
+\le
+\delta_Z + \Lambda_z(\pi),
+\tag{46}
+\]
+其中  
+\[
+\Lambda_z(\pi)
+=
+\delta_{\mathrm{init}}
++
+\sum_{r=1}^{R}
+\mathbb{E}\!\left[
+\sum_{i\in A_r}\delta^{(r)}_{i,r}(S_r, Z)
++
+\sum_{\{i,j\}\subset A_r}
+\beta_r \exp\!\left(-\frac{d_r(i,j)}{\ell_r}\right)
+\right].
+\tag{47}
+\]
+
+简要解释：这一段把骨架预测误差与编辑过程中的误差合并，给出了完整的 KL 上界表达式。
+
+等价地，定义  
+\[
+B_{\mathrm{model}}(\pi)
+=
+\sum_{r=1}^{R}
+\mathbb{E}\!\left[
+\sum_{i\in A_r}\delta^{(r)}_{i,r}(S_r, Z)
+\right],
+\tag{48}
+\]
+以及  
+\[
+U_{\mathrm{dep}}(\pi)
+=
+\sum_{r=1}^{R}
+\mathbb{E}\!\left[
+\sum_{\{i,j\}\subset A_r}
+\beta_r \exp\!\left(-\frac{d_r(i,j)}{\ell_r}\right)
+\right].
+\tag{49}
+\]
+
+简要解释：最后把上界拆成“模型误差项” \(B_{\mathrm{model}}(\pi)\) 和“依赖/耦合项” \(U_{\mathrm{dep}}(\pi)\)，便于后续分析与优化。
+
+34</pre>
+        </article>
+      </div>
+    </section>
+
+    <section class="spread" id="page-35">
+      <header><span>Page 35</span><a href="#top">Top</a></header>
+      <div class="cols">
+        <figure class="original">
+          <img src="faithful_page_images/Xiaomi-Discrete-WAM/page-035.png" alt="Xiaomi-Discrete-WAM page 35" loading="lazy" />
+        </figure>
+        <article class="translation">
+          <div class="label">中文翻译 + 简单解释</div>
+          <pre>则
+
+\[
+D_{KL}\bigl(q(Y \mid C)\,\|\,p_{\psi,\theta,\pi}(Y \mid C)\bigr)\le \delta_Z+\delta_{\text{init}}+B_{\text{model}}(\pi)+U_{\text{dep}}(\pi).
+\]
+
+(50)
+
+该上界表明，只有当潜在骨架（latent skeleton）的预测代价较小，并且残余依赖性的降低足以抵消额外的骨架预测误差时，它才会改善整体生成风险。  
+简要解释：这里是在说明“潜在骨架”不是无条件有益的，它只有在帮助建模全局结构、且代价不高时，才真正降低整体风险。
+
+在我们的策略建模任务中，决策 token \(D_t\) 扮演潜在骨架 \(Z\) 的角色。一个有效的决策 token 应当表示上游的低频规划结构，例如机动意图（maneuver intent）、粗粒度参考运动、目标车道或速度趋势，而不是从最终动作序列计算得到的下游轨迹质量标签。在这种理解下，\(D_t\) 在细粒度动作 token 编辑之前解释全局的多模态驾驶选择，而其余动作 token 主要建模局部残差修正。因此，分层分解
+
+**策略建模中的含义。**
+
+\[
+p_{\psi,\theta}\bigl(A_{t+1:t+H},D_t\mid C_t\bigr)
+=
+p_{\psi}(D_t\mid C_t)\,p_{\theta}(A_{t+1:t+H}\mid C_t,D_t)
+\]
+
+在理论上是合理的，只要 \(D_t\) 降低剩余动作 token 之间的依赖性所带来的收益，足以抵消它自身的预测误差。  
+简要解释：这段把决策 token 解释为“先做全局规划，再做局部修正”的中间层；如果它确实能压缩动作之间的复杂相关性，那么这种分层建模就有理论依据。
+
+### 7.3.5 软标签插值下的精确重建
+
+我们证明，所提出的软标签动作表示消除了每个加速度网格单元内部的确定性硬量化误差。设加速度词表由纵向与横向加速度两个维度上的 bin 中心所构成的笛卡尔积定义。记 \(a_x\) 的 bin 中心为 \(\{c_i^x\}_{i=1}^{N_x}\)，\(a_y\) 的 bin 中心为 \(\{c_j^y\}_{j=1}^{N_y}\)。考虑一个连续加速度向量 \(a=(a_x,a_y)\)，它落在由四个相邻原型（prototype）围成的网格单元中：
+
+也就是说，
+
+\[
+v_{ij}=(c_i^x,c_j^y),
+\]
+
+\[
+v_{i+1,j}=(c_{i+1}^x,c_j^y),
+\]
+
+\[
+v_{i,j+1}=(c_i^x,c_{j+1}^y),
+\]
+
+\[
+v_{i+1,j+1}=(c_{i+1}^x,c_{j+1}^y).
+\]
+
+\[
+a_x\in[c_i^x,c_{i+1}^x],
+\]
+
+(51)
+
+\[
+a_y\in[c_j^y,c_{j+1}^y].
+\]
+
+(52)
+
+\[
+\lambda_x=\frac{a_x-c_i^x}{c_{i+1}^x-c_i^x},\qquad
+\lambda_y=\frac{a_y-c_j^y}{c_{j+1}^y-c_j^y}.
+\]
+
+(53)
+
+我们定义插值系数。软目标分布 \(p^*(\cdot\mid a)\) 仅在四个相邻原型上非零，其权重为
+
+\[
+p^*_{ij}=(1-\lambda_x)(1-\lambda_y),
+\]
+
+\[
+p^*_{i+1,j}=\lambda_x(1-\lambda_y),
+\]
+
+\[
+p^*_{i,j+1}=(1-\lambda_x)\lambda_y,
+\]
+
+(54)
+
+\[
+p^*_{i+1,j+1}=\lambda_x\lambda_y.
+\]
+
+这些权重都非负，且总和为 1。由软目标重建得到的加速度为
+
+\[
+\bar{a}
+=
+\sum_{m\in\{i,i+1\}}\sum_{n\in\{j,j+1\}} p^*_{mn}v_{mn}.
+\]
+
+(55)
+
+对于纵向分量，有
+
+\[
+\bar{a}_x
+=
+p^*_{ij}c_i^x
++
+p^*_{i+1,j}c_{i+1}^x
++
+p^*_{i,j+1}c_i^x
++
+p^*_{i+1,j+1}c_{i+1}^x.
+\]
+
+(56)
+
+代入插值权重可得
+
+\[
+\bar{a}_x=(1-\lambda_x)c_i^x+\lambda_x c_{i+1}^x=a_x.
+\]
+
+(57)  
+简要解释：这部分证明了软标签不是把连续动作简单“硬切”到某个格点，而是用四个邻近原型的加权插值来精确恢复原始连续值，因此可以消除网格量化带来的误差。</pre>
+        </article>
+      </div>
+    </section>
+
+    <section class="spread" id="page-36">
+      <header><span>Page 36</span><a href="#top">Top</a></header>
+      <div class="cols">
+        <figure class="original">
+          <img src="faithful_page_images/Xiaomi-Discrete-WAM/page-036.png" alt="Xiaomi-Discrete-WAM page 36" loading="lazy" />
+        </figure>
+        <article class="translation">
+          <div class="label">中文翻译 + 简单解释</div>
+          <pre>同样地，对于横向分量，
+\[
+\bar{a}_y = (1 - \lambda_y)c_{yj} + \lambda_y c_{yj+1} = a_y .
+\]
+(58)
+
+\[
+\bar{a} = a.
+\]
+(59)
+
+简要解释：这里说明，在横向分量上采用线性插值后，重建得到的加速度与原始加速度完全一致，因此该插值方案在理想情况下不会引入额外误差。
+
+因此，
+
+训练期间，动作头（action head）在加速度词表（acceleration vocabulary）上预测分布 \(q_\theta(\cdot \mid C_t)\)，并使用软标签交叉熵（soft-label cross-entropy）进行优化：
+\[
+L^{cls}_a = -\sum_{k=1}^{N_x N_y} p^*_k(a)\log q_{\theta,k}(C_t).
+\]
+(60)
+
+由于
+\[
+L^{cls}_a = H(p^*) + KL(p^* \parallel q_\theta),
+\]
+(61)
+
+在模型容量与优化充分的理想条件下，最优解满足
+\[
+q_\theta(\cdot \mid C_t) = p^*(\cdot \mid a).
+\]
+(62)
+
+简要解释：这一部分把动作预测训练写成“匹配软目标分布”的分类问题。交叉熵最小化后，模型分布会逼近由连续加速度插值得到的目标分布。
+
+在推理时，如果连续加速度通过词表期望（vocabulary expectation）解码：
+\[
+\hat{a} = \sum_{k=1}^{N_x N_y} q_{\theta,k}(C_t)v_k,
+\]
+(63)
+
+那么在理想预测条件 \(q_\theta = p^*\) 下，可得
+\[
+\hat{a} = \sum_{k=1}^{N_x N_y} p^*_k(a)v_k = a.
+\]
+(64)
+
+因此，在对软目标分布进行精确恢复时，所提出的软标签插值（soft-label interpolation）在加速度网格单元内可实现零确定性量化误差。
+
+简要解释：推理时用分布期望来还原连续动作，只要预测分布与软目标完全一致，就能精确恢复原始加速度，不会产生网格量化误差。
+
+7.3.6
+
+连续运动监督的一致性界（Consistency Bound for Continuous Motion Supervision）
+
+接下来，我们刻画当预测的动作分布与软目标分布不完全一致时，剩余的重建误差。令 \(p^*(\cdot \mid a)\) 表示连续加速度 \(a\) 的插值目标分布，令 \(q_\theta(\cdot \mid C_t)\) 表示预测的动作分布。解码得到的连续加速度为
+
+分布预测不匹配下的加速度误差。
+
+\[
+\hat{a} = \sum_{k=1}^{N_x N_y} q_{\theta,k}(C_t)v_k.
+\]
+(65)
+
+由于软目标分布可以通过网格插值精确重建 \(a\)，所以
+\[
+a = \sum_{k=1}^{N_x N_y} p^*_k(a)v_k.
+\]
+(66)
+
+因此，加速度重建误差可写为
+\[
+\hat{a} - a = \sum_{k=1}^{N_x N_y} \bigl(q_{\theta,k}(C_t) - p^*_k(a)\bigr)v_k.
+\]
+(67)
+
+假设加速度词表满足有界条件
+\[
+\|v_k\|_2 \le V_{\max}, \qquad \forall k \in \{1, \ldots, N_x N_y\}.
+\]
+(68)
+
+简要解释：这一段开始分析“预测分布有偏差时误差会有多大”。它把重建误差写成预测分布与目标分布差异的加权和，并为后续给出误差上界做准备。</pre>
+        </article>
+      </div>
+    </section>
+
+    <section class="spread" id="page-37">
+      <header><span>Page 37</span><a href="#top">Top</a></header>
+      <div class="cols">
+        <figure class="original">
+          <img src="faithful_page_images/Xiaomi-Discrete-WAM/page-037.png" alt="Xiaomi-Discrete-WAM page 37" loading="lazy" />
+        </figure>
+        <article class="translation">
+          <div class="label">中文翻译 + 简单解释</div>
+          <pre>论文标题：Discrete-WAM：统一的离散视觉-动作 token 编辑用于世界策略学习
+
+然后，由三角不等式（triangle inequality），
+\[
+\|\hat{a}-a\|_2 \le \sum_{k=1}^{N_xN_y} \left|q_{\theta,k}(C_t)-p_k^*(a)\right| \,\|v_k\|_2 .
+\tag{69}
+\]
+
+利用词表原型（vocabulary prototypes）的有界性，我们得到
+\[
+\|\hat{a}-a\|_2 \le V_{\max}\,\|q_{\theta}(\cdot \mid C_t)-p^*(\cdot \mid a)\|_1 .
+\tag{70}
+\]
+
+由 Pinsker 不等式，
+\[
+\|q_{\theta}(\cdot \mid C_t)-p^*(\cdot \mid a)\|_1 \le \sqrt{2\,\mathrm{KL}\!\left(p^*(\cdot \mid a)\,\|\,q_{\theta}(\cdot \mid C_t)\right)}.
+\tag{71}
+\]
+
+因此，
+\[
+\|\hat{a}-a\|_2 \le V_{\max}\sqrt{2\,\mathrm{KL}\!\left(p^*(\cdot \mid a)\,\|\,q_{\theta}(\cdot \mid C_t)\right)}.
+\tag{72}
+\]
+
+由于软标签交叉熵（soft-label cross-entropy）满足
+\[
+L^{\mathrm{cls}}_{a}=H(p^*)+\mathrm{KL}\!\left(p^*(\cdot \mid a)\,\|\,q_{\theta}(\cdot \mid C_t)\right),
+\tag{73}
+\]
+我们进一步有
+\[
+\|\hat{a}-a\|_2 \le V_{\max}\sqrt{2\left(L^{\mathrm{cls}}_{a}-H(p^*)\right)}.
+\tag{74}
+\]
+
+这表明，在用软标签插值（soft-label interpolation）替换硬的一热量化（hard one-hot quantization）之后，剩余的加速度重建误差由分布预测误差控制，而不是由确定性的最近桶（nearest-bin）量化误差控制。  
+简要解释：这一段证明了软标签替代硬量化后，误差来源从“选错离散桶”转为“预测分布偏差”，因此训练信号更平滑、可控。
+
+上面的软标签插值分析涉及动作 token 目标分布的构造，以及硬量化引入的确定性误差。相比之下，模态感知解码（mode-aware decoding）策略用于不同的目的：它把预测得到的类别型动作分布转换为连续加速度，用于辅助连续运动损失（auxiliary continuous motion losses）。它的目标不是保留全分布期望，而是避免对不相容的动作模态进行平均。  
+简要解释：这里作者区分了两种“解码”用途：一种是构造监督目标，一种是把离散分布还原成连续动作；后者更强调保持动作模式的物理合理性。
+
+用于连续运动监督的模态感知解码（Mode-aware decoding for continuous motion supervision）。
+
+设 \(q_{\theta}(\cdot \mid C_t)\) 表示在加速度词表 \(\{v_k\}_{k=1}^{K}\) 上预测得到的类别分布。全分布期望解码（full-distribution expectation decoding）给出
+\[
+\bar{a}=\sum_{k=1}^{K} q_{\theta,k}(C_t)v_k .
+\tag{75}
+\]
+
+当 \(q_{\theta}\) 是多模态（multi-modal）时，\(\bar{a}\) 可能落在多个合理模态之间，并且未必对应任何物理上有意义的驾驶行为。为避免这种由解码引起的模态平均（mode averaging），我们对加速度词表上的 \(q_{\theta}\) 拟合一个高斯混合模型（Gaussian mixture），选择一个模态支撑集 \(S_{m^\star}\)，并构造归一化的局部分布
+\[
+\tilde{q}_{\theta,k}(C_t)=\frac{q_{\theta,k}(C_t)\mathbf{1}[k\in S_{m^\star}]}{\sum_{\ell\in S_{m^\star}} q_{\theta,\ell}(C_t)} .
+\tag{76}
+\]
+
+随后，模态感知解码得到的加速度为
+\[
+\hat{a}_{\mathrm{mode}}=\sum_{k=1}^{K}\tilde{q}_{\theta,k}(C_t)v_k .
+\tag{77}
+\]
+
+这个操作有意地用一个由模态条件化（mode-conditioned）的局部分布 \(\tilde{q}_{\theta}\) 替换完整预测分布 \(q_{\theta}\)。因此，它引入了模态选择近似（mode-selection approximation），同时避免了全分布期望解码带来的模态平均效应。设 \(p^*(\cdot \mid a)\) 表示真实加速度的软插值目标，则模态感知解码的重建误差可分解为
+\[
+\hat{a}_{\mathrm{mode}}-a
+=
+\sum_{k=1}^{K}\big(\tilde{q}_{\theta,k}(C_t)-p_k^*(a)\big)v_k
+=
+\sum_{k=1}^{K}\big(q_{\theta,k}(C_t)-p_k^*(a)\big)v_k
++
+\sum_{k=1}^{K}\big(\tilde{q}_{\theta,k}(C_t)-q_{\theta,k}(C_t)\big)v_k .
+\tag{78}
+\]
+
+37</pre>
+        </article>
+      </div>
+    </section>
+
+    <section class="spread" id="page-38">
+      <header><span>Page 38</span><a href="#top">Top</a></header>
+      <div class="cols">
+        <figure class="original">
+          <img src="faithful_page_images/Xiaomi-Discrete-WAM/page-038.png" alt="Xiaomi-Discrete-WAM page 38" loading="lazy" />
+        </figure>
+        <article class="translation">
+          <div class="label">中文翻译 + 简单解释</div>
+          <pre>第一项对应于相对于 soft-label 目标的分布预测误差，而第二项对应于用 \(\tilde{q}_\theta\) 替换 \(q_\theta\) 所引入的额外模式选择误差。假设对所有 vocabulary prototypes 都有 \(\|v_k\|_2 \le V_{\max}\)，则有  
+\[
+\|\hat{a}_{\text{mode}} - a\|_2 \le V_{\max}\|q_\theta(\cdot \mid C_t)-p^*(\cdot \mid a)\|_1
++ V_{\max}\|\tilde{q}_\theta(\cdot \mid C_t)-q_\theta(\cdot \mid C_t)\|_1 .
+\]
+(79)
+
+简要解释：这一段把总误差拆成两部分：一部分来自原始分布预测不准，另一部分来自模式选择（mode selection）本身带来的近似误差。
+
+对第一项使用 Pinsker 不等式，可得  
+\[
+\|\hat{a}_{\text{mode}} - a\|_2 \le V_{\max}\sqrt{2\,\mathrm{KL}\!\left(p^*(\cdot \mid a)\|q_\theta(\cdot \mid C_t)\right)}
++ V_{\max}\|\tilde{q}_\theta(\cdot \mid C_t)-q_\theta(\cdot \mid C_t)\|_1 .
+\]
+(80)
+
+简要解释：这里把第一部分误差进一步用 KL 散度上界化，说明分布预测越接近目标，整体误差就越小。
+
+这个上界将由不完美分布预测造成的误差与由 mode selection 引入的误差分离开来。实践中，mode-aware decoding 仅用于连续加速度（continuous acceleration）和轨迹回归（trajectory regression）损失。它防止回归损失把多峰（multi-modal）的分类预测强行压成其全局均值，从而在保留用于 token-level policy prediction 的离散动作分布的同时，减少 mode collapse。
+
+简要解释：这一段说明 mode-aware decoding 的作用是“只在需要连续回归时介入”，避免把本来多种可能的动作平均掉。
+
+第一项是原始 categorical action distribution 的预测不匹配，而第二项是由 mode selection 和重新归一化（re-normalization）引入的近似。如果 acceleration vocabulary 有界，即 \(\|v_k\|_2 \le V_{\max}\)，则  
+\[
+\|\hat{a}_{\text{mode}} - a\|_2 \le V_{\max}\|q_\theta(\cdot \mid C_t)-p^*(\cdot \mid a)\|_1 + V_{\max}\|\tilde{q}_\theta(\cdot \mid C_t)-q_\theta(\cdot \mid C_t)\|_1 .
+\]
+使用 Pinsker 不等式处理第一项可得  
+\[
+\|\hat{a}_{\text{mode}} - a\|_2 \le V_{\max}\sqrt{2\,\mathrm{KL}\!\left(p^*(\cdot \mid a)\|q_\theta(\cdot \mid C_t)\right)} + V_{\max}\|\tilde{q}_\theta(\cdot \mid C_t)-q_\theta(\cdot \mid C_t)\|_1 .
+\]
+
+简要解释：这段是前述界的另一种表述，强调 mode selection 不是零误差，而是在多模态动作预测中做出更符合物理直觉的条件化近似。
+
+这个上界将原始分布预测误差与额外的 mode-selection 近似误差分离开来。不同于 soft-label interpolation 的结果，mode-aware decoding 并不宣称是无误差的。相反，它是在无偏的全分布期望与一个以 mode 为条件、对多模态动作预测而言更具物理一致性的加速度之间做权衡。
+
+简要解释：这里明确指出方法并非“绝对正确”，而是在统计无偏性和物理一致性之间进行折中。
+
+对所提监督（proposed supervision）的启示。
+
+简要解释：这一行是小节式提示，表示下面内容将讨论该分析对监督设计的意义。
+
+7.4
+
+Additional Qualitative Results
+
+简要解释：这是新的小节标题，表示接下来给出更多定性结果。
+
+我们进一步可视化 policy-token decoding 的迭代调度（iterative scheduling）过程。具体而言，Discrete-WAM 还在 navhard 上进行了评估，navhard 是从 navtest 中精选出的一个子集，包含具有挑战性且安全关键（safety-critical）的驾驶场景，如 Fig. 12 所示。定性结果显示，选择性重编辑（selective re-editing）会随着调度轮次的增加，逐步降低预测动作分布的不确定性。在早期轮次中，高熵 token 往往出现在决策敏感或动态受限的片段附近，因为此时多个未来动作仍可能是合理的。随着调度推进，这些 token 的熵逐渐下降，表明模型正在逐步消解含糊的动作选择，并收敛到更稳定的 policy。
+
+简要解释：这一段说明迭代式 token 更新会逐轮消除不确定性，而不是一次性生成所有动作。
+
+重要的是，这种熵降低并不是通过盲目覆盖整个动作序列实现的。相反，scheduler 只会选择性更新那些仍然不确定或在分布上不稳定的 token，同时保留那些已经变得自信的 token。这种行为与 Sec. 4.3 中的定量结果一致：选择性替换（selective replacement）会随着轮次增加而改善，而全量替换（full replacement）可能扰动稳定 token，并降低长时程轨迹精度。因此，这一可视化为所提出的 scheduling strategy 提供了定性的证据：它执行的是 uncertainty-aware iterative refinement，而不是反复对整段序列进行 full-sequence resampling。
+
+简要解释：这一段强调调度器的核心优点是“按不确定性局部修改”，从而避免破坏已经稳定的预测。
+
+Figure 13 展示了跨多种城市驾驶场景的额外定性 world-generation 示例。给定两个历史帧和当前观测，Discrete-WAM 会在多个预测时域上生成未来的视觉观测。在路口、城市道路、高速匝道、立交下穿（underpasses）以及开阔道路环境中，生成的未来结果在时间上保持连贯，并且在几何上
+
+简要解释：这一段说明模型不仅能生成动作，还能生成与驾驶场景一致的未来视觉世界状态；原文此处在“几何上”处截断。
+
+World modeling.
+
+简要解释：这是图注或小节标签，表示这里讨论的是世界建模（world modeling）相关结果。
+
+Planning.
+
+简要解释：这是图注或小节标签，表示这里讨论的是规划（planning）相关结果。</pre>
+        </article>
+      </div>
+    </section>
+
+    <section class="spread" id="page-39">
+      <header><span>Page 39</span><a href="#top">Top</a></header>
+      <div class="cols">
+        <figure class="original">
+          <img src="faithful_page_images/Xiaomi-Discrete-WAM/page-039.png" alt="Xiaomi-Discrete-WAM page 39" loading="lazy" />
+        </figure>
+        <article class="translation">
+          <div class="label">中文翻译 + 简单解释</div>
+          <pre>图12 navhard 子集中的额外规划结果。Discrete-WAM 一贯能够处理复杂交互、道路几何形状和危险情形，在多样环境中生成安全且以目标为导向的行为。  
+简要解释：这一图注说明，模型在更复杂的导航场景中仍能保持稳定的规划能力，能够同时兼顾道路结构、危险因素与最终目标。
+
+与底层场景结构一致。特别是，Discrete-WAM 能准确保留道路边界、车道布局、建筑物和交通基础设施等静态元素，同时对周围车辆的运动以及自车引发的视角变化进行建模。  
+简要解释：这段强调模型不仅会“看见”场景中的静态几何，还会同步刻画动态交通参与者和自车运动带来的视角变化，因此生成结果更贴近真实场景。
+
+图14展示了在不同危险场景下，通过逐步增大横向动作扰动幅度得到的额外反事实评估。在所有示例中，surprise 指标与反事实干预的严重程度呈现清晰的单调关系。当扰动仍然较小且生成的未来仍具有物理可行性时，surprise 值保持较低，而规划分数基本不受影响。随着反事实动作越来越偏离事实行为，生成的未来开始违反场景约束，导致越界行驶行为、反事实推断。  
+简要解释：这段说明 surprise 指标能够反映反事实扰动的强弱和合理性。扰动越大，生成结果越容易偏离物理和场景约束，进而暴露出更高的风险。</pre>
+        </article>
+      </div>
+    </section>
+
+    <section class="spread" id="page-40">
+      <header><span>Page 40</span><a href="#top">Top</a></header>
+      <div class="cols">
+        <figure class="original">
+          <img src="faithful_page_images/Xiaomi-Discrete-WAM/page-040.png" alt="Xiaomi-Discrete-WAM page 40" loading="lazy" />
+        </figure>
+        <article class="translation">
+          <div class="label">中文翻译 + 简单解释</div>
+          <pre>图13 额外的世界模型生成结果。
+
+……不安全交互，或即将发生的碰撞。相应地，surprise 值显著上升，而 PDM 分数则急剧下降。我们进一步观察到，像素级重建误差（L1）的增加要比 surprise 更为缓慢，这表明 surprise 捕捉到的是超越低层外观差异的、具有语义意义的偏离。跨多个场景都出现这一一致趋势，说明该世界模型学习到的是带动作条件的因果动力学，而不仅仅是在建模视觉统计特征。surprise 与规划质量之间的强负相关关系表明，surprise 可以作为生成驾驶场景中因果不一致和未来不安全结果的有效指标。更多生成结果见图15。
+
+简要解释：这一段的核心意思是，模型生成结果中的 surprise 越高，往往意味着未来越不安全，且这种信号比单纯的像素重建误差更能反映语义层面的风险，因此可用来衡量世界模型的因果一致性与规划质量。
+
+我们提供了额外的注意力图可视化，以补充正文中的分析。这些示例包括跨摄像头视角的平均 policy attention maps、逐层的前视角 attention maps，以及上部区域消融结果。其目的在于说明，所观察到的注意力模式，包括对与驾驶相关语义的关注以及在图像上部区域的稳定激活，并不局限于单一示例。
+
+简要解释：这一段说明，作者通过更多注意力图证明模型确实在关注与驾驶相关的关键区域和语义，而且这种现象具有稳定性，不是偶然个例。
+
+注意力图可视化。</pre>
+        </article>
+      </div>
+    </section>
+
+    <section class="spread" id="page-41">
+      <header><span>Page 41</span><a href="#top">Top</a></header>
+      <div class="cols">
+        <figure class="original">
+          <img src="faithful_page_images/Xiaomi-Discrete-WAM/page-041.png" alt="Xiaomi-Discrete-WAM page 41" loading="lazy" />
+        </figure>
+        <article class="translation">
+          <div class="label">中文翻译 + 简单解释</div>
+          <pre>图14 采用 surprise metric 的额外反事实结果。我们在 havhard subset 上，通过更大范围的 lateral counterfactual actions，对事实性（factual）与反事实性（counterfactual）world-model 生成结果中的 surprise value S 进行了比较。Discrete-WAM 与因果理解（causal understanding）之间仍然保持清晰的相关性。
+
+简要解释：这张图表明，当把侧向反事实动作的搜索范围扩大后，Discrete-WAM 的 surprise 指标依旧能稳定反映模型对因果关系的把握，而不只是表面相关性的拟合。
+
+41</pre>
+        </article>
+      </div>
+    </section>
+
+    <section class="spread" id="page-42">
+      <header><span>Page 42</span><a href="#top">Top</a></header>
+      <div class="cols">
+        <figure class="original">
+          <img src="faithful_page_images/Xiaomi-Discrete-WAM/page-042.png" alt="Xiaomi-Discrete-WAM page 42" loading="lazy" />
+        </figure>
+        <article class="translation">
+          <div class="label">中文翻译 + 简单解释</div>
+          <pre>事实  
+反事实  
+事实  
+反事实  
+事实  
+反事实  
+
+图/表/公式说明：图 15 额外的 world model 反事实预测结果（Additional world model counterfactual prediction results）。
+
+简要解释：这里展示的是 world model 在“事实”与“反事实”两种条件下的额外预测对比，用来观察模型在不同假设输入下的行为变化与泛化能力。</pre>
+        </article>
+      </div>
+    </section>
+
+    <section class="spread" id="page-43">
+      <header><span>Page 43</span><a href="#top">Top</a></header>
+      <div class="cols">
+        <figure class="original">
+          <img src="faithful_page_images/Xiaomi-Discrete-WAM/page-043.png" alt="Xiaomi-Discrete-WAM page 43" loading="lazy" />
+        </figure>
+        <article class="translation">
+          <div class="label">中文翻译 + 简单解释</div>
+          <pre>图 16 额外的平均策略注意力图（Additional averaged policy attention maps）。用于补充的策略注意力示例，这些注意力图是对 Transformer 各层、各注意力头以及第一轮编辑中的策略动作查询（policy action queries）进行平均后得到的。每个示例中的三个面板分别对应左视角（left-view）、前视角（front-view）和右视角（right-view）相机。
+
+简要解释：这张图展示了模型在第一轮编辑时，如何在三个摄像头视角之间分配注意力；对多层、多头和多个动作查询取平均后，更容易看出策略关注的整体空间模式。</pre>
+        </article>
+      </div>
+    </section>
+
+    <section class="spread" id="page-44">
+      <header><span>Page 44</span><a href="#top">Top</a></header>
+      <div class="cols">
+        <figure class="original">
+          <img src="faithful_page_images/Xiaomi-Discrete-WAM/page-044.png" alt="Xiaomi-Discrete-WAM page 44" loading="lazy" />
+        </figure>
+        <article class="translation">
+          <div class="label">中文翻译 + 简单解释</div>
+          <pre>图 17 额外的逐层策略注意力图。逐层策略注意力的补充正视图示例。对注意力头（attention heads）和策略查询（policy queries）取平均后，可视化第 0、6、12 和 17 层。
+
+简要解释：这幅图展示了模型在不同层中关注图像各区域的方式；通过比较第 0、6、12、17 层，可以观察策略注意力如何随网络深度变化。</pre>
+        </article>
+      </div>
+    </section>
+
+    <section class="spread" id="page-45">
+      <header><span>Page 45</span><a href="#top">Top</a></header>
+      <div class="cols">
+        <figure class="original">
+          <img src="faithful_page_images/Xiaomi-Discrete-WAM/page-045.png" alt="Xiaomi-Discrete-WAM page 45" loading="lazy" />
+        </figure>
+        <article class="translation">
+          <div class="label">中文翻译 + 简单解释</div>
+          <pre>图 18 额外的上半区域消融示例（Additional upper-region ablation examples）。补充的正视图示例，对比了原始图像、上半部分遮罩（upper-masked）设置，以及仅上半部分（upper-only）设置。这些示例为正文中讨论的注意力重分配（attention redistribution）行为提供了额外的定性证据。
+
+简要解释：这一图注说明作者又补充了一组消融对比，用来观察模型在“只保留上半部分”或“遮住上半部分”时的表现变化，从而支持正文关于注意力会重新分配的结论。</pre>
+        </article>
+      </div>
+    </section>
+
+</main>
+</body>
+</html>

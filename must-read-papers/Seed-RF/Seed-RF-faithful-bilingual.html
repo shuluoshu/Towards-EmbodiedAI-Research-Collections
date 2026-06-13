@@ -1,0 +1,1006 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Representation Forcing for Bottleneck-Free Unified Multimodal Models | Faithful Bilingual Reader</title>
+<style>
+:root { --accent: #059669; --line: #d9dee8; --ink: #172033; --muted: #667085; }
+* { box-sizing: border-box; }
+body { margin: 0; background: #f4f6fa; color: var(--ink); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", Arial, sans-serif; }
+.top { position: sticky; top: 0; z-index: 10; background: rgba(255,255,255,.96); border-bottom: 1px solid var(--line); backdrop-filter: blur(12px); }
+.title { padding: 14px 18px 10px; border-top: 6px solid var(--accent); }
+h1 { margin: 0 0 6px; font-size: 21px; line-height: 1.3; letter-spacing: 0; }
+.meta { color: var(--muted); font-size: 13px; }
+.nav { display: flex; gap: 6px; overflow-x: auto; padding: 8px 18px 12px; }
+.nav a { flex: 0 0 auto; min-width: 32px; text-align: center; color: #344054; text-decoration: none; border: 1px solid var(--line); border-radius: 6px; padding: 3px 7px; background: #fff; font-size: 12px; }
+main { max-width: 1680px; margin: 0 auto; padding: 16px 14px 80px; }
+.notice { background: #fff7ed; border: 1px solid #fdba74; color: #7c2d12; padding: 12px 14px; border-radius: 8px; line-height: 1.65; margin-bottom: 16px; }
+.spread { background: #fff; border: 1px solid var(--line); border-radius: 8px; margin: 0 0 20px; overflow: hidden; }
+.spread header { display: flex; justify-content: space-between; align-items: center; background: #1f2937; color: #fff; padding: 8px 12px; }
+.spread header a { color: #dbeafe; text-decoration: none; font-size: 13px; }
+.cols { display: grid; grid-template-columns: minmax(420px, 1.05fr) minmax(380px, .95fr); gap: 0; align-items: start; }
+.original { margin: 0; padding: 12px; background: #e5e7eb; border-right: 1px solid var(--line); }
+.original img { display: block; width: 100%; height: auto; background: white; box-shadow: 0 2px 10px rgba(15,23,42,.16); }
+.translation { min-height: 100%; }
+.label { background: var(--accent); color: #fff; font-weight: 700; font-size: 13px; padding: 7px 10px; }
+pre { margin: 0; padding: 14px 16px 24px; white-space: pre-wrap; overflow-wrap: anywhere; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", Arial, sans-serif; font-size: 15px; line-height: 1.78; }
+@media (max-width: 980px) { .cols { grid-template-columns: 1fr; } .original { border-right: 0; border-bottom: 1px solid var(--line); } }
+@media print { .top { position: static; } .nav { display: none; } .spread { break-after: page; } body { background: white; } }
+</style>
+</head>
+<body id="top">
+<div class="top">
+  <div class="title">
+    <h1>Representation Forcing for Bottleneck-Free Unified Multimodal Models</h1>
+    <div class="meta">左栏为 PDF 原页图片，英文原文视觉保持不改；右栏为对应中文翻译与解释。Source: 2605.31604v2-Seed.pdf · Pages: 16</div>
+  </div>
+  <nav class="nav"><a href="#page-1">1</a><a href="#page-2">2</a><a href="#page-3">3</a><a href="#page-4">4</a><a href="#page-5">5</a><a href="#page-6">6</a><a href="#page-7">7</a><a href="#page-8">8</a><a href="#page-9">9</a><a href="#page-10">10</a><a href="#page-11">11</a><a href="#page-12">12</a><a href="#page-13">13</a><a href="#page-14">14</a><a href="#page-15">15</a><a href="#page-16">16</a></nav>
+</div>
+<main>
+  <div class="notice">新版修正：左栏不再使用抽取文本，因此不会出现硬换行破坏原文的问题。右栏会读取 <code>faithful_translations/Seed-RF/page-XXX.txt</code>；尚未翻译的页面会临时显示待填充提示和抽取文本，便于逐页补齐。</div>
+  
+    <section class="spread" id="page-1">
+      <header><span>Page 1</span><a href="#top">Top</a></header>
+      <div class="cols">
+        <figure class="original">
+          <img src="faithful_page_images/Seed-RF/page-001.png" alt="Seed-RF page 1" loading="lazy" />
+        </figure>
+        <article class="translation">
+          <div class="label">中文翻译 + 简单解释</div>
+          <pre>**Representation Forcing for Bottleneck-Free Unified Multimodal Models**  
+无瓶颈统一多模态模型的表示强制（Representation Forcing）
+
+arXiv:2605.31604v2 [cs.CV] 2026年6月3日
+
+Yuqing Wang1,2 †，Zhijie Lin2 ‡，Ceyuan Yang2，Yang Zhao2，Fei Xiao2，Hao He3,2 †，Qi Zhao2，Zihan Ding2，Fuyun Wang3,2 †，Shuai Wang4,2 †，Youliang Zhang5,2 †，Haoqi Fan2，Xihui Liu1 B
+
+1 香港大学，2 字节跳动 Seed，3 中国香港中文大学，4 南京大学，5 清华大学
+
+† 在字节跳动 Seed 实习期间完成。  
+‡ 项目负责人。  
+B 通讯作者。
+
+**摘要**  
+统一多模态模型（Unified multimodal models, UMMs）旨在在单个模型中同时处理感知和生成。  
+简要解释：这一句说明 UMMs 的目标是把“理解”和“生成”统一到一个模型里。
+
+然而，现有的 UMMs 在图像生成中仍然依赖一个冻结的、单独预训练的 VAE，从而引入了一个结构性瓶颈。  
+简要解释：这里指出当前方法虽然“统一”了框架，但图像生成部分仍要借助外部 VAE，限制了端到端能力。
+
+如果天真地移除它，就会引入质量差距，因为模型必须直接从原始像素中同时学习高层结构和低层细节。  
+简要解释：直接去掉 VAE 并不一定更好，因为模型会一下子承担过多难度，导致生成质量下降。
+
+在本文中，我们提出 Representation Forcing（RF），一种通过让表示预测成为模型原生能力来弥合这一差距的技术。  
+简要解释：作者的核心想法是，不把“预测表示”当作外部模块，而是让模型自己学会这一中间表示生成能力。
+
+具体而言，RF 强制解码器以自回归方式在像素之前预测视觉表示，作为中间 token；随后这些 token 会保留在上下文中，以在同一 backbone 内引导像素 diffusion。  
+简要解释：RF 先生成“表示 token”，再用这些 token 带着像素扩散过程走，相当于在同一模型内部建立一个更顺滑的生成路径。
+
+通过把表示从感知输出转变为生成目标，RF 消除了对任何外部生成潜变量空间的需求。  
+简要解释：这意味着表示不再只是“看图后的产物”，而是直接成为要生成的对象，因此不必依赖外部 latent space。
+
+我们发现，RF 同时有利于理解和生成。  
+简要解释：RF 不只是提升生成，也会帮助模型的理解能力。
+
+在图像生成上，我们带有 RF 的像素空间模型匹配了最先进的基于 VAE 的统一模型。  
+简要解释：作者强调，去掉 VAE 后只用像素空间训练，性能仍能追平当前 SOTA。
+
+在图像理解上，像素空间 RF 通常优于其基于 VAE 的变体。  
+简要解释：在理解任务里，直接在像素空间做 RF 的效果一般还更好。
+
+综合来看，这些结果为走向端到端、无瓶颈的 UMMs 提供了一个有效步骤。  
+简要解释：本文声称 RF 是把统一多模态模型推进到“真正端到端”的关键进展。
+
+Date: 2026年6月4日  
+Project Page: https://yuqingwang1029.github.io/RepresentationForcing
+
+**1  引言**  
+能够在统一框架中同时完成理解（文本输出）和生成（像素输出），代表着迈向通用多模态智能的一个基础性步骤 [5, 11, 48, 51, 54]。  
+简要解释：作者把“能看懂并能画出”看作通用多模态智能的核心能力。
+
+主流的统一多模态模型（UMMs）通过将语言和图像生成纳入共享的 transformer backbone 来实现这一目标 [11, 34, 63]，其中语言使用 next-token prediction，而图像生成使用 diffusion。  
+简要解释：当前主流路线是把不同模态放进同一个骨干网络里，但各自用不同的生成机制。
+
+然而，尽管实现了这种统一，图像生成路径仍然依赖一个单独预训练、冻结的 VAE [15, 27, 42]：图像在 diffusion 之前先被压缩到 latent 中，并通过一个固定解码器恢复为像素。  
+简要解释：这里说明问题的根源在于图像并不是直接生成像素，而是先生成压缩表示，再由固定解码器还原。
+
+这造成了一个结构性瓶颈。  
+简要解释：模型在结构上被外部 VAE 卡住了，无法真正端到端地学习全部生成过程。
+
+latent space 是为重建而优化的，而不是为统一模型的目标而优化；其有损压缩施加了一个硬性上限  
+简要解释：这一句在本页末尾处被截断，核心意思是：VAE 的压缩会损失信息，因此会给最终性能设定上限。</pre>
+        </article>
+      </div>
+    </section>
+
+    <section class="spread" id="page-2">
+      <header><span>Page 2</span><a href="#top">Top</a></header>
+      <div class="cols">
+        <figure class="original">
+          <img src="faithful_page_images/Seed-RF/page-002.png" alt="Seed-RF page 2" loading="lazy" />
+        </figure>
+        <article class="translation">
+          <div class="label">中文翻译 + 简单解释</div>
+          <pre>(a) 基于 VAE 的 UMMs
+
+理解
+
+生成
+
+理解
+
+生成
+
+理解
+
+文本头
+
+VAE ❄ 解码器
+
+文本头
+
+像素头
+
+文本头
+
+生成
+
+表征头
+
+像素头
+
+上下文中的 Transformer
+
+文本分词器
+
+图像编码器
+
+提示
+
+图像
+
+Transformer
+
+VAE ❄ 编码器
+
+依赖外部 VAE
+
+Transformer
+
+文本分词器
+
+图像编码器
+
+文本分词器
+
+图像编码器
+
+提示
+
+图像
+
+提示
+
+图像
+
+没有结构引导
+
+由自身表征引导
+
+图1 架构对比。（a）当前主流的 UMMs 在图像生成中依赖冻结的 VAE 编码器和解码器，从而形成结构瓶颈。（b）直接去掉 VAE、在像素空间中生成，确实消除了这一瓶颈，但也失去了结构引导，导致质量差距。（c）Representation Forcing 通过训练 Transformer 解码器在像素生成之前，以自回归方式预测视觉表征（Rep head），从而弥合这一差距。这些表征被训练为与模型自身理解编码器提取的特征相匹配，并且作为上下文保留在共享 Transformer 中，从而在不依赖任何外部潜在空间的情况下，为像素空间扩散提供结构引导。
+
+简要解释：这张图说明了三种统一多模态模型（UMMs）生成路径的差异：传统 VAE 路径有结构瓶颈，纯像素路径缺少结构约束，而 Representation Forcing 则试图把“先生成表征、再生成像素”变成模型内生能力。
+
+在生成质量上的这一限制，即使继续训练 UMM 也无法克服。消除这一瓶颈，是迈向端到端 UMMs 的重要一步。
+
+简要解释：这一段强调，问题不只是训练不够，而是架构本身带来的上限，因此需要从结构上去掉瓶颈。
+
+一种自然的替代方案是直接在像素空间中生成。近期工作已经表明，像素空间扩散对于独立的生成模型是可行的 [8, 29, 47]。然而，我们发现，将这些方法直接应用到 UMMs 中，无法达到基于 VAE 的对应方法的质量。我们认为，这是由于 UMMs 具有更广泛的图像分布和更丰富的文本条件：模型必须从同一原始信号中同时学习图像的高层语义结构和细粒度细节。这促使我们引入一种中间表征，将这两个因素分离开来，使扩散过程可以专注于低层渲染，而不必退回到外部潜在空间。
+
+简要解释：这一段解释了为什么“直接像素生成”在统一多模态场景里不够好，因为模型同时要处理语义结构和细节纹理，难度比单纯生成模型更高。
+
+关键问题在于，这样的表征应当来自哪里。我们观察到，UMMs 内部其实已经提供了一种表征：它们的理解路径会学习视觉表征，用来捕捉高层结构，例如物体身份、空间布局和场景组成。在理解任务中，编码器 [37, 43, 45, 61] 从观察到的图像中提取这些表征。而在生成任务中，由于没有图像可用，模型必须仅从输入上下文中生成这些表征。这意味着模型必须学会自主预测这些表征。
+
+简要解释：这一段指出，模型并不缺少“表征”这种中间表示，真正的问题是生成时如何从文本上下文把这些表征预测出来。
+
+在本文中，我们提出 Representation Forcing（RF），一种通过让模型具备原生的表征预测能力来弥合这一差距的方法。我们的核心思想是把高层视觉表征锚定到解码器自身中。具体来说，我们使用理解编码器提取的视觉表征作为目标，并训练模型解码器在与语言相同的下一个词元预测目标下，以自回归方式预测这些表征。这些被预测出的表征在文本与像素之间提供了一个显式的结构支架；它们作为上下文条件保留在序列中，指导共享 Transformer 内的像素空间生成。通过把表征从感知输出转变为生成目标，RF 将理解与生成锚定在同一个表征空间中，而不依赖单独预训练的潜在空间（图1）。
+
+简要解释：这一段给出了 RF 的核心做法，即先预测“视觉表征”再生成像素，让模型内部形成统一的中间表示，从而把理解和生成连接起来。
+
+为了验证 Representation Forcing，我们在相同的架构、数据和训练预算下，将它分别应用于像素空间和基于 VAE 的 UMMs。在图像生成上，带有 RF 的像素空间模型在标准基准上与基于 VAE 的基线相当，同时保留了丰富的纹理细节（图2）。在理解任务上，像素空间 RF 优于其基于 VAE 的变体，表明像素空间生成比基于 VAE 的生成更适合统一多模态建模。消融实验 2
+
+简要解释：这一段报告实验结论：RF 不只是把像素生成做到了可用，而且在理解任务上也更有优势，说明它更契合统一多模态模型的整体目标。</pre>
+        </article>
+      </div>
+    </section>
+
+    <section class="spread" id="page-3">
+      <header><span>Page 3</span><a href="#top">Top</a></header>
+      <div class="cols">
+        <figure class="original">
+          <img src="faithful_page_images/Seed-RF/page-003.png" alt="Seed-RF page 3" loading="lazy" />
+        </figure>
+        <article class="translation">
+          <div class="label">中文翻译 + 简单解释</div>
+          <pre>图 2 采用我们在像素空间（pixel-space）的统一模型，并结合 Representation Forcing，在 1024 × 1024 分辨率下生成文本到图像（text-to-image）的结果。  
+简要解释：这是一条图注，说明图 2 展示的是在高分辨率下，使用 Representation Forcing 的像素空间统一模型生成图像的效果。
+
+进一步表明，RF 对像素空间生成至关重要，同时也会给基于 VAE 的设置带来改进。综合这些发现可以看出，Representation Forcing 同时有利于统一多模态建模（unified multimodal modeling）的两个方向，并为像素空间、无瓶颈（bottleneck-free）的 UMMs 提供了一步有效推进。  
+简要解释：这一段强调 RF 不仅提升像素空间生成，还能改善 VAE 路线；作者据此认为它对统一多模态模型的“生成”和“理解”两端都有帮助。
+
+本文的主要贡献总结如下：  
+简要解释：这一句是在引出后面的贡献列表，概括论文的核心工作。
+
+• 我们提出 Representation Forcing（RF），一种简单方法，用于消除统一多模态模型中像素空间图像生成的质量差距，并且不再需要任何预训练的 VAE。RF 训练解码器以自回归（autoregressively）方式预测视觉表示（visual representations）作为中间 token，这些 token 随后作为上下文内（in-context）的结构性引导，用于同一 backbone 中的像素空间扩散（pixel-space diffusion）。  
+简要解释：这一条说明 RF 的基本机制是先预测视觉表示，再把它们作为结构提示来指导最终的像素生成，从而替代外部 VAE。
+
+• RF 同时有利于像素空间和基于 VAE 的 UMMs 中的图像生成与理解。尤其是，我们带有 RF 的像素空间模型在生成上与基于 VAE 的对应模型相匹配，而在理解上优于后者，这表明像素空间生成比基于 VAE 的生成更适合统一多模态建模。  
+简要解释：这一条是在做性能对比，结论是像素空间方案不但不差，甚至在理解任务上更强，因此更符合统一多模态模型的目标。
+
+• 我们的工作倡导这样一种统一多模态模型：感知（perception）和生成（generation）共享一个单一的、端到端学习得到的表示空间，而不是依赖诸如外部 VAEs 这类分别预训练的组件之间进行协调。Representation Forcing 是迈向完全统一的多模态模型的一步，在这种模型中，所有能力都在模型内部端到端学习，而不是继承自主独立训练的组件。  
+简要解释：这一条强调作者的总体立场是“统一表示空间”，反对把感知和生成拆成多个外部预训练模块来拼接。
+
+2
+
+相关工作
+
+统一多模态模型（Unified Multimodal Models）。现有的 UMMs 大体可分为两类。第一类在单一 backbone 内生成，要么通过将图像建模为离散 token（Chameleon [5], Emu3 [48]），要么通过在 VAE 潜空间（VAE latent space）中接入扩散（diffusion）模型（Transfusion [63], Show-o [54], JanusFlow [34]）。这些方法进一步  
+简要解释：这一段是在梳理相关工作，先把现有统一多模态模型分成两条主路线：离散图像 token 路线和 VAE 潜空间扩散路线；原文在此处于页面截断，后文应在下一页继续。</pre>
+        </article>
+      </div>
+    </section>
+
+    <section class="spread" id="page-4">
+      <header><span>Page 4</span><a href="#top">Top</a></header>
+      <div class="cols">
+        <figure class="original">
+          <img src="faithful_page_images/Seed-RF/page-004.png" alt="Seed-RF page 4" loading="lazy" />
+        </figure>
+        <article class="translation">
+          <div class="label">中文翻译 + 简单解释</div>
+          <pre>为了解决 Janus 系列 [9, 34, 51] 中通过解耦视觉编码器，或者 BAGEL [11] 中通过模态特定专家来处理理解与生成之间的干扰，二者都依赖一个单独预训练的视觉 tokenizer, 即 VQVAE 或 continuous VAE，来为生成定义潜在空间。第二类方法将 LLM 与外部 diffusion model 拼接在一起：LLM 预测诸如 CLIP 特征之类的视觉表示，然后由一个单独训练的 diffusion decoder 来渲染图像，例如 Emu2 [44]、SEED-X [20]、BLIP3-o [6] 和 MetaQueries [38]。最近，Omni [57] 将原生训练的模态集合扩展到文本、图像、视频和 3D 几何，并在解码前在 backbone 内部展开中间多模态上下文。越来越多的工作进一步尝试移除这些模型中的预训练 VAE 瓶颈。与我们的工作同时，SenseNova-U1 [14] 和 Tuna-2 [32] 构建了像素空间的 UMMs，舍弃视觉编码器并直接从原始 patch 生成。Representation Forcing 共享这种无瓶颈、端到端 UMM 的目标，但走的是不同路径。它建立在相同的 MoT backbone 设计 [11] 之上，并保留一个联合训练的理解编码器，将其表示转化为中间生成目标，作为同一 transformer 内像素空间 diffusion 的 in-context conditioning，从而得到一个完全端到端的 UMM。  
+简要解释：这一段是在回顾相关工作并说明本文的方法定位。核心差别是：不是依赖外部预训练表示空间，而是把理解编码器自身学到的表示直接用于生成。
+
+**Pixel-Space Generation.** 目前最先进的 diffusion models [3, 42] 通常运行在一个预训练 VAE [27] 的 latent space 中，这样可以降低计算量并支持高分辨率合成，但会阻碍端到端训练。最近一类工作开始探索直接在像素空间中生成 [13, 23]，从而支持从原始数据出发的端到端学习：JiT [29] 展示了使用 x-prediction 的普通 Vision Transformers 可以在原始像素上生成，其他方法则探索了替代性的像素空间架构 [8, 24, 47]。这些方法大多聚焦于在 ImageNet [12] 数据集上的独立生成。在 UMMs 中，更广泛的图像分布和更丰富的文本条件会让朴素的像素空间 diffusion 出现明显的质量差距；Representation Forcing 通过来自模型自身理解编码器的结构性支架来弥合这一差距。  
+简要解释：这一段说明像素空间生成的优缺点。它指出：直接在像素上做生成虽然端到端，但很难做好，而本文通过引入结构化表示来提升生成质量。
+
+**Representation Learning for Generation.** 一些工作探索更丰富的视觉表示来提升生成效果。REPA [58] 将 diffusion 的中间特征与冻结的预训练表示对齐，以加速训练收敛；RAE [62] 进一步用 DINOv2 [37] 和 SigLIP [61] 等冻结的预训练编码器完全替代 VAE，从而提供语义更丰富的 latent space。与此密切相关的是，Latent Forcing [1] 在独立噪声调度下联合扩散像素和冻结的 DINOv2 latent，从而先于像素生成高层结构。尽管这些方法各不相同，它们仍然依赖一个冻结的、单独预训练的表示空间。Representation Forcing 则相反，会解除这个空间的冻结：理解编码器与模型其余部分联合端到端训练，并将其特征在线离散化为 representation tokens，由 decoder 自回归地预测。这样，高层视觉结构就成为模型内部学习到的原生输出，而不是继承自一个固定的外部空间，这与我们追求无瓶颈、端到端 UMM 的目标一致。  
+简要解释：这一段强调本文与其他表示学习方法的关键区别。别人的表示空间大多是冻结的外部空间，而本文让表示空间也参与联合训练，因此更贴近端到端建模。
+
+**3 Representation Forcing**
+
+Representation Forcing 背后的设计原则很简单：在理解阶段，encoder 将图像映射为能够捕捉高层结构的表示；在生成阶段，decoder 通过仅根据文本来预测这些表示来呼应这一过程，然后再把它们渲染成像素。在第 3.1 节中，我们描述这些表示从何而来，以及它们如何被形式化。在第 3.2 节中，我们展示 decoder 如何预测它们以引导像素空间生成。在第 3.3 节中，我们给出整体架构和训练目标。完整训练流程如图 3 所示。  
+简要解释：这一段是方法总览。核心思想是让“理解”与“生成”共享同一种中间表示，只是输入来源不同，一个来自图像，一个来自文本。
+
+**3.1 Representations from Understanding**
+
+我们不依赖外部 latent space，而是希望从模型内部获取一种能够捕捉高层结构的中间表示，使像素空间 diffusion 可以专注于低层渲染。理解编码器提供了一个自然来源：它的特征是为视觉理解而训练的，已经编码了我们所需要的结构内容。该编码器与模型其余部分联合训练。为了使 decoder 能在与文本相同的 next-token objective 下预测这些特征，并且在推理时容易采样，我们通过 vector quantization 将它们离散化为一串 visual representation tokens。除了支持统一训练之外，离散化还鼓励这些表示保留高层结构，同时  
+简要解释：这一段在解释“表示”具体从哪里来。作者不是另找一个外部编码器，而是直接用理解编码器的特征，并把它们离散成 token，方便统一训练与推理。</pre>
+        </article>
+      </div>
+    </section>
+
+    <section class="spread" id="page-5">
+      <header><span>Page 5</span><a href="#top">Top</a></header>
+      <div class="cols">
+        <figure class="original">
+          <img src="faithful_page_images/Seed-RF/page-005.png" alt="Seed-RF page 5" loading="lazy" />
+        </figure>
+        <article class="translation">
+          <div class="label">中文翻译 + 简单解释</div>
+          <pre>**训练流水线**
+
+**Rep token 提取（仅训练时）**
+
+`ℒ_LM`
+
+`ℒ_Rep`
+
+`ℒ_FM`
+
+Text head
+
+Rep head
+
+Pixel head
+
+GT image（用于生成）
+
+Transformer  
+`T`
+
+`T`
+
+`T`
+
+`T`
+
+`T`
+
+→
+
+自回归（因果式）
+
+`R`
+
+`R`
+
+`R`
+
+`R`
+
+Image encoder
+
+`R`
+
+→
+
+自回归（因果式）
+
+（EMA）
+
+`P`
+
+`P`
+
+`P`
+
+`P`
+
+`P`
+
+Pixel diffusion（双向）
+
+Online Quantization
+
+`R`
+
+Text tokenizer
+
+Prompt
+
+Image encoder
+
+`R`
+
+`R`
+
+`R`
+
+`R`
+
+Noise（`ε`）
+
+Image（用于理解）
+
+**图 3：Representation Forcing 的训练流水线。** 左侧：解码器在共享 transformer 中处理一个统一序列，其中包含文本 token（`T`）、表示 token（`R`）和像素 patch（`P`）。文本 token 和表示 token 通过下一 token 预测以自回归方式进行预测（`LLM` 和 `LRep`），而像素 patch 则通过从噪声出发的双向扩散生成（`LFM`）。图像编码器为 transformer 提供连续的视觉特征，用于理解任务。右侧：在生成训练中，图像编码器的 EMA 副本从真实图像中提取特征，这些特征通过在线量化离散化为表示 token。这些 token 既作为 `LRep` 的训练目标，也作为 `R` 位置上的 teacher-forcing 输入。在推理时，右侧面板完全不再使用：解码器仅从文本提示生成表示 token，而这些 token 会保留在上下文中，引导像素空间扩散。
+
+**简要解释：** 这幅图说明了模型如何把“理解”和“生成”统一到同一条流水线上：先从文本预测表示，再用表示去约束像素生成，从而把语义结构和图像细节连接起来。
+
+丢弃细粒度细节，从而实现我们所寻求的表示预测与像素渲染之间的分解。我们在第 4.4 节中用连续回归对这一选择进行了验证。
+
+我们通过在线向量量化（online vector quantization）来完成这一离散化过程，它不需要单独预训练的 tokenizer。由于编码器是联合训练的，其特征会在整个训练过程中持续变化；因此，我们从编码器的指数滑动平均（EMA）副本中提取特征，以提供变化缓慢的目标，从而保持离散分配的稳定。具体来说，我们使用 EMA 编码器最后一层、最终 norm 之前的 patch 级特征。我们维护一个包含 `K` 个可学习原型嵌入（prototype embeddings）的 codebook；对于每个 patch 级特征，我们计算其与所有原型的余弦相似度，并将其分配给最近的原型，从而产生一个离散 token 索引。codebook 通过遵循 SwAV [4] 的 momentum update 进行在线更新，并且我们应用 Sinkhorn–Knopp balancing [28] 来防止 codebook collapse。这样，每个空间 patch 都会得到一个表示 token，形成一个与图像空间布局相对应的序列，并且可以按 raster-scan 顺序进行预测。
+
+**简要解释：** 这一段在说明“表示 token”是怎么来的：不是直接回归连续向量，而是把图像 patch 的特征离散化成 token，这样更稳定，也更适合像语言模型一样自回归预测。
+
+### 3.2
+
+**通过预测表示生成像素**
+
+定义好表示 token 之后，我们现在来描述解码器如何利用它们生成图像。在训练期间，EMA 编码器提供表示 token 作为真实目标（ground-truth targets），解码器学习在交叉熵损失下以自回归方式预测这些 token，并且它们与文本一起位于同一个 next-token prediction 流中。在推理时，编码器不再参与：解码器仅从文本提示中生成表示 token。我们把这个过程称为 Representation Forcing：一方面，理解编码器中的表示强迫解码器学习相同的高层视觉结构；另一方面，解码器预测出的表示强迫像素生成过程遵循预期的语义布局。
+
+一旦表示 token 被预测出来，它们就会保留在序列中，并作为像素空间生成的上下文条件（in-context conditioning）；像素 patch 构成最终图像，而表示 token 本身并不属于可见输出。相同的 backbone 通过 flow matching 完成这种生成。按照 JiT [29]，我们采用带 velocity loss 的 x-prediction。给定干净的 patch `x` 和高斯噪声 `ϵ ∼ N(0, I)，`
+
+**简要解释：** 这里说明生成阶段的核心机制：先预测出表示 token，再让像素扩散/流匹配在这些表示的语义约束下生成最终图像。表示 token 不是输出本身，而是生成时的“导航信息”。
+
+页码：5</pre>
+        </article>
+      </div>
+    </section>
+
+    <section class="spread" id="page-6">
+      <header><span>Page 6</span><a href="#top">Top</a></header>
+      <div class="cols">
+        <figure class="original">
+          <img src="faithful_page_images/Seed-RF/page-006.png" alt="Seed-RF page 6" loading="lazy" />
+        </figure>
+        <article class="translation">
+          <div class="label">中文翻译 + 简单解释</div>
+          <pre>论文标题：Representation Forcing for Bottleneck-Free Unified Multimodal Models（用于无瓶颈统一多模态模型的表示强制）
+
+在时刻 \(t \in [0,1]\) 的噪声 patch 表示为  
+\[
+z_t = t x + (1 - t)\epsilon .
+\]
+(1)
+
+解码器预测 \(x_\theta\)，流匹配损失为  
+\[
+L_{FM} = \mathbb{E}\,\|v_\theta - v\|^2,
+\]
+(2)
+
+其中 \(v = x - \epsilon\)，且 \(v_\theta = (x_\theta - z_t)/(1 - t)\)。
+
+简要解释：这一段定义了图像生成中的噪声插值方式，以及用于训练解码器的 flow-matching 损失；模型通过预测 \(x_\theta\) 来间接学习从噪声恢复原始图像。
+
+在序列级别上，如图 3 所示，模型处理一个统一的 token 序列，其结构为 \([\,\text{text tokens},\ \text{representation tokens},\ \text{pixel patches}\,]\)。在骨干网络共享的 self-attention 中，文本 token 和表示 token 采用标准自回归建模中的因果注意力，而带噪的 pixel patches 则彼此之间进行双向注意力，同时对所有位于其之前的文本 token 和表示 token 进行因果注意力。正是这种注意力模式，使表示 token 能够充当上下文条件（in-context conditioning）：它们编码的高层结构通过标准 self-attention 流入像素生成过程，而不需要额外的 cross-attention 或注入模块。
+
+简要解释：这一段说明了模型为什么不需要专门的跨模态注入层，而是靠统一序列里的注意力机制，让表示 token 直接影响后续像素生成。
+
+### 3.3 训练与推理
+
+我们的模型遵循 BAGEL [11]，采用 Mixture-of-Transformers（MoT）架构。所有 token 共享相同的 multi-head self-attention 层，但会根据各自类型被路由到不同的模态专属 feed-forward experts 中。我们维护三组 experts：一组用于多模态理解，一组用于表示 token 预测，一组用于像素生成。每个表示 token 的嵌入由两个可学习嵌入之和构成：一个 2D 空间位置嵌入，以及一个按离散 token ID 索引的 token identity 嵌入。后者存储在一个独立的 \(K\)-entry 表中。
+
+简要解释：这一段介绍了模型主体结构。注意力层是共享的，但前馈专家按模态分工；表示 token 的位置与身份信息分开建模，以便同时保留空间结构和离散语义。
+
+模型以端到端方式训练，目标函数为  
+\[
+L = L_{LM} + L_{FM} + L_{Rep},
+\]
+(3)
+
+其中，\(L_{LM}\) 是用于文本 next-token prediction 的交叉熵损失，\(L_{Rep}\) 是用于表示 token prediction 的交叉熵损失，而 \(L_{FM}\) 是依据第 3.2 节中的 \(x\)-prediction formulation 进行像素生成的 flow-matching 损失。为在推理时支持 classifier-free guidance，我们在训练过程中以 0.1 的概率分别丢弃文本条件和表示 token 序列。
+
+简要解释：这一段说明总训练目标由三部分组成，分别对应文本建模、表示 token 预测和像素生成；同时通过随机丢条件，让推理时能使用 classifier-free guidance。
+
+在推理阶段，生成分两步进行。解码器首先根据文本 prompt，自回归地产生完整的表示 token 序列。然后，在文本和预测出的表示 token 的共同条件下，解码器从高斯噪声出发进行迭代去噪，直接在像素空间合成最终图像。classifier-free guidance 同时应用于这两个条件。
+
+简要解释：推理时先生成中间的表示 token，再用这些表示 token 和文本一起生成最终图像；这是一个两阶段流程，先抽象结构，再落到像素级细节。
+
+## 4 实验
+
+## 4.1 实验设置
+
+**Architecture.** 我们的模型从 Qwen3-A3B [56] 初始化而来。Qwen3-A3B 是一个预训练的 Mixture-of-Experts 语言模型，每个 token 有 3B active parameters，并遵循 Mixture-of-Transformers（MoT）架构 [11]：所有 token 共享 self-attention 层，但会被路由到三个模态专属的 feed-forward expert pools 之一，即理解（understanding）、表示预测（representation prediction）和像素生成（pixel generation）。图像编码器采用 DINOv3 ViTH+/16 [43]，并支持 NaViT-style 的 variable-resolution support [10]，且与模型其余部分联合训练。我们在 online vector quantization 中使用一个包含 \(K=16,384\) 个 prototypes 的 codebook。对于像素空间生成，我们使用 \(16\times16\) 的 patch size，并采用带 velocity loss [29] 的 \(x\)-prediction。pooling factor 是一个超参数，用于在表示粒度与序列长度之间折中；我们始终使用 \(2\times2\) pooling，因此在共享空间布局下，每 \(4N\) 个 pixel patches 对应 \(N\) 个 representation tokens。
+
+简要解释：这一段给出具体架构配置，包括初始化模型、视觉编码器、量化码本、patch 大小和 pooling 设置；核心是在表示细粒度和序列长度之间做权衡。
+
+**Data.** 我们遵循 BAGEL [11] 的数据构建与过滤流程，在以下混合数据上训练：(1) 用于语言建模的纯文本数据；(2) 大规模图文对数据，覆盖图像到文本理解任务（通用 VQA、文档理解、空间推理）以及文本到图像生成。
+
+简要解释：这一段说明训练数据既包含纯文本，也包含大规模图文对，既支持理解任务，也支持生成任务，从而让模型同时学会多模态理解与生成。</pre>
+        </article>
+      </div>
+    </section>
+
+    <section class="spread" id="page-7">
+      <header><span>Page 7</span><a href="#top">Top</a></header>
+      <div class="cols">
+        <figure class="original">
+          <img src="faithful_page_images/Seed-RF/page-007.png" alt="Seed-RF page 7" loading="lazy" />
+        </figure>
+        <article class="translation">
+          <div class="label">中文翻译 + 简单解释</div>
+          <pre>表 1 文本到图像生成（text-to-image generation）评估。† 表示使用 LLM rewriter 的方法。我们的像素空间模型结合 Representation Forcing（RF-Pixel）后，在不依赖任何预训练 VAE 的情况下，在 GenEval 和 DPG-Bench 上都能匹配当前最先进的基于 VAE 的统一模型。  
+简要解释：这一段的核心意思是，这张表用两个基准同时比较了文本到图像生成能力，并强调 RF-Pixel 不借助预训练 VAE 也能达到顶尖统一模型水平。
+
+**仅生成（Generation Only）**
+
+| Model | Single Obj. | Two Obj. | Counting | Colors | Position | Color Attri. | Overall↑ | DPG Overall↑ |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| PixArt-α [7] | 0.98 | 0.50 | 0.44 | 0.80 | 0.08 | 0.07 | 0.48 | 71.11 |
+| SDv2.1 [42] | 0.98 | 0.51 | 0.44 | 0.85 | 0.07 | 0.17 | 0.50 | 68.09 |
+| DALL-E 2 [41] | 0.94 | 0.66 | 0.49 | 0.77 | 0.10 | 0.19 | 0.52 | – |
+| SDXL [39] | 0.98 | 0.74 | 0.39 | 0.85 | 0.15 | 0.23 | 0.55 | 74.65 |
+| DALL-E 3 [2] | 0.96 | 0.87 | 0.47 | 0.83 | 0.43 | 0.45 | 0.67 | 83.50 |
+| SD3-Medium [16] | 0.99 | 0.94 | 0.72 | 0.89 | 0.33 | 0.60 | 0.74 | 84.08 |
+| FLUX.1-dev† [3] | 0.98 | 0.93 | 0.75 | 0.93 | 0.68 | 0.65 | 0.82 | 84.00 |
+| Seedream 3.0 [19] | 0.99 | 0.96 | 0.91 | 0.93 | 0.47 | 0.80 | 0.84 | 88.27 |
+| Z-Image-Turbo [60] | 1.00 | 0.95 | 0.77 | 0.89 | 0.65 | 0.68 | 0.82 | 84.86 |
+| Qwen-Image [50] | 0.99 | 0.92 | 0.89 | 0.88 | 0.76 | 0.77 | 0.87 | 88.32 |
+
+**统一模型（Unified Models）**
+
+| Model | Single Obj. | Two Obj. | Counting | Colors | Position | Color Attri. | Overall↑ | DPG Overall↑ |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| Chameleon [5] | – | – | – | – | – | – | 0.39 | – |
+| LWM [31] | 0.93 | 0.41 | 0.46 | 0.79 | 0.09 | 0.15 | 0.47 | – |
+| SEED-X [20] | 0.97 | 0.58 | 0.26 | 0.80 | 0.19 | 0.14 | 0.49 | – |
+| TokenFlow-XL [40] | 0.95 | 0.60 | 0.41 | 0.81 | 0.16 | 0.24 | 0.55 | 73.38 |
+| ILLUME [46] | 0.99 | 0.86 | 0.45 | 0.71 | 0.39 | 0.28 | 0.61 | – |
+| Janus [51] | 0.97 | 0.68 | 0.30 | 0.84 | 0.46 | 0.42 | 0.61 | – |
+| Transfusion [63] | – | – | – | – | – | – | 0.63 | – |
+| Emu3† [48] | 0.99 | 0.81 | 0.42 | 0.80 | 0.49 | 0.45 | 0.66 | 81.60 |
+| Show-o [54] | 0.98 | 0.80 | 0.66 | 0.84 | 0.31 | 0.50 | 0.68 | – |
+| Show-o2 [55] | 1.00 | 0.87 | 0.58 | 0.92 | 0.52 | 0.62 | 0.76 | 86.14 |
+| Janus-Pro-7B [9] | 0.99 | 0.89 | 0.59 | 0.90 | 0.79 | 0.66 | 0.80 | 84.19 |
+| MetaQuery-XL† [38] | – | – | – | – | – | – | 0.80 | 82.05 |
+| BLIP3-o [6] | – | – | – | – | – | – | 0.84 | 81.60 |
+| UniWorld-V1† [30] | 0.98 | 0.93 | 0.81 | 0.89 | 0.74 | 0.71 | 0.84 | 81.38 |
+| OmniGen2† [52] | 0.99 | 0.96 | 0.74 | 0.98 | 0.71 | 0.64 | 0.86 | 83.57 |
+| BAGEL [11] | 0.99 | 0.94 | 0.81 | 0.88 | 0.64 | 0.63 | 0.82 | 85.07 |
+| BAGEL† [11] | 0.98 | 0.95 | 0.84 | 0.95 | 0.78 | 0.77 | 0.88 | – |
+| RF-Pixel（ours） | 0.99 | 0.93 | 0.84 | 0.89 | 0.74 | 0.66 | 0.84 | 84.15 |
+| RF-Pixel（ours）† | 0.98 | 0.95 | 0.88 | 0.87 | 0.92 | 0.70 | 0.88 | - |
+
+**统一模型（Unified Models）训练。**我们遵循 [11] 采用三阶段训练策略：（i）对齐（alignment）：冻结主干和编码器，仅训练 MLP connector，迭代 10K 次；（ii）联合预训练（joint pre-training）：解冻所有组件，在最高 256 分辨率上对文本和文本-图像对进行联合优化，迭代 50K 次；（iii）继续训练（continued training）：将分辨率扩展到最高 1024，继续训练 20K 次。在整个训练过程中，图像分辨率会在每个阶段的最大值以内动态采样，并通过 NaViT-style 的可变分辨率 batching 进行打包。更多细节见附录。  
+简要解释：这一段说明模型的训练流程是分三步逐步放开参数、提高分辨率，从而稳定地把对齐、预训练和高分辨率继续训练串起来。
+
+**基线（Baselines）。**为了进行可控比较，我们使用 WanX-2.1 VAE [49] 训练了基于 VAE 的变体，用 VAE latent 替换像素输入/输出，同时保持其余架构、训练数据和优化方式完全一致。我们在这项对照研究中的四个变体（Pixel、Pixel+RF、VAE、VAE+RF）只在两点上不同：(a) 生成路径（generation pathway）；(b) 是否启用 RF。消融实验在 256 分辨率下进行；主结果报告在 1024 分辨率下。  
+简要解释：这一段说明对照实验设计非常严格，核心只比较像素空间与 VAE latent 路径，以及 RF 是否开启，其他因素都尽量保持不变，便于公平评估。
+
+7</pre>
+        </article>
+      </div>
+    </section>
+
+    <section class="spread" id="page-8">
+      <header><span>Page 8</span><a href="#top">Top</a></header>
+      <div class="cols">
+        <figure class="original">
+          <img src="faithful_page_images/Seed-RF/page-008.png" alt="Seed-RF page 8" loading="lazy" />
+        </figure>
+        <article class="translation">
+          <div class="label">中文翻译 + 简单解释</div>
+          <pre>表2：RF 对理解能力的影响。我们在基于 VAE 和像素空间（pixel-space）的生成方式下，比较了有无 RF 的理解性能。MME∗ 报告所有感知（perception）与认知（cognition）问题的平均准确率。`+x/−x` 表示加入 RF 后的变化。RF 在两种设置下都带来提升，在通用视觉理解上增益较大，而在面向文档的任务上仅有轻微下降。与 VAE+RF 相比，Pixel+RF 从 RF 中获益更多（8 个基准中提升 6 个，而 VAE+RF 为 5 个），并且在 8 个基准中的 6 个上优于 VAE+RF。
+
+通用视觉理解 / 文档与图表理解
+
+| 方法 | MMMU | HalluBench | MME∗ | BLINK | RealWorldQA | AI2D | DocVQA | ChartQA |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| VLM-only | 56.2 | 65.0 | 79.7 | 56.2 | 65.8 | 90.3 | 89.3 | 86.0 |
+| VAE | 51.0 | 55.7 | 71.3 | 52.2 | 65.2 | 90.7 | 90.0 | 78.8 |
+| VAE+RF | 49.6 −1.4 | 61.3 +5.6 | 79.3 +8.0 | 52.9 +0.7 | 66.6 +1.4 | 87.8 −2.9 | 88.3 −1.7 | 80.5 +1.7 |
+| Pixel | 49.9 | 63.7 | 76.6 | 49.4 | 63.1 | 85.8 | 90.0 | 81.7 |
+| Pixel+RF | 54.2 +4.3 | 64.8 +1.1 | 80.2 +3.6 | 53.0 +3.6 | 65.8 +2.7 | 90.3 +4.5 | 88.0 −2.0 | 81.3 −0.4 |
+
+简要解释：这张表说明 RF 会普遍增强模型的理解能力，尤其对通用视觉理解类任务提升明显；在 DocVQA 和 ChartQA 这类依赖精确文字识别与版面解析的任务上，提升不稳定甚至略有下降。
+
+**4.2 图像生成**
+
+我们在两个标准 text-to-image 基准上评估加入 RF 的像素空间模型（在表 1 中记为 RF-Pixel）：GenEval [21] 用于组合式生成（compositional generation），以及 DPG-Bench [25] 用于密集提示遵循（dense prompt following）。我们将其与仅生成模型以及统一多模态模型（unified multimodal models）进行比较。现有统一模型都依赖单独预训练的生成组件，或者是在单一 backbone 中使用冻结的 VAE/VQVAE（例如 BAGEL、Show-o、Janus-Pro），或者是一个由 LLM 预测特征条件化的外部 diffusion 模块（例如 BLIP3-o、MetaQuery、SEED-X）。相比之下，我们的模型完全在像素空间中运行，不依赖任何单独预训练的生成模块。
+
+简要解释：这一段的重点是说明 RF-Pixel 的生成能力并不依赖额外的 VAE 或扩散生成器，而是可以在纯像素空间里把统一多模态模型的生成质量补齐。
+
+如表 1 所示，在不使用 LLM rewriter 的情况下，RF-Pixel 的 GenEval 总分达到 0.84，略高于 BAGEL 基线（0.82），并与 BLIP3-o 等统一模型（0.84）持平。使用 LLM rewriter 后，RF-Pixel 达到 0.88，与统一模型中的最先进结果持平。在 DPG-Bench 上，RF-Pixel 在没有 rewriter 的情况下得分为 84.15，与最先进的基于 VAE 的统一模型相当。这些结果表明，Representation Forcing 有效缩小了像素空间生成与基于 VAE 的生成之间的质量差距，使端到端的像素空间统一模型能够达到与 VAE 方案相当的水平。
+
+简要解释：这一段强调 RF 不只是提升单项指标，而是实质性消除了像素空间方案与 VAE 方案之间的生成质量差距。
+
+**4.3 图像理解**
+
+除了生成质量之外，我们还比较了不同生成路径对理解能力的影响。如表 2 所示，我们在同一个第一阶段 VLM baseline 之上训练了四种生成变体，分别是基于 VAE 的和像素空间的，以及各自带 RF 和不带 RF 的版本，并且使用相同的架构和训练数据。由于这里关注的是预训练阶段的比较，因此没有进行后训练（post-training）。我们将 VLM-only 基线作为参考。
+
+简要解释：这一段说明实验控制变量很严格，因此表 2 中的差异主要可以归因于“生成路径”和“RF”本身，而不是后训练或架构差异。
+
+我们在 8 个基准上评估，分为两类：(1) 通用视觉理解，包括 MMMU [59]、HalluBench [22]、MME [17]、BLINK [18] 和 RealWorldQA [53]，用于测试通用视觉理解、幻觉鲁棒性以及现实世界感知；(2) 文档与图表理解，包括 AI2D [26]、DocVQA [36] 和 ChartQA [35]，用于测试结构化视觉理解。
+
+简要解释：这里的分组是在区分“高层语义理解”与“结构化/版面化理解”，后续结果会分别反映这两类能力的差异。
+
+RF 在两种生成路径下都能稳定提升理解能力。对于像素空间生成，RF 在 8 个基准中提升了 6 个，其中 MMMU（+4.3）、MME（+3.6）、BLINK（+3.6）、AI2D（+4.5）和 RealWorldQA（+2.7）提升明显，而 DocVQA（−2.0）和 ChartQA（−0.4）略有下降。对于基于 VAE 的生成，RF 在 8 个基准中提升了 5 个，尤其是 HalluBench（+5.6）和 MME（+8.0）。这些提升主要集中在测试高层视觉理解的基准上，例如目标识别、空间理解和场景级感知，这与 representation tokens 的性质一致：它们来自理解编码器，编码的是语义结构，而不是细粒度细节。DocVQA 和 ChartQA 的下降，这两个任务高度依赖精确文本识别和版面解析，说明这些能力并没有被 representation-level guidance 直接充分支持。
+
+简要解释：作者的核心结论是，RF 更擅长提升“语义层面的理解”，而对“需要精确文字与排版解析”的任务帮助有限。
+
+Pixel+RF 在 8 个基准中的 6 个上优于 VAE+RF。我们将此归因于外部 VAE 潜空间的移除，因为这使得理解和生成可以共享一个单一表示空间，从而更...
+
+简要解释：这一段在当前页文本中被截断了；已可见部分的意思是，去掉外部 VAE 潜空间后，理解与生成更容易在同一表示空间内协同。</pre>
+        </article>
+      </div>
+    </section>
+
+    <section class="spread" id="page-9">
+      <header><span>Page 9</span><a href="#top">Top</a></header>
+      <div class="cols">
+        <figure class="original">
+          <img src="faithful_page_images/Seed-RF/page-009.png" alt="Seed-RF page 9" loading="lazy" />
+        </figure>
+        <article class="translation">
+          <div class="label">中文翻译 + 简单解释</div>
+          <pre>表3  消融研究。除非另有说明，所有实验均在 256 分辨率的 pixel-space 生成下进行。  
+（a）RF 在 pixel-space 和基于 VAE 的生成中的效果。  
+（b）作为表征引导策略，RF（decoder prediction）与 REPA（auxiliary alignment）的比较。  
+（c）离散与连续的 representation token 形式。  
+（d）codebook size K 的影响。  
+（e）在仅 VLM 基准上评估的 understanding encoder 选择。  
+简要解释：这张表汇总了 RF 的关键设计消融，分别考察它在不同生成路径、不同表征引导方式、不同 token 形式、不同码本大小以及不同编码器选择下的效果。
+
+（a）RF 在 pixel-space 和 VAE-based generation 上的效果。  
+GenEval↑：  
+- Pixel，w/o：0.25  
+- Pixel，w/：0.76  
+- VAE，w/o：0.52  
+- VAE，w/：0.77  
+简要解释：无论是 pixel-space 还是 VAE 路径，引入 RF 都能显著提升生成质量，其中对 pixel-space 的提升最明显。
+
+（b）Prediction vs. alignment.  
+GenEval↑：  
+- w/o REPA：0.25  
+- REPA：0.43  
+- RF (ours)：0.76  
+简要解释：单纯做特征对齐的 REPA 有帮助，但直接预测表征并把它送入解码器的 RF 效果更强。
+
+（c）Rep. token formulation.  
+GenEval↑：  
+- w/o：0.25  
+- Continuous：0.26  
+- Discrete：0.76  
+简要解释：离散 representation token 明显优于连续回归式表征预测，说明离散化表征更适合该生成框架。
+
+（d）Rep. token codebook size.  
+GenEval↑：  
+- K = 16384：0.76  
+- K = 32768：0.77  
+简要解释：码本大小从 16384 增加到 32768 只带来很小的提升，说明该方法对码本规模并不特别敏感。
+
+（e）Understanding encoder.  
+评测基准：MMMU，HalluBench，MME∗，BLINK，RealWorldQA  
+- SigLIP2：56.3，64.4，76.8，53.4，62.5  
+- DINOv3：56.2，65.0，79.7，56.2，65.8  
+简要解释：不同 understanding encoder 的选择会影响 VLM-only 基准表现，DINOv3 在多个指标上更强。
+
+……紧密地。该结果与我们更广泛的动机一致，即朝向无瓶颈的统一多模态模型迈进。  
+简要解释：这里强调的是，实验结果支持作者提出的总体方向，即减少或消除多模态系统中的瓶颈结构。
+
+**4.4  消融研究**
+
+我们在表 3 中进行了消融研究，以分析 Representation Forcing 的关键设计选择。  
+简要解释：这一节开始系统检验 RF 的各个组成部分，看看每个设计是否真的必要。
+
+表征对于 pixel-space 生成至关重要。我们在 pixel-space 和基于 VAE 的生成两种情况下评估 RF，结果如表 3a 所示。四个变体共享相同的架构和训练设置，唯一差异在于生成路径以及是否使用 RF。没有 RF 时，pixel-space 生成在 GenEval 上仅得 0.25，而基于 VAE 的生成达到 0.52。正如图 4 所示，没有 RF 的 pixel-space 模型往往会生成结构较差的图像，例如目标物体变形、组合不连贯，这表明模型仅凭原始像素很难同时学习高层布局和低层细节。加入 RF 后，pixel-space 生成分数跃升至 0.76，与对应的 VAE-based 结果 0.77 相当，而且生成图像在结构上变得一致。RF 也将基于 VAE 的生成从 0.52 提升到 0.77，说明显式表征引导对两种设置都有益，但在 pixel space 中效果最显著。  
+简要解释：这一段说明 RF 不只是“锦上添花”，它直接缓解了模型从原始像素中同时学习布局与细节的困难，尤其有利于 pixel-space 生成。
+
+Decoder prediction 优于 auxiliary alignment。RF 并不是把视觉表征融入生成的唯一方式。REPA [58] 采用另一种方法：在 diffusion 端加入一个辅助损失，促使模型的中间特征与 encoder representations 对齐。我们在相同训练条件下，将这两种方法都应用到同一个 pixel-space UMM 上，并使用相同的视觉编码器 DINOv3 [43] 作为表征来源，结果如表 3b 所示。没有任何引导时，pixel-space 生成仅得 0.25。REPA 将其提升到 0.43，证明表征引导确实有效，但增益仍然有限。RF 达到 0.76，显著优于 REPA。我们将这一差异归因于表征进入生成过程的位置不同。REPA 只是把特征相似性作为一个附加目标来优化，但对齐后的特征在推理时并不会显式条件化生成输出。RF 则把预测得到的表征直接放入 decoder 的序列中，pixel patches 通过共享的 self-attention 与这些表征进行交互。在高维 pixel space 中，这种直接条件化比隐式的特征对齐更有效。  
+简要解释：作者认为，RF 的优势不在于“多加一个对齐约束”，而在于把表征真正作为生成序列的一部分参与推理，从而更直接地控制输出。
+
+Discrete prediction 优于 continuous regression。representation tokens 可以用不同方式来表述。除了我们采用的离散方法，即用 autoregressive cross-entropy 进行预测之外，另一种选择是直接预测连续特征，例如在每个 representation 位置增加一个 diffusion head，以因果方式回归 encoder features。我们在相同设置下比较这两种形式（表 3c）。Continuous regression 仅得 0.26，几乎没有比不使用 RF 的基线更好，而 discrete tokens 达到 0.76。我们将其归因于两个因素。第一，因果地预测高维连续……  
+简要解释：这一段的核心结论是，离散表征比连续回归更稳定、更有效；作者认为问题可能出在高维连续空间难以被因果预测稳定建模。</pre>
+        </article>
+      </div>
+    </section>
+
+    <section class="spread" id="page-10">
+      <header><span>Page 10</span><a href="#top">Top</a></header>
+      <div class="cols">
+        <figure class="original">
+          <img src="faithful_page_images/Seed-RF/page-010.png" alt="Seed-RF page 10" loading="lazy" />
+        </figure>
+        <article class="translation">
+          <div class="label">中文翻译 + 简单解释</div>
+          <pre>图4 无 RF 与有 RF 的像素空间生成定性比较。无 RF 时，模型往往会生成结构较差的图像，例如物体形状扭曲、构图不连贯。有 RF 时，模型会先预测高层视觉表征，再进行像素渲染，从而通过为扩散过程提供显式的结构指导，生成出更连贯的结构。  
+简要解释：这张图说明，RF 的作用不是直接改进像素细节，而是先在高层表示空间中建立结构，再把结构稳定地落实到像素层，从而减少生成失真。
+
+向量表示容易出现误差累积，即早期位置上的小预测误差会不断叠加，并损害后续预测。离散 token 通过将每个位置简化为一个类别选择来避免这一问题，因此在序列预测下更稳健。其次，离散化会自然鼓励表示保留高层结构，同时舍弃细粒度细节，这正是 RF 旨在提供的因子分解。连续目标保留了更多低层信息，从而削弱了这种因子分解。  
+简要解释：这里说明了为什么 RF 采用离散表示而不是连续向量。核心原因是离散化更适合自回归预测，也更符合“先结构、后细节”的设计目标。
+
+码本大小。码本大小 K 决定离散表示空间的表达能力。我们在表 3d 中比较了 K=16,384 和 K=32,768。两种设置的表现相当（0.76 vs. 0.77），说明模型在这一范围内对码本大小并不敏感。我们在其他所有实验中使用 K=16,384，这与向量量化中的常见做法一致。  
+简要解释：这一段表明，码本规模在这里不是主要瓶颈，选用较常见的 16,384 就足够，不必刻意增大到 32,768。
+
+理解编码器。理解编码器的选择决定了 RF 所学习去预测的表示质量。我们将 SigLIP2 [45]（一种对比式视觉-语言模型）和 DINOv3 [43]（一种自监督视觉模型）作为图像编码器骨干进行比较（表 3e）。我们发现，在我们的设置中，DINOv3 在 5 个理解基准中的 4 个上优于 SigLIP2。我们将 DINOv3 的优势归因于其自监督训练目标；与 SigLIP2 的语言对齐特征相比，它产生的特征包含更丰富的空间与结构信息。这与 RF 的设计是一致的：表示 token 旨在捕获视觉结构，而这类结构更受益于优先保证空间保真度、而不是文本对齐的编码器。我们默认使用 DINOv3 作为编码器。  
+简要解释：这一段强调，RF 预测的不是任意表示，而是“能保留视觉结构的表示”。因此，像 DINOv3 这样更强调空间结构的编码器，更适合作为 RF 的监督目标来源。
+
+5 讨论
+
+局限性。受计算资源限制，我们的模型是从一个预训练的大语言模型初始化的，而不是在多模态数据上从头训练。尽管这提供了一个强语言对齐的起点，但完全从头进行多模态预训练可能产生更丰富的联合表示，这也是未来工作的重要方向。我们还聚焦于静态图像生成，没有将 RF 扩展到视频或其他时间模态。  
+简要解释：这里指出了两点局限：其一，模型不是从零开始的多模态预训练；其二，当前工作只覆盖静态图像，尚未涉及视频等时序任务。
+
+结论。本文提出了 Representation Forcing，这是一种用于统一多模态模型中像素空间图像生成的简单方法。其关键思想是在同一序列中，让解码器在渲染像素之前先预测自身的理解表示作为自回归目标，从而为像素空间扩散提供来自同一序列内部的结构指导。实验表明，这一单一机制就足以弥合与基于 VAE 的生成之间的质量差距，同时还提升了多模态理解。同一表示服务于  
+简要解释：结论部分总结了 RF 的核心贡献：用同一套表示同时服务理解和生成，并通过“先表示、后像素”的顺序，把结构信息直接注入生成过程。
+
+10</pre>
+        </article>
+      </div>
+    </section>
+
+    <section class="spread" id="page-11">
+      <header><span>Page 11</span><a href="#top">Top</a></header>
+      <div class="cols">
+        <figure class="original">
+          <img src="faithful_page_images/Seed-RF/page-011.png" alt="Seed-RF page 11" loading="lazy" />
+        </figure>
+        <article class="translation">
+          <div class="label">中文翻译 + 简单解释</div>
+          <pre>在两个方向上——理解视觉输入并引导其生成——这指向感知与生成的更紧密融合。我们将 RF 视为迈向完全端到端原生多模态学习（native multimodal learning）的一步，在这种范式下，所有多模态能力都直接从单一模型中的原始输入中获得。我们希望这项工作能激发该方向上的进一步研究。
+
+简要解释：这段话强调 RF 不仅能让模型“看懂”图像，还能反过来帮助生成图像，说明感知和生成正在走向统一；作者认为这是通往真正端到端多模态模型的重要过渡。</pre>
+        </article>
+      </div>
+    </section>
+
+    <section class="spread" id="page-12">
+      <header><span>Page 12</span><a href="#top">Top</a></header>
+      <div class="cols">
+        <figure class="original">
+          <img src="faithful_page_images/Seed-RF/page-012.png" alt="Seed-RF page 12" loading="lazy" />
+        </figure>
+        <article class="translation">
+          <div class="label">中文翻译 + 简单解释</div>
+          <pre>参考文献
+
+[1] Alan Baade, Eric Ryan Chan, Kyle Sargent, Changan Chen, Justin Johnson, Ehsan Adeli, and Li Fei-Fei. 《Latent forcing: 重排扩散轨迹以用于像素空间图像生成》（Latent forcing: Reordering the diffusion trajectory for pixel-space image generation）. arXiv 预印本 arXiv:2602.11401，2026。  
+简要解释：这篇工作讨论了如何通过重排扩散过程中的轨迹来改进像素空间图像生成。
+
+[2] James Betker, Gabriel Goh, Li Jing, Tim Brooks, Jianfeng Wang, Linjie Li, Long Ouyang, Juntang Zhuang, Joyce Lee, Yufei Guo, Wesam Manassra, Prafulla Dhariwal, Casey Chu, Yunxin Jiao, and Aditya Ramesh. 《通过更好的 captions 改进图像生成》（Improving image generation with better captions）. OpenAI 技术报告，https://cdn.openai.com/papers/dall-e-3.pdf，2023。  
+简要解释：这篇报告说明了高质量文本描述（captions）对图像生成性能的重要性。
+
+[3] Black Forest Labs. FLUX. https://github.com/black-forest-labs/flux，2024。  
+简要解释：这里引用的是 FLUX 的公开项目页面，表明论文相关工作或基线模型与该项目有关。
+
+[4] Mathilde Caron, Ishan Misra, Julien Mairal, Priya Goyal, Piotr Bojanowski, and Armand Joulin. 《通过对比聚类分配进行无监督视觉特征学习》（Unsupervised learning of visual features by contrasting cluster assignments）. 见 NeurIPS，2020。  
+简要解释：这项工作是无监督视觉表征学习中的经典方法，强调聚类分配的对比学习。
+
+[5] Chameleon Team. 《Chameleon：混合模态早期融合基础模型》（Chameleon: Mixed-modal early-fusion foundation models）. arXiv 预印本 arXiv:2405.09818，2024。  
+简要解释：该工作提出了混合模态早期融合的基础模型框架。
+
+[6] Jiuhai Chen, Zhiyang Xu, Xichen Pan, Yushi Hu, Can Qin, Tom Goldstein, Lifu Huang, Tianyi Zhou, Saining Xie, Silvio Savarese, et al. 《Blip3-o：一个完全开放的统一多模态模型家族 - 架构、训练和数据集》（Blip3-o: A family of fully open unified multimodal models-architecture, training and dataset）. arXiv 预印本 arXiv:2505.09568，2025。  
+简要解释：这篇论文介绍了一个完整开放的统一多模态模型系列，以及其架构、训练方法和数据集。
+
+[7] Junsong Chen, Jincheng Yu, Chongjian Ge, Lewei Yao, Enze Xie, Yue Wu, Zhongdao Wang, James Kwok, Ping Luo, Huchuan Lu, and Zhenguo Li. 《PixArt-α：用于逼真文本到图像合成的扩散 Transformer 快速训练》（PixArt-α: Fast training of diffusion transformer for photorealistic text-to-image synthesis）. 见 ICLR，2024。  
+简要解释：这篇工作关注如何更高效地训练扩散 Transformer，以实现高质量文本生成图像。
+
+[8] Shoufa Chen, Chongjian Ge, Shilong Zhang, Peize Sun, and Ping Luo. 《PixelFlow：基于 flow 的像素空间生成模型》（PixelFlow: Pixel-space generative models with flow）. arXiv 预印本 arXiv:2504.07963，2025。  
+简要解释：该工作探索了将 flow 方法用于像素空间生成模型的设计。
+
+[9] Xiaokang Chen, Zhiyu Wu, Xingchao Liu, Zizheng Pan, Wen Liu, Zhenda Xie, Xingkai Yu, and Chong Ruan. 《Janus-Pro：结合数据与模型扩展的统一多模态理解与生成》（Janus-Pro: Unified multimodal understanding and generation with data and model scaling）. arXiv 预印本 arXiv:2501.17811，2025。  
+简要解释：这篇论文讨论了通过数据和模型扩展来统一多模态理解与生成。
+
+[10] Mostafa Dehghani, Basil Mustafa, Josip Djolonga, Jonathan Heek, Matthias Minderer, Mathilde Caron, Andreas Steiner, Joan Puigcerver, Robert Geirhos, Ibrahim M Alabdulmohsin, et al. 《Patch n’ Pack：NaViT，一个适用于任意长宽比和分辨率的视觉 Transformer》（Patch n’ Pack: NaViT, a vision transformer for any aspect ratio and resolution）. 见 NeurIPS，2023。  
+简要解释：这篇工作提出了能适配任意分辨率和长宽比输入的视觉 Transformer。
+
+[11] Chaorui Deng, Deyao Zhu, Kunchang Li, Chenhui Gou, Feng Li, Zeyu Wang, Shu Zhong, Weihao Yu, Xiaonan Nie, Ziang Song, Guang Shi, and Haoqi Fan. 《统一多模态预训练中的涌现属性》（Emerging properties in unified multimodal pretraining）. arXiv 预印本 arXiv:2505.14683，2025。  
+简要解释：该工作研究了统一多模态预训练过程中出现的涌现能力与性质。
+
+[12] Jia Deng, Wei Dong, Richard Socher, Li-Jia Li, Kai Li, and Li Fei-Fei. 《Imagenet：一个大规模层次化图像数据库》（Imagenet: A large-scale hierarchical image database）. 见 CVPR，2009。  
+简要解释：这是 ImageNet 数据集的经典论文，为后续视觉识别研究奠定了基础。
+
+[13] Prafulla Dhariwal and Alexander Nichol. 《扩散模型在图像合成上击败 GAN》（Diffusion models beat gans on image synthesis）. 见 NeurIPS，第 34 卷，第 8780–8794 页，2021。  
+简要解释：这篇论文标志着扩散模型在图像生成质量上超越 GAN 的重要进展。
+
+[14] Haiwen Diao, Penghao Wu, Hanming Deng, Jiahao Wang, Shihao Bai, Silei Wu, Weichen Fan, Wenjie Ye, Wenwen Tong, Xiangyu Fan, et al. 《Sensenova-u1：使用 neo-unify 架构统一多模态理解与生成》（Sensenova-u1: Unifying multimodal understanding and generation with neo-unify architecture）. arXiv 预印本 arXiv:2605.12500，2026。  
+简要解释：这篇工作提出了基于 neo-unify 架构的统一多模态系统。
+
+[15] Patrick Esser, Robin Rombach, and Bjorn Ommer. 《驯服 Transformer 以实现高分辨率图像合成》（Taming transformers for high-resolution image synthesis）. 见 CVPR，2021。  
+简要解释：该论文展示了如何调整 Transformer 以适配高分辨率图像生成任务。
+
+[16] Patrick Esser, Sumith Kulal, Andreas Blattmann, Rahim Entezari, Jonas Müller, Harry Saini, Yam Levi, Dominik Lorenz, Axel Sauer, Frederic Boesel, Dustin Podell, Tim Dockhorn, Zion English, Kyle Lacey, Alex Goodwin, Yannik Marek, and Robin Rombach. 《扩展 rectified flow transformers 以实现高分辨率图像合成》（Scaling rectified flow transformers for high-resolution image synthesis）. 见 ICML，2024。  
+简要解释：这篇工作讨论了 rectified flow Transformer 的扩展策略，用于更高分辨率的图像生成。
+
+[17] Chaoyou Fu, Peixian Chen, Yunhang Shen, Yulei Qin, Mengdan Zhang, Xu Lin, Jinrui Yang, Xiawu Zheng, Ke Li, Xing Sun, et al. 《MME：用于多模态大语言模型的综合评测基准》（Mme: A comprehensive evaluation benchmark for multimodal large language models）. arXiv 预印本 arXiv:2306.13394，2023。  
+简要解释：这篇工作提供了一个多模态大语言模型的综合评测基准，用于系统衡量模型能力。
+
+[18] Xingyu Fu, Yushi Hu, Bangzheng Li, Yu Feng, Haoyu Wang, Xudong Lin, Dan Roth, Noah A. Smith, Wei-Chiu Ma, and Ranjay Krishna. 《BLINK：多模态大语言模型可以看见，但不能感知》（BLINK: Multimodal large language models can see but not perceive）. 见 ECCV，2024。  
+简要解释：这篇论文指出，多模态大语言模型在“看见”视觉信息与真正“感知”之间仍存在差距。</pre>
+        </article>
+      </div>
+    </section>
+
+    <section class="spread" id="page-13">
+      <header><span>Page 13</span><a href="#top">Top</a></header>
+      <div class="cols">
+        <figure class="original">
+          <img src="faithful_page_images/Seed-RF/page-013.png" alt="Seed-RF page 13" loading="lazy" />
+        </figure>
+        <article class="translation">
+          <div class="label">中文翻译 + 简单解释</div>
+          <pre>[19] Yu Gao, Lixue Gong, Qiushan Guo, Xiaoxia Hou, Zhichao Lai, Fanshi Li, Liang Li, Xiaochen Lian, Chao Liao, Liyang Liu, Wei Liu, Yichun Shi, Shiqi Sun, Yu Tian, Zhi Tian, Peng Wang, Rui Wang, Xuanda Wang, Xun Wang, Ye Wang, Guofeng Wu, Jie Wu, Xin Xia, Xuefeng Xiao, Zhonghua Zhai, Xinyu Zhang, Qi Zhang, Yuwei Zhang, Shijia Zhao, Jianchao Yang, and Weilin Huang. 《Seedream 3.0 技术报告》（Seedream 3.0 technical report）。arXiv 预印本 arXiv:2504.11346，2025。  
+简要解释：这是 Seedream 3.0 的技术报告引用，说明作者在相关工作中参考了一个较新的生成/多模态系统报告。
+
+[20] Yuying Ge, Sijie Zhao, Jinguo Zhu, Yixiao Ge, Kun Yi, Lin Song, Chen Li, Xiaohan Ding, and Ying Shan. 《SEED-X：具有统一的多粒度理解与生成的多模态模型》（SEED-X: Multimodal models with unified multi-granularity comprehension and generation）。arXiv 预印本 arXiv:2404.14396，2024。  
+简要解释：该工作聚焦统一的多粒度多模态理解与生成，是本文背景中的重要相关研究。
+
+[21] Dhruba Ghosh, Hannaneh Hajishirzi, and Ludwig Schmidt. 《GenEval：一个面向对象的文本到图像对齐评估框架》（GenEval: An object-focused framework for evaluating text-to-image alignment）。发表于 NeurIPS，2023。  
+简要解释：这是一个用于评估文生图对齐质量的基准，强调对象级别的准确性。
+
+[22] Tianrui Guan, Fuxiao Liu, Xiyang Wu, Ruiqi Xian, Zongxia Li, Xiaoyu Liu, Xijun Wang, Lichang Chen, Furong Huang, Yaser Yacoob, Dinesh Manocha, and Tianyi Zhou. 《HallusionBench：用于大视觉语言模型中纠缠语言幻觉与视觉错觉的高级诊断套件》（HallusionBench: An advanced diagnostic suite for entangled language hallucination and visual illusion in large vision-language models）。发表于 CVPR，2024。  
+简要解释：该基准用于检测视觉语言模型中的幻觉与视觉误判问题，属于诊断类评测工具。
+
+[23] Jonathan Ho, Ajay Jain, and Pieter Abbeel. 《去噪扩散概率模型》（Denoising diffusion probabilistic models）。发表于 NeurIPS，第 33 卷，2020。  
+简要解释：这是扩散模型领域的经典基础工作，提出了 DDPM 框架。
+
+[24] Emiel Hoogeboom, Thomas Mensink, Jonathan Heek, Kay Lamerigts, Ruiqi Gao, and Tim Salimans. 《更简单的扩散（SiD2）：在 ImageNet512 上通过像素空间扩散达到 1.5 FID》（Simpler diffusion (SiD2): 1.5 FID on ImageNet512 with pixel-space diffusion）。发表于 CVPR，2025。  
+简要解释：该工作关注更简化的扩散建模方式，并报告了在 ImageNet512 上的高质量生成结果。
+
+[25] Xiwei Hu, Rui Wang, Yixiao Fang, Bin Fu, Pei Cheng, and Gang Yu. 《ELLA：使用 LLM 增强扩散模型以实现更强语义对齐》（ELLA: Equip diffusion models with LLM for enhanced semantic alignment）。arXiv 预印本 arXiv:2403.05135，2024。  
+简要解释：该方法将 LLM 引入扩散模型，以提升生成内容与语义提示之间的一致性。
+
+[26] Aniruddha Kembhavi, Mike Salvato, Eric Kolve, Minjoon Seo, Hannaneh Hajishirzi, and Ali Farhadi. 《一张图表胜过十张图片》（A diagram is worth a dozen images）。发表于 ECCV，2016。  
+简要解释：该工作强调图表/示意图在信息表达上的高密度价值，常用于文档理解相关研究。
+
+[27] Diederik P Kingma and Max Welling. 《自编码变分贝叶斯》（Auto-encoding variational bayes）。arXiv 预印本 arXiv:1312.6114，2013。  
+简要解释：这是变分自编码器（VAE）的奠基性论文之一。
+
+[28] Philip A Knight. 《Sinkhorn–Knopp 算法：收敛性与应用》（The sinkhorn–knopp algorithm: convergence and applications）。SIAM Journal on Matrix Analysis and Applications，30(1):261–275，2008。  
+简要解释：该文系统讨论了 Sinkhorn–Knopp 算法的收敛性质及其应用，常用于矩阵归一化与最优传输相关问题。
+
+[29] Tianhong Li and Kaiming He. 《回到基础：让去噪生成模型执行去噪》（Back to basics: Let denoising generative models denoise）。arXiv 预印本 arXiv:2511.13720，2025。  
+简要解释：这篇工作回到去噪生成模型的核心机制，强调模型应充分发挥“去噪”本职功能。
+
+[30] Bin Lin, Zongjian Li, Xinhua Cheng, Yuwei Niu, Yang Ye, Xianyi He, Shenghai Yuan, Wangbo Yu, Shaodong Wang, Yunyang Ge, et al. 《UniWorld-V1：用于统一视觉理解与生成的高分辨率语义编码器》（UniWorld-V1: High-resolution semantic encoders for unified visual understanding and generation）。arXiv 预印本 arXiv:2506.03147，2025。  
+简要解释：该工作面向统一视觉理解与生成，重点是高分辨率语义编码能力。
+
+[31] Hao Liu, Wilson Yan, Matei Zaharia, and Pieter Abbeel. 《基于块状 RingAttention 的百万长度视频与语言世界模型》（World model on million-length video and language with blockwise RingAttention）。arXiv 预印本 arXiv:2402.08268，2024。  
+简要解释：该研究探索超长视频与语言上的世界模型建模，并采用 blockwise RingAttention 处理长序列。
+
+[32] Zhiheng Liu, Weiming Ren, Xiaoke Huang, Shoufa Chen, Tianhong Li, Mengzhao Chen, Yatai Ji, Sen He, Jonas Schult, Belinda Zeng, Tao Xiang, Wenhu Chen, Ping Luo, Luke Zettlemoyer, and Yuren Cong. 《Tuna-2：像素嵌入在多模态理解与生成中优于视觉编码器》（Tuna-2: Pixel embeddings beat vision encoders for multimodal understanding and generation）。arXiv 预印本 arXiv:2604.24763，2026。  
+简要解释：该工作主张像素嵌入在部分多模态任务上可优于传统视觉编码器，指向输入表示方式的改进。
+
+[33] Ilya Loshchilov and Frank Hutter. 《解耦权重衰减正则化》（Decoupled weight decay regularization）。发表于 ICLR，2019。  
+简要解释：这篇论文提出了 AdamW 等优化方法中的关键思想，将权重衰减与梯度更新解耦。
+
+[34] Yiyang Ma, Xingchao Liu, Xiaokang Chen, Wen Liu, Chengyue Wu, Zhiyu Wu, Zizheng Pan, Zhenda Xie, Haowei Zhang, Xingkai Yu, Liang Zhao, Yisong Wang, Jiaying Liu, and Chong Ruan. 《JanusFlow：协调自回归与 rectified flow 以实现统一的多模态理解与生成》（JanusFlow: Harmonizing autoregression and rectified flow for unified multimodal understanding and generation）。发表于 CVPR，2025。  
+简要解释：该方法尝试把自回归与 rectified flow 统一起来，服务于理解与生成一体化的多模态模型。
+
+[35] Ahmed Masry, Do Xuan Long, Jia Qing Tan, Shafiq Joty, and Enamul Hoque. 《ChartQA：一个面向图表问答、包含视觉与逻辑推理的基准》（ChartQA: A benchmark for question answering about charts with visual and logical reasoning）。发表于 ACL Findings，2022。  
+简要解释：这是一个图表问答基准，强调既需要视觉读取，也需要逻辑推理。
+
+[36] Minesh Mathew, Dimosthenis Karatzas, and C. V. Jawahar. 《DocVQA：一个用于文档图像 VQA 的数据集》（DocVQA: A dataset for VQA on document images）。arXiv 预印本 arXiv:2007.00398，2020。  
+简要解释：该数据集面向文档图像问答，是文档理解与多模态问答的重要资源。
+
+[37] Maxime Oquab, Timothée Darcet, Théo Moutakanni, Huy V. Vo, Marc Szafraniec, Vasil Khalidov, Pierre Fernandez, Daniel Haziza, Francisco Massa, Alaaeldin El-Nouby, Mahmoud Assran, Nicolas Ballas, Wojciech Galuba, Russell Howes, Po-Yao Huang, Shang-Wen Li, Ishan Misra, Michael Rabbat, Vasu Sharma, Gabriel Synnaeve, Hu Xu, Hervé Jegou, Julien Mairal, Patrick Labatut, Armand Joulin, and Piotr Bojanowski. 《DINOv2：在无监督条件下学习鲁棒视觉特征》（DINOv2: Learning robust visual features without supervision）。Transactions on Machine Learning Research（TMLR），2024。  
+简要解释：DINOv2 是无监督视觉表征学习的重要工作，强调学习到的特征具有较强鲁棒性。</pre>
+        </article>
+      </div>
+    </section>
+
+    <section class="spread" id="page-14">
+      <header><span>Page 14</span><a href="#top">Top</a></header>
+      <div class="cols">
+        <figure class="original">
+          <img src="faithful_page_images/Seed-RF/page-014.png" alt="Seed-RF page 14" loading="lazy" />
+        </figure>
+        <article class="translation">
+          <div class="label">中文翻译 + 简单解释</div>
+          <pre>[38] Xichen Pan, Satya Narayan Shukla, Aashu Singh, Zhuokai Zhao, Shlok Kumar Mishra, Jialiang Wang, Zhiyang Xu, Jiuhai Chen, Kunpeng Li, Felix Juefei-Xu, Ji Hou, 和 Saining Xie. 使用 MetaQueries 在不同模态之间迁移。arXiv 预印本 arXiv:2504.06256, 2025。  
+简要解释：这篇工作关注如何借助 MetaQueries 在视觉、语言等不同模态之间进行迁移学习。
+
+[39] Dustin Podell, Zion English, Kyle Lacey, Andreas Blattmann, Tim Dockhorn, Jonas Müller, Joe Penna, 和 Robin Rombach. SDXL：提升 latent diffusion models 以实现高分辨率图像合成。发表于 ICLR, 2024。  
+简要解释：该工作是对 SDXL 的引用，重点在于改进潜空间扩散模型，使其更适合高分辨率生成。
+
+[40] Liao Qu, Huichao Zhang, Yiheng Liu, Xu Wang, Yi Jiang, Yiming Gao, Hu Ye, Daniel K. Du, Zehuan Yuan, 和 Xinglong Wu. TokenFlow：用于多模态理解与生成的统一图像 tokenizer。发表于 CVPR, 2025。  
+简要解释：这篇工作提出统一的图像 tokenizer，服务于理解和生成两个方向。
+
+[41] Aditya Ramesh, Prafulla Dhariwal, Alex Nichol, Casey Chu, 和 Mark Chen. 基于 CLIP latents 的分层文本条件图像生成。arXiv 预印本 arXiv:2204.06125, 2022。  
+简要解释：该文利用 CLIP 潜变量实现文本条件图像生成，是早期文本到图像生成的重要工作。
+
+[42] Robin Rombach, Andreas Blattmann, Dominik Lorenz, Patrick Esser, 和 Björn Ommer. 使用 latent diffusion models 的高分辨率图像合成。发表于 CVPR, 2022。  
+简要解释：这是 latent diffusion models 方向的经典论文，奠定了高质量图像生成的重要基础。
+
+[43] Oriane Siméoni, Huy V. Vo, Maximilian Seitzer, Federico Baldassarre, Maxime Oquab, Cijo Jose, Vasil Khalidov, Marc Szafraniec, Seungeun Yi, Michaël Ramamonjisoa, Francisco Massa, Daniel Haziza, Luca Wehrstedt, Jianyuan Wang, Timothée Darcet, Théo Moutakanni, Leonel Sentana, Claire Roberts, Andrea Vedaldi, Jamie Tolan, John Brandt, Camille Couprie, Julien Mairal, Hervé Jégou, Patrick Labatut, 和 Piotr Bojanowski. DINOv3。arXiv 预印本 arXiv:2508.10104, 2025。  
+简要解释：这里引用的是 DINOv3，一个面向视觉表征学习的重要基础模型系列。
+
+[44] Quan Sun, Yufeng Cui, Xiaosong Zhang, Fan Zhang, Qiying Yu, Zhengxiong Luo, Yueze Wang, Yongming Rao, Jingjing Liu, Tiejun Huang, 和 Xinlong Wang. 生成式多模态模型是上下文学习器。2023。  
+简要解释：该结论强调生成式多模态模型可以通过上下文示例进行任务适应，表现出 in-context learning 能力。
+
+[45] Michael Tschannen, Alexey Gritsenko, Xiao Wang, Muhammad Ferjad Naeem, Ibrahim Alabdulmohsin, Nikhil Parthasarathy, Talfan Evans, Lucas Beyer, Ye Xia, Basil Mustafa, 等. Siglip 2：具有改进语义理解、定位能力和稠密特征的多语言视觉-语言编码器。arXiv 预印本 arXiv:2502.14786, 2025。  
+简要解释：这是 Siglip 2 的技术路线，核心是更强的视觉-语言编码和更好的密集特征表达。
+
+[46] Chunwei Wang, Guansong Lu, Junwei Yang, Runhui Huang, Jianhua Han, Lu Hou, Wei Zhang, 和 Hang Xu. ILLUME：让你的 LLMs 学会看、画并自我增强。发表于 ICCV, 2025。  
+简要解释：该方法让 LLMs 具备视觉感知、绘制和自我提升能力，属于多模态扩展方向。
+
+[47] Shuai Wang, Ziteng Gao, Chenhui Zhu, Weilin Huang, 和 Limin Wang. PixNerd：像素神经场扩散。arXiv 预印本 arXiv:2507.23268, 2025。  
+简要解释：这篇工作将 diffusion 与 pixel neural field 结合，用于像素级生成建模。
+
+[48] Xinlong Wang, Xiaosong Zhang, Zhengxiong Luo, Quan Sun, Yufeng Cui, Jinsheng Wang, Fan Zhang, Yueze Wang, Zhen Li, Qiying Yu, 等. Emu3：只需下一 token 预测即可。arXiv 预印本 arXiv:2409.18869, 2024。  
+简要解释：该工作强调统一建模可通过 next-token prediction 这种简单目标完成。
+
+[49] WanTeam, Ang Wang, Baole Ai, Bin Wen, Chaojie Mao, Chen-Wei Xie, Di Chen, Feiwu Yu, Haiming Zhao, 等. Wan：开源且先进的大规模视频生成模型。arXiv 预印本 arXiv:2503.20314, 2025。  
+简要解释：这是一个面向视频生成的大规模开放模型工作。
+
+[50] Chenfei Wu, Jiahao Li, Jingren Zhou, Junyang Lin, Kaiyuan Gao, Kun Yan, Sheng ming Yin, Shuai Bai, Xiao Xu, Yilei Chen, Yuxiang Chen, Zecheng Tang, Zekai Zhang, Zhengyi Wang, An Yang, Bowen Yu, Chen Cheng, Dayiheng Liu, Deqing Li, Hang Zhang, Hao Meng, Hu Wei, Jingyuan Ni, Kai Chen, Kuan Cao, Liang Peng, Lin Qu, Minggang Wu, Peng Wang, Shuting Yu, Tingkun Wen, Wensen Feng, Xiaoxiao Xu, Yi Wang, Yichang Zhang, Yongqiang Zhu, Yujia Wu, Yuxuan Cai, 和 Zenan Liu. Qwen-image 技术报告。arXiv 预印本 arXiv:2508.02324, 2025。  
+简要解释：这是 Qwen-image 的技术报告，说明其图像生成或理解相关能力与设计。
+
+[51] Chengyue Wu, Xiaokang Chen, Zhiyu Wu, Yiyang Ma, Xingchao Liu, Zizheng Pan, Wen Liu, Zhenda Xie, Xingkai Yu, Chong Ruan, 和 Ping Luo. Janus：解耦视觉编码以实现统一的多模态理解与生成。发表于 CVPR, 2025。  
+简要解释：该工作通过解耦视觉编码，提升统一多模态模型在理解和生成上的兼容性。
+
+[52] Chenyuan Wu, Pengfei Zheng, Ruiran Yan, Shitao Xiao, Xin Luo, Yueze Wang, Wanli Li, Xiyan Jiang, Yexin Liu, Junjie Zhou, Ze Liu, Ziyi Xia, Chaofan Li, Haoge Deng, Jiahao Wang, Kun Luo, Bo Zhang, Defu Lian, Xinlong Wang, Zhongyuan Wang, Tiejun Huang, 和 Zheng Liu. OmniGen2：迈向指令对齐的多模态生成。arXiv 预印本 arXiv:2506.18871, 2025。  
+简要解释：该工作聚焦指令对齐的多模态生成，使生成结果更符合用户控制意图。
+
+[53] xAI. RealWorldQA. https://huggingface.co/datasets/xai-org/RealworldQA, 2024。  
+简要解释：这是一个数据集引用，用于真实世界问答相关评测任务。
+
+[54] Jinheng Xie, Weijia Mao, Zechen Bai, David Junhao Zhang, Weihao Wang, Kevin Qinghong Lin, Yuchao Gu, Zhijie Chen, Zhenheng Yang, 和 Mike Zheng Shou. Show-o：用一个单一 transformer 统一多模态理解与生成。发表于 ICLR, 2025。  
+简要解释：该工作主张用一个 transformer 同时承担多模态理解和生成，强调统一架构的简洁性。</pre>
+        </article>
+      </div>
+    </section>
+
+    <section class="spread" id="page-15">
+      <header><span>Page 15</span><a href="#top">Top</a></header>
+      <div class="cols">
+        <figure class="original">
+          <img src="faithful_page_images/Seed-RF/page-015.png" alt="Seed-RF page 15" loading="lazy" />
+        </figure>
+        <article class="translation">
+          <div class="label">中文翻译 + 简单解释</div>
+          <pre>[55] Jinheng Xie、Zhenheng Yang 和 Mike Zheng Shou。Show-o2：改进的原生统一多模态模型。发表于 NeurIPS，2025 年。  
+简要解释：这篇工作提出或改进了名为 Show-o2 的统一多模态模型，重点是提升其原生多模态能力。
+
+[56] An Yang、Anfeng Li、Baosong Yang、Beichen Zhang、Binyuan Hui、Bo Zheng、Bowen Yu、Chang Gao、Chengen Huang、Chenxu Lv、Chujie Zheng、Dayiheng Liu、Fan Zhou、Fei Huang、Feng Hu、Hao Ge、Haoran Wei、Huan Lin、Jialong Tang、Jian Yang、Jianhong Tu、Jianwei Zhang、Jianxin Yang、Jiaxi Yang、Jing Zhou、Jingren Zhou、Junyang Lin、Kai Dang、Keqin Bao、Kexin Yang、Le Yu、Lianghao Deng、Mei Li、Mingfeng Xue、Mingze Li、Pei Zhang、Peng Wang、Qin Zhu、Rui Men、Ruize Gao、Shixuan Liu、Shuang Luo、Tianhao Li、Tianyi Tang、Wenbiao Yin、Xingzhang Ren、Xinyu Wang、Xinyu Zhang、Xuancheng Ren、Yang Fan、Yang Su、Yichang Zhang、Yinger Zhang、Yu Wan、Yuqiong Liu、Zekun Wang、Zeyu Cui、Zhenru Zhang、Zhipeng Zhou 和 Zihan Qiu。Qwen3 技术报告。arXiv 预印本 arXiv:2505.09388，2025 年。  
+简要解释：这是 Qwen3 的官方技术报告，通常会系统介绍模型架构、训练方法、能力边界与实验结果。
+
+[57] Ceyuan Yang、Zhijie Lin、Yang Zhao、Fei Xiao、Hao He、Qi Zhao、Chaorui Deng、Kunchang Li、Zihan Ding、Yuwei Guo、Fuyun Wang、Fangqi Zhu、Xiaonan Nie、Shenhan Zhu、Shanchuan Lin、Hongsheng Li、Weilin Huang、Guang Shi 和 Haoqi Fan。Omni models 中的上下文展开。arXiv 预印本 arXiv:2604.21921，2026 年。  
+简要解释：这项工作讨论了 omni 模型中的 context unrolling，核心通常是把长上下文或多轮信息更有效地展开并利用。
+
+[58] Sihyun Yu、Sangkyung Kwak、Huiwon Jang、Jongheon Jeong、Jonathan Huang、Jinwoo Shin 和 Saining Xie。用于生成的表示对齐：训练扩散 Transformer 比你想象的更容易。发表于 ICLR，2025 年。  
+简要解释：这篇论文强调通过 representation alignment 可以简化扩散 Transformer 的训练，使生成模型更容易优化。
+
+[59] Xiang Yue、Yuansheng Ni、Kai Zhang、Tianyu Zheng、Ruoqi Liu、Ge Zhang、Samuel Stevens、Dongfu Jiang、Weiming Ren、Yuxuan Sun、Cong Wei、Botao Yu、Ruibin Yuan、Renliang Sun、Ming Yin、Boyuan Zheng、Zhenzhu Yang、Yibo Liu、Wenhao Huang、Huan Sun、Yu Su 和 Wenhu Chen。MMMU：面向专家 AGI 的大规模跨学科多模态理解与推理基准。发表于 CVPR，2024 年。  
+简要解释：MMMU 是一个覆盖多个学科的多模态基准，用来评测模型在复杂理解与推理任务上的能力。
+
+[60] Z-Image Team。Z-Image：一种高效的图像生成基础模型，采用单流 diffusion transformer。arXiv 预印本 arXiv:2511.22699，2025 年。  
+简要解释：这篇工作提出 Z-Image，重点是用单流 diffusion transformer 提升图像生成基础模型的效率。
+
+[61] Xiaohua Zhai、Basil Mustafa、Alexander Kolesnikov 和 Lucas Beyer。用于语言-图像预训练的 sigmoid loss。发表于 ICCV，2023 年。  
+简要解释：这项工作提出或推广了用于语言-图像预训练的 sigmoid loss，通常用于改进图文对齐与训练稳定性。
+
+[62] Boyang Zheng、Nanye Ma、Shengbang Tong 和 Saining Xie。带有表示自编码器的 diffusion transformers。arXiv 预印本 arXiv:2510.11690，2025 年。  
+简要解释：这篇论文将 representation autoencoders 与 diffusion transformers 结合，目标是提升生成建模的表示质量与训练效果。
+
+[63] Chunting Zhou、Lili Yu、Arun Babu、Kushal Tirumala、Michihiro Yasunaga、Leonid Shamis、Jacob Kahn、Xuezhe Ma、Luke Zettlemoyer 和 Omer Levy。Transfusion：用一个多模态模型同时预测下一个 token 并对图像进行扩散生成。发表于 ICLR，2025 年。  
+简要解释：Transfusion 尝试把语言建模和图像扩散统一到一个多模态模型中，实现 token 预测与图像生成的联合建模。</pre>
+        </article>
+      </div>
+    </section>
+
+    <section class="spread" id="page-16">
+      <header><span>Page 16</span><a href="#top">Top</a></header>
+      <div class="cols">
+        <figure class="original">
+          <img src="faithful_page_images/Seed-RF/page-016.png" alt="Seed-RF page 16" loading="lazy" />
+        </figure>
+        <article class="translation">
+          <div class="label">中文翻译 + 简单解释</div>
+          <pre>**附录 A**
+
+**实现细节**
+
+**训练。** 我们使用 AdamW [33] 进行训练（β1 = 0.9，β2 = 0.95，ϵ = 10−8，weight decay 0.1，gradient clipping 1.0）。学习率采用线性 warmup，随后保持常数调度；在 Stage 1–2 中基础学习率为 5×10−5，而在 Stage 3 中为了高分辨率稳定性，基础学习率设为 2.5×10−5。新初始化的、与生成相关的参数使用基础学习率的 4× 倍数，而 LLM backbone 保持基础学习率不变。每张 GPU 处理 32,768 个 token 的序列，并通过 NaViT-style variable-resolution batching 进行打包。在线 vector quantization codebook 通过 momentum 更新（decay 0.9999，1 次 Sinkhorn-Knopp iteration，temperature 0.5）；伪代码见 Algorithm 1。对于 classifier-free guidance，我们独立地以 0.1 的概率丢弃 text condition 和整个 representation token sequence。
+
+简要解释：这一段说明了训练时使用的优化器、学习率策略、batch 组织方式，以及在线向量量化和 CFG 的具体设置，核心是在保证稳定训练的同时兼顾高分辨率生成能力。
+
+**推理。** 我们维护模型参数的 exponential moving average，衰减系数为 0.9999，并使用 EMA model 进行 inference。生成分两阶段进行：decoder 首先使用 top-k sampling，根据 text prompt 自回归地产生完整的 representation token sequence；随后在 text 和预测的 representation token tokens 条件下，经过 25 个 flow-matching steps，并结合 dynamic timestep shifting [16]，将 Gaussian noise 去噪为 pixel patches。我们对 representation token sampling 使用双条件 CFG，权重为 wrep = 2.0；对 pixel patch denoising 使用双条件 CFG，权重为 wpix = 3.0。
+
+简要解释：这一段描述了推理与采样流程，先生成中间表示 token，再把噪声逐步去噪成像素块；同时通过 EMA 和 CFG 提升生成稳定性与可控性。
+
+**附录 B**
+
+**在线 vector quantization 算法**
+
+**算法 1 在线 Vector Quantization（类 PyTorch 伪代码）伪代码。**
+
+```python
+# f_m: EMA understanding encoder
+# X: batch of samples (BxHxWx3)
+# C: visual prototypes (KxD)
+# m: momentum (default 0.9999)
+# t: temperature (default 0.5)
+Z = f_m(X).view(B * L, D)
+Z = normalize(Z, dim=1)
+score = matmul(Z, C.T) / t
+score = softmax(score, dim=1)
+score = softmax(score, dim=0)
+A = argmax(score, dim=1)
+
+# 通过 EMA encoder 提取连续特征
+# 两两 cosine 相似度：(B*L, K)
+# 按行归一化
+# 按列归一化（Sinkhorn-Knopp，1 次迭代）
+# 离散分配：(B*L,)
+
+N_k, C_new = zeros(K), zeros(K, D)
+A_c = A.view(B * L, 1).expand(B * L, K)
+C_new = scatter_add(C_new, dim=0, index=A_c, src=Z)
+N_k = scatter_add(N_k, dim=0, index=A, src=ones(B * L))
+C_new = normalize(C_new / N_k, dim=1) # 根据分配得到的新原型
+C = m * C + (1 - m) * C_new
+# momentum 更新
+C = normalize(C, dim=1)
+```
+
+简要解释：这段伪代码展示了如何用 EMA encoder 提取特征、计算与原型的匹配分数、做离散分配，并用 momentum 方式更新视觉原型字典。
+
+**C**
+
+**更广泛影响**
+
+与其他 text-to-image 生成系统一样，Representation Forcing 可能被滥用来生成误导性或有害的视觉内容，包括 disinformation、non-consensual imagery 或 deepfakes。统一多模态模型所采用的标准安全措施，包括 safety filters、output watermarking 和 controlled access，也适用于基于 RF 的系统。
+
+简要解释：这一段强调了该方法的潜在风险，以及应通过常规安全机制来限制其被用于生成虚假或有害图像。
+
+16</pre>
+        </article>
+      </div>
+    </section>
+
+</main>
+</body>
+</html>

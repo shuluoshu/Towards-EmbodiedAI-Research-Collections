@@ -8,6 +8,14 @@
 配套可视化速记页：[`core-diagrams.html`](./core-diagrams.html)  
 说明：该页面为每个工作补充了统一风格的“核心机制框图”，用于记忆和横向比较；框图是按论文/技术博客核心思想重画的结构图，不是论文原图搬运。
 
+新增 must-read paper 入口：
+
+| 工作 | Markdown 技术解读 | HTML 阅读版 |
+| - | - | - |
+| Seed-RF | [`Seed-RF/README.md`](../../must-read-papers/Seed-RF/README.md) | [源码](../../must-read-papers/Seed-RF/Seed-RF-faithful-bilingual.html) / [网页预览](https://raw.githack.com/shuluoshu/Towards-EmbodiedAI-Research-Collections/main/must-read-papers/Seed-RF/Seed-RF-faithful-bilingual.html) |
+| WALL-WM | [`WALL-WM/README.md`](../../must-read-papers/WALL-WM/README.md) | [源码](../../must-read-papers/WALL-WM/WALL-WM-faithful-bilingual.html) / [网页预览](https://raw.githack.com/shuluoshu/Towards-EmbodiedAI-Research-Collections/main/must-read-papers/WALL-WM/WALL-WM-faithful-bilingual.html) |
+| Discrete-WAM | [`Discrete-WAM/README.md`](../../must-read-papers/Discrete-WAM/README.md) | [源码](../../must-read-papers/Discrete-WAM/Discrete-WAM-faithful-bilingual.html) / [网页预览](https://raw.githack.com/shuluoshu/Towards-EmbodiedAI-Research-Collections/main/must-read-papers/Discrete-WAM/Discrete-WAM-faithful-bilingual.html) |
+
 ## 0. 总览结论
 
 ### 0.1 这一批工作的总体趋势
